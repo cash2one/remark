@@ -1,0 +1,324 @@
+{% extends '../../public/main.html' %}
+
+{% block body %}
+<script type="text/javascript">
+    function create(){
+        var a = document.getElementById('community_name').value;
+        if (a == "") {
+            alert("名称不能为空");
+            return false;
+        }
+        document.getElementById('community_form').submit();
+    }
+    function iframeLoaded(iframe) {
+        var doc = iframe.contentWindow.window;
+        var html = doc.document.body.innerHTML;
+        var len = html.length;
+        if (len > 0) {
+            var obj = JSON.parse(html);
+            console.log(obj.data);
+            $('.avatar_image img').attr('src', obj.data.url);
+            $('.avatar_image input').attr('value', obj.data.key);
+        }
+    }
+    $(function() {
+        uediter('community_brief');
+    })
+</script>
+<div class="nav">
+    <a class="btnAdd" name="community_create" data-target="#community_create_dialog" data-toggle="modal">增加社群</a>
+</div>
+<div>
+    <div id="community_create_dialog" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" id="community_create_close" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 id="community_create_title">增加社群</h4>
+                </div>
+                <div class="modal-body">
+                    <form class="form-horizontal" id="community_form" name="community_form" method="post" action="/media/community?a=create">
+                        <div class="form-group">
+                            <label for="league_name" class="col-sm-2 control-label">名称</label>
+                            <div class="col-sm-7">
+                            <input class="form-control" type="text" id="community_name" name="community_name" value="">
+                            </div>
+                        </div>
+                        <div class="form-group avatar_image" onclick="javascript:$('#avatar_image').click()">
+                            <label for="league_name" class="col-sm-2 control-label">头像</label>
+                            <div class="col-sm-7">
+                                <input class="form-control" type="hidden" id="community_avatar_key" name="community_avatar" value="">
+                            <img src="{{ static_url('images/logo.jpg') }}">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="league_name" class="col-sm-2 control-label">人数</label>
+                            <div class="col-sm-3">
+                                <input class="form-control" type="number" id="community_population" name="community_population">
+                            </div>
+                        </div>
+                        <div class="form-group uediter">
+                            <label for="league_name" class="col-sm-2 control-label">简介</label>
+                            <textarea id="community_brief" name="community_brief"></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-success" onclick="create()">保存</button>
+                    <button class="btn btn-default" data-dismiss="modal" aria-hidden="true">取消</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<form id="avatar_image_form" action="/media/community?a=upload_avatar" method="post" enctype="multipart/form-data"  target='hidden_form'>
+    <input type="file" onchange="document.getElementById('avatar_image_form').submit();" style="display: none;" id="avatar_image" name="avatar_image">
+</form>
+<div class="result_filter funnel">
+    <form method="get" action="/media/community" class="form-inline" id="search_form">
+        <div class="searchBox">
+            <select class="form-control" title="搜索项" id="field" name="field">
+                <option id="field_1" name="field" value="1">名称</option>
+                <option id="field_4" name="field" value="4">简介</option>
+                <option id="field_5" name="field" value="5">联系手机</option>
+                <option id="field_6" name="field" value="6">联系 QQ</option>
+                <option id="field_7" name="field" value="7">联系微信</option>
+                <option id="field_8" name="field" value="8">备注</option>
+            </select>
+            <input class="form-control" title="搜索内容" type="text" id="query" name="query" value="{{condition['query']}}" class="typeText">
+            <button  type="button" id="search" class="form-control btn btn-default">搜索</button>
+            <button type="button" id="more" class="form-control btn btn-default">高级搜索</button>
+        </div>
+        <div id="more_condition">
+            <div class="colleft">
+                <div class="valueInfo1">
+                    <div>
+                        <strong>行业</strong>
+                        <div id="category_condition">
+                            <a id="all_category">不限</a>
+                        </div>
+                    </div>
+                    <div>
+                        <strong>标签</strong>
+                        <div id="tag_condition">
+                            <a id="all_tag">不限</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="valueInfo3">
+                    <div>
+                        <strong>接广告</strong>
+                        <div id="ad_condition">
+                            <select title="接广告" name="ad">
+                                <option name="ad_op" value="-1">不限</option>
+                                <option name="ad_op" value="1">是</option>
+                                <option name="ad_op" value="2">否</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div>
+                        <strong>帐号状态</strong>
+                        <div id="status_condition">
+                            <select title="帐号状态" name="status">
+                                <option name="status_op" value="-1">正常</option>
+                                <option name="status_op" value="1">活跃</option>
+                                <option name="status_op" value="2">一般</option>
+                                <option name="status_op" value="3">僵尸</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="colright">
+                <div class="audienceInfo">
+                    <div>
+                        <strong>性别</strong>
+                        <div id="audience_gender_condition">
+                            <select title="性别" name="audience_gender">
+                                <option name="audience_gender_op" value="-1">不限</option>
+                                <option name="audience_gender_op" value="1">偏女性</option>
+                                <option name="audience_gender_op" value="2">偏男性</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div>
+                        <strong>年龄</strong>
+                        <div id="audience_age_condition">
+                            <label><input type="checkbox" name="audience_age" value="1">70后</label>
+                            <label><input type="checkbox" name="audience_age" value="2">80后</label>
+                            <label><input type="checkbox" name="audience_age" value="3">85后</label>
+                            <label><input type="checkbox" name="audience_age" value="4">90后</label>
+                            <label><input type="checkbox" name="audience_age" value="5">95后</label>
+                            <label><input type="checkbox" name="audience_age" value="6">其它</label>
+                        </div>
+                    </div>
+                    <div>
+                        <strong>职业</strong>
+                        <div id="career_condition">
+                            <label><input type="checkbox" name="audience_career" value="1">工薪阶层</label>
+                            <label><input type="checkbox" name="audience_career" value="2">白领</label>
+                            <label><input type="checkbox" name="audience_career" value="3">高管</label>
+                            <label><input type="checkbox" name="audience_career" value="4">创业者</label>
+                            <label><input type="checkbox" name="audience_career" value="5">企事业单位</label>
+                            <label><input type="checkbox" name="audience_career" value="6">国企</label>
+                            <label><input type="checkbox" name="audience_career" value="7">公职人员</label>
+                            <label><input type="checkbox" name="audience_career" value="8">自由职业者</label>
+                        </div>
+                    </div>
+                </div>
+                <hr>
+                <div class="advertisingInfo">
+                    <div>
+                        <strong>其他报价</strong>
+                        <div id="other_price_condition">
+                            <input title="下限" type="text" name="other_price" value="{{ condition['other_price'].split(',')[0] if 'other_price' in condition and condition['other_price'] else '' }}"> -
+                            <input title="上限" type="text" name="other_price" value="{{ condition['other_price'].split(',')[1] if 'other_price' in condition and condition['other_price'] else '' }}">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+<div>
+    <table class="table table-bordered table-hover vert-align">
+        <thead>
+            <tr class="res_tbl_title">
+                <td>ID</td>
+                <td>自媒体名称</td>
+                <td>人数</td>
+                <td>备注</td>
+                <td>更新时间</td>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in community %}
+            <tr>
+                <td width="2%">{{ item['id'] }}</td>
+                <td width="5%" >
+                    <a href="/media/community?a=detail&id={{item['id']}}" >{{ item['name'] }}</a>
+                </td>
+                <td width="5%">{{ item['population'] if item['population'] else ''}}</td>
+                <td width="20%"><div style="overflow:hidden;display:inline-block;max-width:100px;white-space:nowrap;text-overflow:ellipsis;">{% raw item['remark'] if item['remark'] else '' %}</div></td>
+                <td width="5%">{{ item['last_update_time'] }}</td>
+            </tr>
+            {% end %}
+        </tbody>
+    </table>
+</div>
+<div>
+    {% raw page_html %}
+</div>
+<iframe frameborder="0" name='hidden_form' style="width:0;height: 0;" onload="iframeLoaded(this)"></iframe>
+<script type="text/javascript">
+$(document).ready(function(){
+    $("body").keyup(function () {
+        if (event.which == 13){
+            $("#search").trigger("click");
+        }
+    }); 
+    // 分类
+    $.ajax({
+        type: "get",
+        contentType: "application/json",
+        url: "/media/common?a=get_category_media",
+        success: function (result) {
+            var obj = JSON.parse(result);
+            var cb = "";
+            for (var i = 0; i < obj.data.length; i++) {
+                cb += '<label>';
+                cb += '<input type="checkbox" name="category" value=' + obj.data[i].id + '>';
+                cb += obj.data[i].name;
+                cb += '</label>';
+                }
+            $("#category_condition").append(cb);
+            // 行业不限
+            $('#all_category').click(function(){
+                $("input[name=category]").each(function(){
+                    $(this).attr("checked", false);
+                })
+            });
+            // 回显
+            $("input[name=category]").each(function(){
+                if ($.inArray($(this).val(), '{{ condition["category"] }}'.split(',')) != -1) {
+                    $(this).attr("checked", true);
+                }
+            });
+        }
+    });
+    // 标签
+    $.ajax({
+        type: "get",
+        contentType: "application/json",
+        url: "/media/common?a=get_tag",
+        success: function (result) {
+            var obj = JSON.parse(result);
+            var cb = "";
+            for (var i = 0; i < obj.data.length; i++) {
+                cb += '<label>';
+                cb += '<input type="checkbox" name="tag" value=' + obj.data[i].id + '>';
+                cb += obj.data[i].name;
+                cb += '</label>';
+            }
+            $("#tag_condition").append(cb);
+            // 标签不限
+            $('#all_tag').click(function(){
+                $("input[name=tag]").each(function(){
+                    $(this).attr("checked", false);
+                })
+            });
+            // 回显
+            $("input[name=tag]").each(function(){
+                if ($.inArray($(this).val(), '{{ condition["tag"] }}'.split(',')) != -1) {
+                    $(this).attr("checked", true);
+                }
+            });
+        }
+    });
+    $('#more').click(function(){
+        $("#more_condition").toggle();
+        if ($("#more_condition").is(":visible")){
+            $(".searchBox").addClass("searchBoxMore");
+        }else{
+            $(".searchBox").removeClass("searchBoxMore");
+        };
+    });
+    // 提交搜索
+    $('#search').click(function(){
+        $('#search_form').submit();
+    });
+    var field = "{{ condition['field']}}";
+    var status = "{{ condition['status'] }}";
+    var ad = "{{ condition['ad'] }}";
+
+    if (field != ""){
+        $("option[name=field][value=" + field + "]").attr("selected", true);
+    }
+    if (status != "") {
+        $("option[name=status_op][value=" + status + "]").attr("selected", true);
+    }
+    if (ad != "") {
+        $("option[name=ad_op][value=" + ad + "]").attr("selected", true);
+    }
+
+
+    $("input[name=audience_age]").each(function(){
+        if ($.inArray($(this).val(), '{{ condition["audience_age"] }}'.split(',')) != -1) {
+            $(this).attr("checked", true);
+        }
+    });
+    $("input[name=audience_career]").each(function(){
+        if ($.inArray($(this).val(), '{{ condition["audience_career"] }}'.split(',')) != -1) {
+            $(this).attr("checked", true);
+        }
+    });
+});
+
+/*增加样式选择器*/
+$(document).ready(function(){
+        $(".edui-container").addClass("col-sm-2");
+    })
+</script>
+
+</script>
+{% end %}

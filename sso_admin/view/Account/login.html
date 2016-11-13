@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+	<title>{{ title }}</title>
+    <meta name="keywords" content="一道,一道网,自媒体,自媒体营销,自媒体交易,微信自媒体,自媒体变现,微信公众号,微信互推,自媒体维权,阅读数,自媒体平台,自媒体广告">
+    <meta name="description" content="一道自媒体交易平台">
+	<link rel="stylesheet" href="{{ static_url('style/bootstrap.min.css') }}" />
+	<script type="text/javascript" src="{{ static_url('script/jquery.min.js') }}"></script>
+	<script type="text/javascript" src="{{ static_url('script/bootstrap.min.js') }}"></script>
+</head>
+<body>
+    <div class="container" style="width: 20%;margin-top: 200px" >
+        <form class="form-login" role="form" action="/login" method="post">
+            <h3 class="form-login-heading" style="text-align: center;font-weight: bold">一道<span>&nbsp;</span>后台管理系统</h3>
+            <input type="text" class="form-control" name="account" placeholder="用户名"/>
+            <input type="password" class="form-control" name="password" placeholder="密码"/>
+            <input type="hidden" class="form-control" name="redirect_url"/>
+            <input type="submit" class="btn btn-md btn-block" value="登录">
+        </form>
+    </div>
+<script type="text/javascript">
+    function getUrlParam(name)
+    {
+        var reg = new RegExp("(^|&)"+ name +"=([^&]*)(&|$)"); //构造一个含有目标参数的正则表达式对象
+        var r = window.location.search.substr(1).match(reg);  //匹配目标参数
+        if (r!=null)
+            return unescape(r[2]);
+        return null; //返回参数值
+    } 
+    $("input[name='redirect_url']").val(getUrlParam('redirect_url'));
+</script>
+</body>
+</html>

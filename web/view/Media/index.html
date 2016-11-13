@@ -1,0 +1,582 @@
+{% extends '../public/main.html' %}
+{% block title %}自媒体资源{% end %}
+{% block body %}
+<link href="{{ static_url('style/self_media.css') }}" type="text/css" rel="stylesheet" >
+<!--[if lt IE 9]>
+<script language="javascript" type="text/javascript" src="{{ static_url('script/excanvas.js') }}"></script><![endif]-->
+<script language="javascript" type="text/javascript" src="{{ static_url('script/jquery.jqplot.js') }}"></script>
+<link rel="stylesheet" type="text/css" href="{{ static_url('style/jquery.jqplot.css') }}" />
+
+<div class="allMedia">
+    <div class="title">
+        <h2>自媒体资源</h2>
+        <div class="addMedia"><a href="javascript:onlink('/user?a=media_create')" class="btnNext">免费入驻</a></div>
+        <div class="searchBox">
+            <input type="text" placeholder="输入自媒体名称搜索" id="query" value="{{ search_condition['query'] }}">
+            <button type="submit" class="ydi yd-search" id="search_button">搜索</button>
+        </div>
+        <div class="myMedia"><a href="javascript:onlink('/user?a=media')">我的自媒体<span class="ydi yd-right"></span></a></div>
+    </div>
+    <div class="filterBox">
+        <div class="choose-line"><span style="float: left;">媒体行业</span>
+            <div class="choices-box">
+                <a class="choices" id="category" type="category" data="">全部</a>
+                {% for item in category %}
+                <a class="choices" id="category_{{ item['id'] }}" type="category" data="{{ item['id'] }}">{{ item['name'] }}</a>
+                {% end %}
+            </div>
+        </div>
+        <div class="choose-line"><span style="float: left;">综合指数</span>
+            <div class="choices-box">
+                <a class="choices" id="value_level" type="value_level" data="">全部</a>
+                {% for item in value_level %}
+                <a class="choices" id="value_level_{{ item['id'] }}" type="value_level" data="{{ item['id'] }}">{{ item['name'] }}</a>
+                {% end %}
+            </div>
+        </div>
+        <div class="choose-line"><span style="float: left;">针对性别</span>
+            <div class="choices-box">
+                <a class="choices" id="audience_gender" type="audience_gender" data="">全部</a>
+                {% for item in audience_gender %}
+                <a class="choices" id="audience_gender_{{ item['id'] }}" type="audience_gender" data="{{ item['id'] }}">{{ item['name'] }}</a>
+                {% end %}
+            </div>
+        </div>
+        <div class="choose-line"><span style="float: left;">微信认证</span>
+            <div class="choices-box">
+                <a class="choices" id="identify" type="identify" data="">全部</a>
+                {% for item in identify %}
+                <a class="choices" id="identify_{{ item['id'] }}" type="identify" data="{{ item['id'] }}">{{ item['name'] }}</a>
+                {% end %}
+            </div>
+        </div>
+        <div class="choose-line"><span style="float: left;">是否原创</span>
+            <div class="choices-box">
+                <a class="choices" id="original" type="original" data="">全部</a>
+                {% for item in original %}
+                <a class="choices" id="original_{{ item['id'] }}" type="original" data="{{ item['id'] }}">{{ item['name'] }}</a>
+                {% end %}
+            </div>
+        </div>
+        <!--
+        <div class="choose-line"><span style="float: left;">地域筛选</span>
+            <div class="choices-box" name="proved">
+                <input type="text" id="province" class="o_media_area_search" placeholder="省份" value="" readonly="readonly" />
+                <input type="text" id="city" class="o_media_area_search" placeholder="城市" value="" readonly="readonly" />
+                <button class="o_media_area_search_button" id="o_media_area_search_button">确定</button>
+            </div>
+        </div>
+        -->
+    </div>
+    <div class="content">
+        <ul>
+            {% for item in list %}
+            <li class="mediaBox">
+                <div class="mediaAvatar">
+                    <a href="/media?a=view&id={{ item['id'] }}" target="_blank">
+                        {% if item['avatar'] %}
+                        <img src="http://7sbnkf.com2.z0.glb.qiniucdn.com/{{ item['avatar'] }}-avatar" alt="{{ item['name'] }}">
+                        {% elif item['wechat_id'] %}
+                        <span><img src="http://open.weixin.qq.com/qr/code/?username={{ item['wechat_id'] }}" alt="{{ item['name'] }}"></span>
+                        {% else %}
+                        <img src="http://7sbnkf.com2.z0.glb.qiniucdn.com/{{ item['avatar'] }}-avatar" alt="{{ item['name'] }}">
+                        {% end %}
+                    </a>
+                </div>
+                <div class="mediaInfo">
+                    <div class="mediaTitle">
+                        <span class="mediaName"><a href="/media?a=view&id={{ item['id'] }}" target="_blank">{{ item['name'] }}</a></span>
+                        {% if item['original'] %}
+                        <span class="original" title="原创">原创</span>
+                        {% end %}
+                        {% if item['identify'] %}
+                        <span class="wechatVerify ydi yd-checked" title="微信认证">已认证</span>
+                        {% end %}
+                        <span class="level" title="综合级别">级别<strong>{{ item['value_level'] }}</strong></span>
+                        <span class="qrcode"><img src="/static/images/qr-mini.png" alt="二维码"><img src="http://7sbnkf.com2.z0.glb.qiniucdn.com/{{ item['qrcode'] }}-avatar" alt="{{ item['name'] }}二维码" class="codeL"></span>
+                    </div>
+                    <div class="mediaCategory">
+                        <span>{{ item['category'] }}</span>
+                    </div>
+                    <div class="mediaTag">
+                        {% for tag in item['tag'] %}
+                            <span data="">{{ tag['name'] }}</span>
+                        {% end %}
+                    </div>
+                    <dl class="mediaAudience">
+                        <dt>针对地域：</dt>
+                        <dd>{{ item['area'] }}</dd>
+                        <dt>针对性别：</dt>
+                        <dd>{{ item['audience_gender'] }}</dd>
+                    </dl>
+                    <div class="chart jqplot-target" id="chart{{ item['id'] }}" data-weekread="" data-id="{{ item['id'] }}">
+
+                    </div>
+                </div>
+                <div class="more">
+                    <a href="/media?a=view&id={{ item['id'] }}" target="_blank" class="btnMore">查看详情</a>
+                </div>
+            </li>
+            {% end %}
+        </ul>
+        <div class="listPagenation">
+            <div>{% raw page %}</div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+$(function(){
+    // 已有搜索条件
+    var str_category        = "{{ search_condition['category'] }}";
+    var str_tag             = "{{ search_condition['tag'] }}";
+    var str_value_level     = "{{ search_condition['value_level'] }}";
+    var str_audience_gender = "{{ search_condition['audience_gender'] }}";
+    var str_identify        = "{{ search_condition['identify'] }}";
+    var str_original        = "{{ search_condition['original'] }}";
+    
+    // 媒体行业
+    if(str_category == "")
+        $('#category').addClass('choices-choosen');
+    else
+    {
+        var list_category = str_category.split(",");
+        for(i = 0; i < list_category.length; i++)
+            $('#category_' + list_category[i]).addClass('choices-choosen');
+    }
+    
+    // Tag
+    if(str_tag == "")
+        $('#tag').addClass('choices-choosen');
+    else
+    {
+        var list_tag = str_tag.split(",");
+        for(i = 0; i < list_tag.length; i++)
+            $('#tag_' + list_tag[i]).addClass('choices-choosen');
+    }
+    
+    // 综合指数
+    if(str_value_level == "")
+        $('#value_level').addClass('choices-choosen');
+    else
+    {
+        list_value_level = str_value_level.split(",");
+        for(i = 0; i < list_value_level.length; i++)
+            $('#value_level_' + list_value_level[i]).addClass('choices-choosen');
+    }
+
+    // 受众性别
+    if(str_audience_gender == "")
+        $('#audience_gender').addClass('choices-choosen');
+    else
+    {
+        list_audience_gender = str_audience_gender.split(",");
+        for(i = 0; i < list_audience_gender.length; i++)
+            $('#audience_gender_' + list_audience_gender[i]).addClass('choices-choosen');
+    }
+    
+    // 账号认证
+    if(str_identify == "")
+        $('#identify').addClass('choices-choosen');
+    else
+    {
+        list_identify = str_identify.split(",");
+        for(i = 0; i < list_identify.length; i++)
+            $('#identify_' + list_identify[i]).addClass('choices-choosen');
+    }
+    
+    // 是否原创
+    if(str_original == "")
+        $('#original').addClass('choices-choosen');
+    else
+    {
+        list_original = str_original.split(",");
+        for(i = 0; i < list_original.length; i++)
+            $('#original_' + list_original[i]).addClass('choices-choosen');
+    }
+
+    $(".choices,#search_button").click(function(){
+        var list_category         = [];
+        var list_tag              = [];
+        var list_value_level      = [];
+        var list_audience_gender  = [];
+        var list_identify         = [];
+        var list_original         = [];
+        
+        if($(this).attr('id') !== 'search_button')
+        {
+            if($(this).attr('class').indexOf('choices-choosen') > 0)
+                $(this).attr('class', 'choices');
+            else
+                $(this).attr('class', 'choices choices-choosen');
+
+            // 不限
+            if($(this).attr('data') == "")
+            {
+                $("a[type='" + $(this).attr('type') + "']").each(function (index) {
+                    if($(this).attr("data") != "")
+                        $(this).attr('class', 'choices');
+                });
+            }
+        }
+        
+        $("a[class='choices choices-choosen']").each(function (index) {
+            if($(this).attr("type") == "category" && $(this).attr("data") != "")
+                list_category.push($(this).attr("data"));
+            
+            if($(this).attr("type") == "tag" && $(this).attr("data") != "")
+                list_tag.push($(this).attr("data"));
+                
+            if($(this).attr("type") == "value_level" && $(this).attr("data") != "") {
+                list_value_level.push($(this).attr("data"));
+            }
+            if($(this).attr("type") == "audience_gender" && $(this).attr("data") != "")
+                list_audience_gender.push($(this).attr("data"));
+                
+            if($(this).attr("type") == "identify" && $(this).attr("data") != "")
+                list_identify.push($(this).attr("data"));
+            
+            if($(this).attr("type") == "original" && $(this).attr("data") != "")
+                list_original.push($(this).attr("data"));
+        });
+        
+        var list_search_condition = [];
+        if (list_category.length > 0)
+            list_search_condition.push("category=" + list_category.join(","));
+        if (list_tag.length > 0)
+            list_search_condition.push("tag=" + list_tag.join(","));
+        if (list_value_level.length > 0)
+            list_search_condition.push("value_level=" + list_value_level.join(","));
+        if (list_audience_gender.length > 0)
+            list_search_condition.push("audience_gender=" + list_audience_gender.join(","));
+        if (list_identify.length > 0)
+            list_search_condition.push("identify=" + list_identify.join(","));
+        if (list_original.length > 0)
+            list_search_condition.push("original=" + list_original.join(","));
+        if ($('#query').val() !== "")
+            list_search_condition.push("query=" + $('#query').val());
+            
+        location.href = '?' + list_search_condition.join('&');
+    });
+    /////////////////////////////////////////////////////////
+    /**
+     * 处理城市选择
+     */
+    var area = function(){
+        var self = this;
+        
+        // 加载状态
+        self.loading = false;
+        // 显示状态
+        self.hold = false;
+
+        // 监听点击事件
+        self.listen = function(){
+            // 监听省份点击
+            $('.o_media_area_search').focus(function(){
+                $(this).css('border', '1px solid #2891eb');
+                self.show($(this));
+                // 加载数据
+            }).blur(function(){
+                $(this).css('border', '1px solid #ddd');
+                self.hide();
+            });
+        }();
+
+        // 显示
+        self.show = function(obj){
+            var dataId = obj.attr('id');
+            if($('#o_media_area_box').length == 0){
+                self.createHtml(obj);
+            }
+
+            // 加载数据
+            self.loadData(dataId, obj);
+        }
+
+        // 关闭
+        self.hide = function(fc){
+            if(fc == true){
+                $('#o_media_area_box').css('display', 'none');
+            }else{
+                if(!self.hold){
+                    $('#o_media_area_box').css('display', 'none');
+                }
+            }
+        }
+
+        // 执行ajax
+        self.request = function(data, callback){
+            self.loading = true;
+            $.ajax({
+                url: '/media?a=area',
+                type: 'POST',
+                dataType: 'JSON',
+                data: data
+            }).then(function(d){
+                callback(d);
+            });
+        }
+
+        // 加载数据
+        self.loadData = function(t, obj){
+            if(!t || self.loading){
+                return false;
+            }
+            
+            $('#o_media_area_box').attr('data-id', t);
+            
+            $('.o_media_area_item').css('display', 'none');
+            $('#o_media_area_' + t).css('display', 'block');
+            
+            var parentId = self.checkProvince(t);
+            if(parentId === false){
+                return false;
+            }
+
+            if(obj){
+                self.setStyle(obj);
+                $('#o_media_area_box').css('display', 'block');
+            }
+
+            var o = $('#o_media_area_' + t);
+            var status = o.attr('data-status');
+            var province = o.attr('data-province');
+            if(status == 1 && province == parentId){
+                return false;
+            }
+
+            o.attr('data-status', '1');
+            o.attr('data-province', parentId);
+            
+            self.request({'t': t, 'parent_id': parentId}, function(d){
+                if(t == 'province'){
+                    self.putProvince(t, d);
+                }else{
+                    self.putCity(t, d);
+                }
+            });
+        }
+
+        // 输出城市
+        self.putCity = function(t, d){
+            if(d.status != 200){
+                $('#o_media_loading_city').text('加载失败，请刷新重试');
+                return false;
+            }
+
+            var _html = '';
+            var cityLen = d.data.length;
+            for(var i = 0; i < cityLen; i++){
+                _html += '<a href="javascript:;" class="o_media_area_content_item_city_val" data-id="'+ d['data'][i]['id'] +'">'+ d['data'][i]['name'] +'</a>';
+            }
+            $('#o_media_area_content_city').html(_html);
+            self.loading = false;
+
+            // 监听点击选择
+            $('.o_media_area_content_item_city_val').unbind('click').click(function(){
+                var id = $(this).attr('data-id');
+                var name = $(this).text();
+                self.hide(true);
+                $('#id_' + t).val(id);
+                $('#' + t).val(name);
+            });
+        }
+
+        // 输出省份
+        self.putProvince = function(t, d){
+            if(d.status != 200){
+                $('#o_media_loading_province').text('加载失败，请刷新重试');
+                return false;
+            }
+
+            // 重构数据
+            var _html = [];
+            var tabIndex = 0;
+            $('.o_media_area_tab li').each(function(){
+                var key = $(this).text();
+                var keys = key.split('');
+                var keysLen = keys.length;
+                var _html_head = '';
+                if(tabIndex == 0){
+                    _html_head = '<div id="o_media_area_content_'+ key +'">';
+                }else{
+                    _html_head = '<div id="o_media_area_content_'+ key +'" style="display:none;">';
+                }
+                _html.push(_html_head);
+                tabIndex++;
+                for(var i in keys){
+                    var list = d['data'][keys[i].toLowerCase()];
+                    if(list){
+                        var item = '';
+                        for(var j in list){
+                            item += '<a href="javascript:;" data-id="'+ list[j]['id'] +'" class="o_media_area_content_item_val">'+ list[j]['name'] +'</a>';
+                        }
+                        var line = '<div class="o_media_area_content_line">'+
+                            '<div class="o_media_area_content_label">'+ keys[i] +'</div>'+
+                            '<div class="o_media_area_content_item">'+ item +'</div>'+
+                        '</div>';
+                        _html.push(line);
+                    }
+                }
+                _html.push('</div>');
+            });
+            $('#o_media_area_content').html(_html.join(''));
+            self.loading = false;
+
+            // 监听点击选择
+            $('.o_media_area_content_item_val').unbind('click').click(function(){
+                var id = $(this).attr('data-id');
+                var name = $(this).text();
+                self.hide(true);
+                $('#id_' + t).val(id);
+                $('#' + t).val(name);
+            });
+        }
+
+        // 创建界面
+        self.createHtml = function(obj){
+            var dataId = obj.attr('id');
+            if(self.checkProvince(dataId) === false){
+                return false;
+            }
+
+            var _html = '<div id="o_media_area_box" data-id="'+ dataId +'">'+
+                '<div id="o_media_area_province" class="o_media_area_item" data-status="0">'+
+                    '<ul class="o_media_area_tab">'+
+                        '<li class="o_media_area_tab_focus">ABCD</li>'+
+                        '<li>EFGH</li>'+
+                        '<li>JKLM</li>'+
+                        '<li>NOPQRS</li>'+
+                        '<li>TUVWX</li>'+
+                        '<li>YZ</li>'+
+                    '</ul>'+
+                    '<div id="o_media_area_content" class="o_media_area_content">'+
+                        '<div class="o_media_area_loading" id="o_media_loading_province">加载中...</div>'+
+                    '</div>'+
+                '</div>'+
+                '<div id="o_media_area_city" class="o_media_area_item" data-status="0">'+
+                    '<div id="o_media_area_content_city" class="o_media_area_content">'+
+                        '<div class="o_media_area_loading">加载中...</div>'+
+                    '</div>'+
+                '</div>'+
+            '</div>';
+            $('body').append(_html);
+
+            // 设置样式
+            self.setStyle(obj);
+
+            // 监听tab click
+            $('.o_media_area_tab li').unbind('click').click(function(){
+                var key = $(this).text();
+                $('.o_media_area_tab > li').removeClass('o_media_area_tab_focus');
+                $(this).addClass('o_media_area_tab_focus');
+                $('#o_media_area_content > div').css('display', 'none');
+                $('#o_media_area_content_' + key).css('display', 'block');
+            });
+            
+            // 监听hold
+            $('#o_media_area_box').unbind('mouseenter').mouseenter(function(){
+                self.hold = true;
+                $('#' + obj.attr('id')).blur();
+            }).unbind('mouseleave').mouseleave(function(){
+                self.hold = false;
+                self.hide();
+            });
+        }
+
+        // 检查是否已选择省份
+        self.checkProvince = function(dataId){
+            var parentId = '';
+            if(dataId == 'city'){
+                parentId = $('#id_province').val();
+                if(parentId == ''){
+                    return false;
+                }
+            }
+            return parentId;
+        }
+
+        // 
+        self.setStyle = function(obj){
+            // 设置样式
+            var objHeight = obj.outerHeight();
+            var opt = obj.offset();
+            var left = opt.left;
+            var top = opt.top + objHeight;
+            $('#o_media_area_box').css({'left': left, 'top': top});
+        }
+    }();
+
+    var week_read_data = function(){
+        $('.chart').each(function(){
+            var data = $(this).attr('data-weekread');
+            var id = $(this).attr('data-id');
+            if(data && id){
+                getExcel(data, 'chart' + id);
+            }
+        });
+    }();
+    
+    function getExcel(data, id){
+        var list = data.split(',');
+        while(list.length<8){
+            list.unshift('0');
+        }
+        var max = getMax(list);
+        var min = getMin(list);
+        var sam = total(list);
+        if(sam>0){
+            if(max<30000){
+                if(max==0){
+                    max = 10;
+                    min = -1;
+                }else{
+                    max = max*3;
+                    min = -1*max/3;
+                }
+
+            }else if(max<70000){
+                max = max*2;
+                min = 0;
+            }else{
+                max = 105000;
+                min = 50000<min?50000:min*0.4;
+            }
+            $.jqplot(id,  [list],{title: {'text': '阅读数曲线图'}, seriesColors:['#f2faff'],
+                axesDefaults:{show:false,tickOptions:{show:false},showTicks: false,showTickMarks: false},
+                axes:{xaxis:{min:0.8,max:8.2},yaxis:{max:max,min:min}},
+                grid:{background: '#f8f9fa',borderColor: '#f8f9fa',shadow:false,gridLineColor: '#f9f9f9',show:false},
+                seriesDefaults:{fill:true,fillAndStroke:true,fillColor:'#f2faff',show:true,lineWidth:2,color:'#2891eb',pointLabels:{ypadding:6,show:true},markerOptions:{shadow:false,size:6},shadow:false}
+            });
+        }else{
+            $('.excel-main').hide();
+        }
+    }
+
+    function total(list){
+        var sam = 0;
+        for(var i=0;i<list.length;i++){
+            sam+=list[i];
+        }
+        return sam;
+    }
+
+    function getMin(list){
+
+        var min = 100000;
+        for(var i=0;i<list.length;i++){
+            if(list[i]<min)min = list[i];
+        }
+        return min;
+    }
+
+    function getMax(list){
+        var max = 0;
+        for(var i=0;i<list.length;i++){
+            if(list[i]>max)max = list[i];
+        }
+        return max;
+    }
+})
+</script>
+{% end %}

@@ -1,0 +1,181 @@
+{% extends '../public/main.html' %}
+{% block title%}创建联盟{% end %}
+{% block body %}
+<link href="{{ static_url('style/union.css') }}" type="text/css" rel="stylesheet">
+<link href="{{ static_url('style/jquery.mCustomScrollbar.min.css') }}" type="text/css" rel="stylesheet">
+<script type="text/javascript">
+    function iframeLoaded(iframe) {
+        var doc = iframe.contentWindow.window;
+        var html = doc.document.body.innerHTML;
+        var len = html.length;
+        if (len > 0) {
+            var obj = JSON.parse(html);
+            console.log(obj.data);
+            $('.create_head img').attr('src',obj.data.url);
+            $('input[name="logo"]').val(obj.data.key);
+        }
+        issendingImg = false;
+    }
+</script>
+
+<iframe frameborder="0" name='hiddenform' style="width:0;height: 0;" onload="iframeLoaded(this)"></iframe>
+<div class="union_create_container">
+    <div class="title">创建联盟</div>
+    <div class="container">
+        <form method="post" action="/user?a=union_create" name="form_upload" autocomplete="off" enctype="multipart/form-data" id="form_upload">
+            <div class="mj-row">
+                <div class="mj-left">联盟名称</div>
+                <div class="mj-middle"><input type="text" maxlength="20" id="uname" name="name"></div>
+                <div class="mj-right">为你的联盟起个响亮的名字吧！</div>
+            </div>
+            <div class="mj-row">
+                <div class="mj-left">联盟头像</div>
+                <div class="mj-middle">
+                    <input type="hidden" value="" name="logo" id="logo">
+                    <div class="create_head" onclick="javascript:$('#union_avatar').click()">
+                        <img src="{{ static_url('images/logo.jpg') }}" width="150" height="100" alt="logo">
+                        <div class="changeBtn">修改头像</div>
+                    </div>
+                </div>
+                <div class="mj-right"></div>
+            </div>
+            <div class="draw-underline"></div>
+            <div class="mj-row">
+                <div class="mj-left">联盟描述</div>
+                <div class="mj-middle">
+                    <textarea maxlength="600" id="description" name="desc"></textarea>
+                </div>
+                <div class="mj-right">为您的联盟添加详细描述，能够让人更清楚的了解你。</div>
+            </div>
+            <div class="mj-row">
+                <input type="hidden" name="type" value="" id="category" />
+                <div class="mj-left">联盟类型</div>
+                <div class="mj-middle" id="trade-container" onchange="checkChange(this)" >
+                    <div class="pick-btn btn-with-blueBg-and-addBtn" id="show-side-list"><span>+</span>选择需求类型</div>
+                </div>
+                <div class="mj-right">选择你所属的行业或者营销受众范围。为保证效果，最多选择7项</div>
+            </div>
+            <div class="draw-underline"></div>
+            <div class="mj-row">
+                <div class="mj-left">联系手机</div>
+                <div class="mj-middle"><input type="text" maxlength="11" id="mobile" name="tel"></div>
+                <div class="mj-right">预留手机获得优惠服务</div>
+            </div>
+            <div class="mj-row">
+                <div class="mj-left"></div>
+                <div class="mj-middle btn-with-blueBg-and-addBtn build" id="show-side" onclick="checkForm_submit()">创建</div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<form id="avatar-form" action="/user?a=union_avatar" method="post" enctype="multipart/form-data"  target='hiddenform'>
+    <input type="file" onchange="uploadImg()" style="display: none;" id="union_avatar" name="avatar">
+</form>
+
+{% include 'pop_category.html' %}
+
+<script src="{{ static_url('script/jquery.mCustomScrollbar.concat.min.js') }}" type="text/javascript"></script>
+<script type="text/javascript">
+    var issendingImg = false;
+    $(function(){
+
+    });
+
+    function uploadImg(){
+        if(issendingImg)return;
+        issendingImg = true;
+        $('#logo').parent().next().text('');
+        document.getElementById('avatar-form').submit();
+    }
+
+    function checkForm_submit(){
+        //if($('#uname'))
+        if(!checkInput()){
+            return;
+        }
+        //else if(tradeList.length<1){
+            //startWord = $('#trade-container').next().addClass('alertWord').text();
+            //$('#trade-container').next().text('！请选择联盟类型');
+            //$('#trade-container').bind('click',function(){
+            //    $(this).unbind('click').next().removeClass('alertWord').text(startWord);
+            //});
+            //return '';
+        //}
+        $('input[name="type"]').val(tradeList);
+
+        // ajax
+        var strName = $.trim($('#uname').val());
+        var strLogo = $.trim($('#logo').val());
+        var strDesc = $.trim($('#description').val());
+        var strCategory = $.trim($('#category').val());
+        var strTel = $.trim($('#mobile').val());
+        $.ajax({
+            url: '/user?a=union_create',
+            type: 'POST',
+            dataType: 'JSON',
+            data: {
+                'name': strName,
+                'logo': strLogo,
+                'desc': strDesc,
+                'category': strCategory,
+                'tel': strTel
+            }
+        }).then(function(d){
+            if(d.status == 200){
+                alert('创建成功');
+                location.href = "/user?a=union";
+            }else{
+                alert('创建失败，请重试');
+            }
+        })
+
+        //$('#form_upload').submit();
+    }
+
+    function checkInput(){
+        var needToReturn = true;
+        if($('#logo').val()==''){
+            alertBox($('#logo'),'请选择头像');
+            needToReturn = false;
+        }
+        $('input[type="text"],textarea').each(function(){
+            if(!needToReturn) return;
+            if($(this).val()==''&& $(this).parent().is(':visible')){
+                    var wrongMsg = '';
+                    switch ($(this).attr('id')){
+                        case 'uname':
+                            wrongMsg = '请输入与联盟名称';
+                            break;
+                        case 'description':
+                            wrongMsg = '请输入联盟描述';
+                            break;
+                        case 'mobile':
+                            wrongMsg = '请输入正确手机号';
+                            break;
+                    }
+                alertBox(this,wrongMsg);
+                needToReturn = false;
+            }else if($(this).attr('id')=='mobile'){
+                if(!checkMovile($(this).val())){
+                    alertBox(this,'请输入正确手机号');
+                    needToReturn = false;
+                }
+            }
+        });
+        return needToReturn;
+    }
+
+    function alertBox(tf,textDetail){
+        $(tf).addClass('alertBox').focus(function(){
+            $(this).removeClass('alertBox');
+            $(tf).parent().next().removeClass('alertWord').text(startWord)
+        });
+        var ttf = $($(tf).parent().next()).text();
+        console.log(textDetail);
+        startWord = ttf=="！" + textDetail?startWord:ttf;
+        $(tf).parent().next().addClass('alertWord').text("！" + textDetail)
+
+    }
+</script>
+{% end %}

@@ -1,0 +1,172 @@
+{% extends '../public/main.html' %}
+{% block title %}找回密码{% end %}
+{% block body %}
+<div class="passport">
+    <div id="verify_user" class="signBox">
+        <h2>找回密码</h2>
+        <h3>为了你的账号安全，请完成身份验证</h3>
+        <label>
+            <span>手机</span>
+            <input id="phone" type="text" maxlength="11" value="">
+            <em class="errorTips" id="tip2"></em>
+        </label>
+        <label>
+            <span>验证码</span>
+            <input id="verify_code" type="text" value="">
+            <button class="" id="send_verify_code" type="button" onclick="sendCode()">发送验证码</button>
+            <em class="errorTips" id="tip3"></em>
+        </label>
+        <button class="submitBtn" onclick="verify_user()">验证</button>
+        <div class="tips">如果你的账号是邮箱注册，请联系右侧客服找回。</div>
+    </div>
+</div>
+<script type="text/javascript">
+    var reg = /^(13[0-9]|15[012356789]|17[678]|18[0-9]|14[57])[0-9]{8}$/;
+    var use = true;
+    $(document).ready(function(){
+        $('#phone').blur(function(){
+            var phone = $('#phone').val();
+            if(!reg.test(phone)){
+                $('#tip2').html('<b>◆</b><i>请输入正确的手机号</i>');
+            } else {
+                $('#tip2').html('');
+                use = true;
+                $.ajax({
+                    type: "POST",
+                    url: "/account?a=check_account",
+                    dataType: "JSON",
+                    data: $.param({'phone':phone}),
+                    success: function(ret, textStatus){
+                        if(ret.status == 300)
+                            $('#tip2').html('');
+                        else
+                        {
+                            $('#tip2').html('<b>◆</b><i>该手机号未注册</i>');
+                            use = false;
+                        }
+                    }
+                });
+            }
+        });
+        $('#password').blur(function(){
+            var password = $('#password').val();
+            if(password.length < 6 || password.length > 32){
+                $('#tip4').html('<b>◆</b><i>长度为6-32个字符</i>');
+            } else {
+                $('#tip4').html('');
+            }
+        });
+    });
+    function verify_user(){
+        var phone = $('#phone').val();
+        var verify_code = $('#verify_code').val();
+        var flag = false;
+        if(!reg.test(phone)){
+            $('#tip2').html('<b>◆</b><i>请输入正确的手机号</i>');
+        } else {
+            flag = true;
+            $('#tip2').html('');
+        }
+        if(verify_code.length != 6){
+            $('#tip3').html('<b>◆</b><i>验证码错误</i>');
+        } else {
+            flag = true;
+            $('#tip3').html('');
+        }
+        if (flag) {
+            var params = {'verify_code':verify_code, 'phone':phone};
+            $.ajax({
+                type: "POST",
+                url: "/account?a=verify_user",
+                dataType: "JSON",
+                data: $.param(params),
+                success: function(ret){
+                    if(ret.status == 200) {
+                        showTipsBox('message', '验证成功，请修改密码');
+                        $('#verify_user').remove();
+                        $('.passport').append(ret.data['set_new_pass'])
+                    } else {
+                        showTipsBox('alert', '验证失败，请检查是否输入有误');
+                    }
+                }
+            });
+        }
+    }
+
+    function set_new_pass(){
+        var phone = $('#phone').val();
+        var verify_code = $('#verify_code').val();
+        var password = $('#password').val();
+        var flag = false;
+        if(password.length < 6 || password.length > 32){
+            $('#tip4').html('<b>◆</b><i>长度为6-32个字符</i>');
+        } else {
+            flag = true;
+            $('#tip4').html('');
+        }
+        if (flag) {
+            var params = {'verify_code': verify_code, 'password':password, 'phone':phone};
+            $.ajax({
+                type: "POST",
+                url: "/account?a=set_password",
+                dataType: "JSON",
+                data: $.param(params),
+                success: function(ret){
+                    if(ret.status == 200) {
+                        showTipsBox('message', '修改密码成功');
+                        location.href = "/";
+                    } else {
+                        showTipsBox('alert', '修改密码失败');
+                    }
+                }
+            });
+        }
+    }
+
+    function sendCode(){
+        var phone = $('#phone').val();
+        if(!reg.test(phone)){
+            $('#tip2').html('<b>◆</b><i>请输入正确的手机号</i>');
+            return;
+        } else {
+            $('#tip2').html('');
+        }
+        if (!use){
+            return;
+        }
+
+        if($('#send_verify_code').hasClass('sending')) {
+            return;
+        }
+
+        count = 60;
+        $.ajax({
+            url:'/account?a=verify_phone',
+            method:'post',
+            dataType:'json',
+            data:{phone:phone},
+            success: function(ret){
+                if(ret.status == 200) {
+                    $('#send_verify_code').addClass('sending').text(count + '秒后重试');
+                    setTimeout(counting,1000);
+                } else {
+                    showTipsBox('alert', '您的手机未注册，请<a href="/account?a=signup">注册</a>');
+                }
+            }
+        });
+    }
+
+    function counting(){
+        if(--count > 0){
+            if(!$('#send_verify_code').hasClass('sending')){
+                $('#send_verify_code').addClass('sending');
+            } else {
+                $('#send_verify_code').text(count + '秒后重试');
+                setTimeout(counting,1000);
+            }
+        }else{
+            $('#send_verify_code').removeClass('sending').text('发送验证码');
+        }
+    }
+</script>
+{% end %}

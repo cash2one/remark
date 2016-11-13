@@ -1,0 +1,133 @@
+{% extends '../../public/main.html' %}
+
+{% block body %}
+<script type="text/javascript">
+    function on_case_commit(){
+        var a = document.getElementById('case_advertiser').value;
+        var b = document.getElementById('case_demand_info').value;
+        var c = document.getElementById('case_media_name_1').value;
+        var d = document.getElementById('case_media_name_2').value;
+        var e = document.getElementById('case_market_effect').value;
+        if (a == "" || c == "" || b == ""|| e=="") {
+            alert("公告参数不能为空");
+            return false;
+        }
+        document.getElementById('case_form').submit();
+    }
+    function update_case(obj){
+        var id = obj.name;
+        var form_id = 'case_form' + id;
+        var a = document.getElementById('case_advertiser'+ id).value;
+        var b = document.getElementById('case_demand_info'+ id).value;
+        var c = document.getElementById('case_media_name_1'+ id).value;
+        var d = document.getElementById('case_media_name_2'+ id).value;
+        var e = document.getElementById('case_market_effect'+ id).value;
+        if (a == "" || c == "" || b == ""|| e=="") {
+            alert("公告参数不能为空");
+            return false;
+        }
+        document.getElementById(form_id).submit();
+    }
+</script>
+<div class="result_filter" id="result_filter">
+    <button class="btnAdd" data-target="#case_dialog" data-toggle="modal">新增案例</button>
+</div>
+<div>
+    <div id="case_dialog" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">X</button>
+                    <h4 id="banner_create_title">新增案例</h4>
+                </div>
+                <div class="modal-body">
+                    <form id="case_form" name="case_form" method="post" action="/index_op/case?a=create">
+                        广告主
+                        <input type="text" id="case_advertiser" name="case_advertiser" value=""><br /><br />
+                        需求信息
+                        <input type="text" id="case_demand_info" name="case_demand_info" value=""><br /><br />
+                        自媒体一
+                        <input type="text" id="case_media_name_1" name="case_media_name_1" value=""><br /><br />
+                        自媒体二
+                        <input type="text" id="case_media_name_2" name="case_media_name_2" value=""><br /><br />
+                        营销效果
+                        <input type="text" id="case_market_effect" name="case_market_effect" value=""><br /><br />
+
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-success" onclick="on_case_commit()">保存</button>
+                    <button class="btn btn-default" data-dismiss="modal" aria-hidden="true">取消</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<table class="table table-bordered table-hover vert-align">
+    <thead>
+        <tr class="res_tbl_title">
+            <td>序号</td>
+            <td>广告主</td>
+            <td>需求信息</td>
+            <td>自媒体一</td>
+            <td>自媒体二</td>
+            <td>营销效果</td>
+            <td>创建时间</td>
+            <td>操作</td>
+        </tr>
+    </thead>
+    {% for item in index_info %}
+    <tbody>
+        <tr>
+            <td>{{item['idx']}}</td>
+            <td>{{item['advertiser']}}</td>
+            <td>{{item['demand_info']}}</td>
+            <td>{{item['media_name_1']}}</td>
+            <td>{{item['media_name_2']}}</td>
+            <td>{{item['market_effect']}}</td>
+            <td>{{item['create_time']}}</td>
+            <td>
+                <div>
+                    <a class="btn btnThin" data-target="#case_dialog{{ item['id'] }}" data-toggle="modal">编辑</a>
+                    <div id="case_dialog{{ item['id'] }}" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">X</button>
+                                    <h4 id="case_update_title{{ item['id'] }}">编辑案例</h4>
+                                </div>
+                                <div class="modal-body">
+                                    <form id="case_form{{ item['id'] }}" name="case_form" method="post" action="/index_op/case?a=update">
+                                        <input type="hidden" id="case_id{{ item['id'] }}" name="case_id" value="{{ item['id'] }}">
+                                        广告主
+                                        <input type="text" id="case_advertiser{{ item['id'] }}" name="case_advertiser" value="{{ item['advertiser'] }}"><br /><br />
+                                        需求信息
+                                        <input type="text" id="case_demand_info{{ item['id'] }}" name="case_demand_info" value="{{ item['demand_info'] }}"><br /><br />
+                                        自媒体一
+                                        <input type="text" id="case_media_name_1{{ item['id'] }}" name="case_media_name_1" value="{{ item['media_name_1'] }}"><br /><br />
+                                        自媒体二
+                                        <input type="text" id="case_media_name_2{{ item['id'] }}" name="case_media_name_2" value="{{ item['media_name_2'] }}"><br /><br />
+                                        营销效果
+                                        <input type="text" id="case_market_effect{{ item['id'] }}" name="case_market_effect" value="{{ item['market_effect'] }}"><br /><br />
+                                        
+                                    </form>
+                                </div>
+                                <div class="modal-footer">
+                                    <button class="btn btn-success" name="{{ item['id'] }}" onclick="update_case(this)">保存</button>
+                                    <button class="btn btn-default" data-dismiss="modal" aria-hidden="true">取消</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <a class="btn btnThin" href="/index_op/case?a=delete&id={{ item['id'] }}" onclick="return confirm('确认删除?');">删除</a>
+                </div>
+            </td>
+        </tr>
+    </tbody>
+    {% end %}
+</table>
+<div>
+    {% raw page_html %}
+</div>
+{% end %}
+

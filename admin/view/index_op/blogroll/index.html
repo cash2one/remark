@@ -1,0 +1,158 @@
+{% extends '../../public/main.html' %}
+
+{% block body %}
+<script type="text/javascript">
+    function on_blogroll_commit(){
+        var a = document.getElementById('blogroll_title').value;
+        var b = document.getElementById('blogroll_logo_key').value;
+        var c = document.getElementById('blogroll_url').value;
+        var d = document.getElementById('blogroll_desc').value;
+        if (a == "" || b == "" || c == "" || d == "") {
+            alert("友链参数不能为空");
+            return false;
+        }
+        document.getElementById('blogroll_form').submit();
+    }
+    function update_blogroll(obj){
+        var id = obj.name;
+        var form_id = 'blogroll_form' + id;
+        var a = document.getElementById('blogroll_title'+id).value;
+        var b = document.getElementById('blogroll_logo_key'+id).value;
+        var c = document.getElementById('blogroll_url'+id).value;
+        var d = document.getElementById('blogroll_desc'+id).value;
+        if (a == "" || b == "" || c == "" || d == "") {
+            alert("友链参数不能为空");
+            return false;
+        }
+        document.getElementById(form_id).submit();
+    }
+    function iframeLoaded(iframe) {
+        var doc = iframe.contentWindow.window;
+        var html = doc.document.body.innerHTML;
+        var len = html.length;
+        if (len > 0) {
+            var obj = JSON.parse(html);
+            console.log(obj.data);
+            $('.logo img').attr('src', obj.data.url);
+            $('.logo input').attr('value', obj.data.url);
+            $('input[name="logo"]').val(obj.data.key);
+        }
+    }
+</script>
+{% include  '../../public/operation_menu.html' %}
+</div>
+<div class="result_filter" id="result_filter">
+    <form action='/operation/blogroll' method="get">
+        标题
+        <input type="text" name="search" />
+        <input type="submit" value="搜索"/>
+    </form>
+    <button class="btnAdd" data-target="#blogroll_dialog" data-toggle="modal">增加友情链接</button>
+</div>
+<div>
+    <div id="blogroll_dialog" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">X</button>
+                    <h4 id="blogroll_create_title">新增blogroll</h4>
+                </div>
+                <div class="modal-body">
+                    <form id="blogroll_form" name="blogroll_form" method="post" action="/operation/blogroll?a=create">
+                        名称
+                        <input type="text" id="blogroll_title" name="blogroll_title" value="">
+                        <br />
+                        链接
+                        <input type="text" id="blogroll_url" name="blogroll_url" value="">
+                        <br />
+                        描述
+                        <input type="text" id="blogroll_desc" name="blogroll_desc" value="">
+                        <br />
+                        <br />
+                        <div class="logo" onclick="javascript:$('#logo').click()">
+                            图片
+                            <input type="hidden" id="blogroll_logo_key" name="logo" value="">
+                            <img src="{{ static_url('images/logo.jpg') }}">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-success" onclick="on_blogroll_commit()">保存</button>
+                    <button class="btn btn-default" data-dismiss="modal" aria-hidden="true">取消</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<form id="logo_form" action="/operation/blogroll?a=uploadLogo" method="post" enctype="multipart/form-data"  target='hiddenform'>
+    <input type="file" onchange="document.getElementById('logo_form').submit();" style="display: none;" id="logo" name="logo">
+</form>
+<table class="table table-bordered table-hover vert-align">
+    <thead>
+        <tr class="res_tbl_title">
+            <td>序号</td>
+            <td>友链标题</td>
+            <td>logo</td>
+            <td>链接</td>
+            <td>时间</td>
+            <td>操作</td>
+        </tr>
+    </thead>
+    {% for item in index_info %}
+    <tbody>
+        <tr>
+            <td>{{ item['idx'] }}</td>
+            <td>{{ item['title'] }}</td>
+            <td><img src="{{ item['logo'] }}" /></td>
+            <td><a target="_blank" href="{{ item['link'] }}">{{ item['link'] }}</a></td>
+            <td>{{ item['create_time'] }}</td>
+            <td>
+                <div>
+                    <a class="btn btnThin" data-target="#blogroll_dialog{{ item['id'] }}" data-toggle="modal">编辑</a>
+                    <div id="blogroll_dialog{{ item['id'] }}" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">X</button>
+                                    <h4 id="blogroll_update_title{{ item['id'] }}">编辑blogroll</h4>
+                                </div>
+                                <div class="modal-body">
+                                    <form id="blogroll_form{{ item['id'] }}" name="blogroll_form" method="post" action="/operation/blogroll?a=edit">
+                                        <input type="hidden" id="blogroll_id{{ item['id'] }}" name="blogroll_id" value="{{ item['id'] }}">
+                                        名称
+                                        <input type="text" id="blogroll_title{{ item['id'] }}" name="blogroll_title" value="{{ item['title'] }}">
+                                        <br />
+                                        链接
+                                        <input type="text" id="blogroll_url{{ item['id'] }}" name="blogroll_url" value="{{ item['link'] }}">
+                                        <br />
+                                        描述
+                                        <input type="text" id="blogroll_desc{{ item['id'] }}" name="blogroll_desc" value="{{ item['desc'] }}">
+                                        <br />
+                                        <br />
+                                        <div class="logo" onclick="javascript:$('#logo').click()">
+                                            图片
+                                            <input type="hidden" id="blogroll_logo_key{{ item['id'] }}" name="logo" value="">
+                                            <!--<img src="{{ static_url('images/logo.jpg') }}">-->
+                                            <img src="{{ item['logo'] }}">
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="modal-footer">
+                                    <button class="btn btn-success" name="{{ item['id'] }}" onclick="update_blogroll(this)">保存</button>
+                                    <button class="btn btn-default" data-dismiss="modal" aria-hidden="true">取消</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <a class="btn btnThin" href="/operation/blogroll?a=delete&id={{ item['id'] }}" onclick="return confirm('确认删除?');">删除</a>
+                </div>
+            </td>
+        </tr>
+    </tbody>
+    {% end %}
+</table>
+<div>
+    {% raw page_html %}
+</div>
+<iframe frameborder="0" name='hiddenform' style="width:0;height: 0;" onload="iframeLoaded(this)"></iframe>
+{% end %}

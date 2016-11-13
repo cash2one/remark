@@ -1,0 +1,135 @@
+
+{% extends '../public/main.html' %}
+{% block title %}{{ demand['title'] }}{% end %}
+{% block body %}
+
+<link href="{{ static_url('style/demand_case.css') }}" type="text/css" rel="stylesheet" >
+<link href="{{ static_url('style/jquery.mCustomScrollbar.min.css')}}" type="text/css" rel="stylesheet">
+<link href="{{ static_url('style/common_v3.css')}}" type="text/css" rel="stylesheet">
+<script src="{{ static_url('script/jquery.mCustomScrollbar.concat.min.js') }}" type="text/javascript"></script>
+
+{% block master_contact %}{% end %}
+{% block nav_title %}{% end %}
+<div class="case-page-detail">
+    <div class="general clearfix">
+        <div class="left">
+            <div class="title">
+                <div>{% if demand['form'] in demand['demand_form_info'].keys() %}{{ demand['demand_form_info'][demand['form']]['name'] }}{% end %}</div>
+                <h2>{{ demand['title'] }}</h2>
+            </div>
+            <div class="date">投放时间：<strong>{{ demand['time_begin'] }}</strong>至<strong>{{ demand['time_end'] }}</strong></div>
+        </div>
+        <div class="right">
+            <div class="status">
+                {% if demand['status'] == 1 %}
+                <!-- 待审核状态 -->
+                <div class="statusCheck">待审核</div>
+                {% block master_cancel %}
+                {% end %}
+                {% end %}
+                {% if demand['status'] == 2 %}
+                <!-- 接单中状态 -->
+                <div class="statusReady">接单中</div>
+                {% block master_cancel %}
+                {% end %}
+                {% end %}
+                {% if demand['status'] == 3 %}
+                <!-- 营销中状态 -->
+                <div class="statusGoing">营销中</div>
+                {% end %}
+                {% if demand['status'] == 4  %}
+                <!-- 已结束状态 -->
+                <div class="statusFinish">已结束</div>
+                {% end %}
+                {% if demand['status'] == 5 %}
+                <!-- 未通过审核状态 -->
+                <div class="statusFailed">未通过审核</div>
+                <!--a href="">修改需求</a-->
+                {% end %}
+                {% if demand['status'] == 6 %}
+                <!-- 已过期状态 -->
+                <div class="statusFinish">已过期</div>
+                {% end %}
+                {% if demand['status'] == 7 %}
+                <!-- 已撤销状态 -->
+                <div class="statusFinish">已撤销</div>
+                {% end %}
+            </div>
+            <div class="budget">预算总额：<small>¥</small><strong>{{ demand['money'] }}</strong></div>
+        </div>
+    </div>
+    <div class="detail clearfix">
+        <div class="demandInfo">
+            <h3>具体需求描述</h3>
+            {% if demand['original'] %}
+            <div class="original"><span class="yd-original"></span>需要原创号</div>
+            {% end %}
+            <div class="category">
+                <em>行业：</em>
+                {% for item in demand['category'] %}
+                    <span>{{item['name']}}</span>
+                {% end %}
+
+            </div>
+            <div class="tag">
+                <em>标签：</em>
+                {% for item in demand['tag'] %}
+                    <span>{{item['name']}}</span>
+                {% end %}
+            </div>
+            <div class="gender"><em>性别要求：</em><span>{{ demand['audience_gender'] }}</span></div>
+            <div class="area"><em>地域要求：</em><span>{{ demand['area'] }}</span></div>
+            <div class="follower">
+                <em>粉丝数要求：</em>
+                <span>
+                    {% if demand['audience_num'] == 0 %}
+                    不限
+                    {% else %}
+                    {{ demand['audience_num'] }} 以上
+                    {% end %}
+                </span>
+            </div>
+            <div class="readNumber">
+                <em>阅读数要求：</em>
+                <span>
+                    {% if demand['view'] == 0 %}
+                    不限
+                    {% else %}
+                    {{ demand['view'] }} 以上
+                    {% end %}
+                </span>
+            </div>
+            <div class="readNumber"><em>自媒体数要求：</em><span>{{ demand['num'] if demand['num'] else '不限'}}</span></div>
+            <div class="other">
+                <em>其它要求：</em>
+                <p>{% raw demand['marketing'] %}</p>
+            </div>
+        </div>
+        <div class="demandDocument">
+            <h3>广告文案内容</h3>
+            {% if demand['article_status'] == 1 %}
+                <p>广告主提供文案{% if demand['status'] == 2 or demand['status'] == 3 %}<br><a href="{{ demand['origin_link'] }}" target="_blank">浏览文案</a>{% end %}</p>
+            {% end %}
+            {% if demand['article_status'] == 2 %}
+            <p>广告主提供文案{% if demand['status'] == 2 or demand['status'] == 3 %}<br><a href="{{ demand['doc_path'] }}" download>下载文案</a>{% end %}</p>
+            {% end %}
+            {% if demand['article_status'] == 0 %}
+                <p>文案与自媒体沟通</p>
+            {% end %}
+        </div>
+    </div>
+    {% if demand['status'] != 1 or demand['status'] != 5 %}
+    <div class="share">
+        <div class="bdsharebuttonbox"><strong>分享广告需求：</strong><a href="#" class="bds_more" data-cmd="more"></a><a href="#" class="bds_weixin" data-cmd="weixin" title="分享到微信"></a><a href="#" class="bds_tsina" data-cmd="tsina" title="分享到新浪微博"></a><a href="#" class="bds_sqq" data-cmd="sqq" title="分享到QQ好友"></a><a href="#" class="bds_qzone" data-cmd="qzone" title="分享到QQ空间"></a><a href="#" class="bds_tqq" data-cmd="tqq" title="分享到腾讯微博"></a><a href="#" class="bds_douban" data-cmd="douban" title="分享到豆瓣网"></a><a href="#" class="bds_bdhome" data-cmd="bdhome" title="分享到百度"></a><a href="#" class="bds_tieba" data-cmd="tieba" title="分享到百度贴吧"></a><a href="#" class="bds_copy" data-cmd="copy" title="复制网址"></a><a href="#" class="bds_mail" data-cmd="mail" title="分享到邮件"></a></div>
+        {% if demand['status'] == 2 %}
+        <script>window._bd_share_config={"common":{"bdSnsKey":{},"bdText":"这边有需要{{ demand['demand_form_info'][demand['form']]['name'] }}的广告需求，预算 ¥{{ demand['money'] }}，投放时间 {{ demand['time_begin'] }} 至 {{ demand['time_end'] }}，广告主题是{{ demand['title'] }}，有兴趣的自媒体（微信公众号）可以打开右侧链接：http://yidao.info/demand?a=view&id={{demand['id']}}","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"0","bdSize":"16"},"share":{}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];</script>
+        {% else %}
+        <script>window._bd_share_config={"common":{"bdSnsKey":{},"bdText":"［{{ demand['demand_form_info'][demand['form']]['name'] }}］{{ demand['title'] }}，已在一道自媒体平台投放广告，打开右侧链接了解：http://yidao.info/demand?a=view&id={{demand['id']}}","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"0","bdSize":"16"},"share":{}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];</script>
+        {% end %}
+    </div>
+    {% end %}
+</div>
+
+{% block list %}{% end %}
+
+{% end %}

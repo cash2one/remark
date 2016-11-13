@@ -1,0 +1,90 @@
+ {% extends '../public/main.html' %}
+{% block title%}通知中心{% end %}
+{% block body %}
+<link href="{{ static_url('style/uc.css') }}" type="text/css" rel="stylesheet">
+
+{% include 'my_top.html' %}
+<div class="ucContainer clearfix">
+    {% include 'my_menu.html' %}
+    <div class="ucMain notificationList">
+        <ul class="content">
+            {% for item in showMsg %}
+                <li class="showMsg{% if item['status'] != 1 %} notificationRead{% end %}" hidden>
+                    <div class="status">通知</div>
+                    <div class="notificationInfo" data-id="{{item['id']}}" >{{ item['info'] }}</div>
+                    <div class="notificationCategory">{{ item['type_name'] }}</div>
+                    <div class="notificationTime">{{ item['format_time'] }}</div>
+                </li>
+            {% end %}
+            {% for item in allMsg %}
+                <li class="allMsg{% if item['status'] != 1 %} notificationRead{% end %}" hidden>
+                    <div class="status">通知</div>
+                    <div class="notificationInfo" id="{{ item['id'] }}">{{ item['info'] }}</div>
+                    <div class="notificationCategory">{{ item['type_name'] }}</div>
+                    <div class="notificationTime">{{ item['format_time'] }}</div>
+                </li>
+            {% end %}
+            <!--<li>-->
+                <!--<div class="status"></div>-->
+                <!--<div class="notificationInfo"><strong>用户名</strong>您好，欢迎使用一道自媒体平台。现在一道提供自媒体广告交易系统，您可以<a href="">发布广告需求</a>，也可以<a href="">入驻自媒体</a>接单，如有疑问请联系客服。</div>-->
+                <!--<div class="notificationCategory">系统通知</div>-->
+                <!--<div class="notificationTime">2015.11.11 11:11</div>-->
+            <!--</li>-->
+        </ul>
+        <div class="notificationMore">
+            <button type="button" class="btnLoad" data-id="more_button" id="more_button">加载更多通知</button>
+            <p id="no_more_msg" hidden>没有更多通知了</p>
+        </div>
+    </div>
+</div>
+ <script type="text/javascript">
+     var msg_num = 0;
+     var show_num = 0;
+     var al_read = [];
+     var show_more_msg = function(){
+         $('.content li').each(function(){
+             if ($(this).hasClass('allMsg')){
+                 msg_num += 1;
+                 if (msg_num <= show_num){
+                     $(this).show();
+                 }
+             }
+             else{
+                 $(this).hide()
+             }
+
+         });
+     };
+     $('.notificationInfo').each(function(){
+         //console.log(this);
+         this.innerHTML = this.innerText ;
+         if ( $(this).parent().hasClass('showMsg')){
+             $(this).parent().show();
+             show_num += 1;
+             al_read.push($(this).attr('data-id'))
+         }
+     });
+     //alert(al_read);
+     $.ajax({
+             url : '/user?a=update_notification',
+             type : 'post',
+             dataType : 'json',
+             data: {
+                 id : al_read
+             }
+         }).then(
+                 //alert(1)
+         );
+     //alert(show_num);
+     $('#more_button').click(function(){
+         //alert(1);
+         msg_num = 0;
+         show_num += 10;
+         show_more_msg();
+         if (show_num >= msg_num){
+             $(this).hide();
+             $('#no_more_msg').show();
+         }
+     })
+</script>
+{% end %}

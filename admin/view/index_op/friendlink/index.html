@@ -1,0 +1,144 @@
+{% extends '../../public/main.html' %}
+
+{% block body %}
+<script type="text/javascript">
+    function on_friendlink_commit(){
+        var a = document.getElementById('friendlink_title').value;
+        var b = document.getElementById('friendlink_logo_key').value;
+        var c = document.getElementById('friendlink_url').value;
+        var d = document.getElementById('friendlink_desc').value;
+        if (a == "" || b == "" || c == "" || d == "") {
+            alert("友链参数不能为空");
+            return false;
+        }
+        document.getElementById('friendlink_form').submit();
+    }
+    function update_friendlink(obj){
+        var id = obj.name;
+        var form_id = 'friendlink_form' + id;
+        var a = document.getElementById('friendlink_title'+id).value;
+//        var b = document.getElementById('friendlink_logo_key'+id).value;
+        var c = document.getElementById('friendlink_url'+id).value;
+        var d = document.getElementById('friendlink_desc'+id).value;
+        if (a == "" || c == "" || d == "") {
+            alert("友链参数不能为空");
+            return false;
+        }
+        document.getElementById(form_id).submit();
+    }
+    function iframeLoaded(iframe) {
+        var doc = iframe.contentWindow.window;
+        var html = doc.document.body.innerHTML;
+        var len = html.length;
+        if (len > 0) {
+            var obj = JSON.parse(html);
+            console.log(obj.data);
+            $('.logo img').attr('src', obj.data.url);
+            $('.logo input').attr('value', obj.data.url);
+            $('input[name="logo"]').val(obj.data.key);
+        }
+    }
+</script>
+</div>
+<div class="result_filter" id="result_filter">
+    <button class="btnAdd" data-target="#friendlink_dialog" data-toggle="modal">新增友情链接</button>
+</div>
+<div>
+    <div id="friendlink_dialog" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">X</button>
+                    <h4 id="friendlink_create_title">新增friendlink</h4>
+                </div>
+                <div class="modal-body">
+                    <form id="friendlink_form" name="friendlink_form" method="post" action="/index_op/friendlink?a=create">
+                        名称
+                        <input type="text" id="friendlink_title" name="friendlink_title" value=""><br /><br />
+                        链接
+                        <input type="text" id="friendlink_url" name="friendlink_url" value=""><br /><br />
+                        描述
+                        <input type="text" id="friendlink_desc" name="friendlink_desc" value=""><br /><br />
+                        <div class="logo" onclick="javascript:$('#logo').click()">
+                            图片
+                            <input type="hidden" id="friendlink_logo_key" name="logo" value="">
+                            <img src="{{ static_url('images/logo.jpg') }}">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-success" onclick="on_friendlink_commit()">保存</button>
+                    <button class="btn btn-default" data-dismiss="modal" aria-hidden="true">取消</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<form id="logo_form" action="/index_op/friendlink?a=uploadLogo" method="post" enctype="multipart/form-data"  target='hiddenform'>
+    <input type="file" onchange="document.getElementById('logo_form').submit();" style="display: none;" id="logo" name="logo">
+</form>
+<table class="table table-bordered table-hover vert-align">
+    <thead>
+        <tr class="res_tbl_title">
+            <td>序号</td>
+            <td>友链标题</td>
+            <td>logo</td>
+            <td>链接</td>
+            <td>时间</td>
+            <td>操作</td>
+        </tr>
+    </thead>
+    {% for item in index_info %}
+    <tbody>
+        <tr>
+            <td>{{ item['idx'] }}</td>
+            <td>{{ item['title'] }}</td>
+            <td><img src="{{ item['logo'] }}" style="width: 100px; height: 40px"/></td>
+            <td><a target="_blank" href="{{ item['link'] }}">{{ item['link'] }}</a></td>
+            <td>{{ item['create_time'] }}</td>
+            <td>
+                <div>
+                    <a class="btn btnThin" data-target="#friendlink_dialog{{ item['id'] }}" data-toggle="modal">编辑</a>
+                    <div id="friendlink_dialog{{ item['id'] }}" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">X</button>
+                                    <h4 id="friendlink_update_title{{ item['id'] }}">编辑friendlink</h4>
+                                </div>
+                                <div class="modal-body">
+                                    <form id="friendlink_form{{ item['id'] }}" name="friendlink_form" method="post" action="/index_op/friendlink?a=edit">
+                                        <input type="hidden" id="friendlink_id{{ item['id'] }}" name="friendlink_id" value="{{ item['id'] }}">
+                                        名称
+                                        <input type="text" id="friendlink_title{{ item['id'] }}" name="friendlink_title" value="{{ item['title'] }}"><br /><br />
+                                        链接
+                                        <input type="text" id="friendlink_url{{ item['id'] }}" name="friendlink_url" value="{{ item['link'] }}"><br /><br />
+                                        描述
+                                        <input type="text" id="friendlink_desc{{ item['id'] }}" name="friendlink_desc" value="{{ item['desc'] }}"><br /><br />
+                                        <div class="logo" onclick="javascript:$('#logo').click()">
+                                            图片
+                                            <input type="hidden" id="friendlink_logo_key{{ item['id'] }}" name="logo" value="">
+                                            <!--<img src="{{ static_url('images/logo.jpg') }}">-->
+                                            <img src="{{ item['logo'] }}">
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="modal-footer">
+                                    <button class="btn btn-success" name="{{ item['id'] }}" onclick="update_friendlink(this)">保存</button>
+                                    <button class="btn btn-default" data-dismiss="modal" aria-hidden="true">取消</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <a class="btn btnThin" href="/index_op/friendlink?a=delete&id={{ item['id'] }}" onclick="return confirm('确认删除?');">删除</a>
+                </div>
+            </td>
+        </tr>
+    </tbody>
+    {% end %}
+</table>
+<div>
+    {% raw page_html %}
+</div>
+<iframe frameborder="0" name='hiddenform' style="width:0;height: 0;" onload="iframeLoaded(this)"></iframe>
+{% end %}

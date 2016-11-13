@@ -1,0 +1,118 @@
+{% extends '../../public/main.html' %}
+
+{% block body %}
+<script type="text/javascript">
+    function on_ad_create(){
+        var attr_name = document.getElementById('attr_name').value;
+        var value_name = document.getElementById('value_name').value;
+        if (attr_name == "" || value_name == "") {
+            alert("属性及属性值不能为空！");
+            return false;
+        }
+        document.getElementById('ad_form').submit();
+    }
+    function on_ad_update(obj){
+        var id = obj.name;
+        var form_id = 'ad_form' + id;
+        var attr_name = document.getElementById('attr_name'+id).value;
+        var value_name = document.getElementById('value_name'+id).value;
+        if (attr_name == "" || value_name == "") {
+            alert("属性及属性值不能为空！");
+            return false;
+        }
+        document.getElementById(form_id).submit();
+    }
+</script>
+<div class="status_title">
+    <div>
+        平台设置 >
+        <a href="/setup/properties">刊例属性</a> |
+
+        <!--<a href="/index_op/winwin">互推运营</a> |-->
+        <!--<a href="/index_op/blog">博客管理</a>-->
+    </div>
+</div>
+<div class="result_filter" id="result_filter">
+    <form action='/setup/properties' method="get">
+        属性
+        <input type="text" name="search" />
+        <input type="submit" value="搜索"/>
+    </form>
+    <button data-target="#ad_dialog" data-toggle="modal">+ 刊例属性</button>
+</div>
+<div>
+    <div id="ad_dialog" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">X</button>
+                    <h4 id="ad_create_title">新增刊例属性-属性值</h4>
+                </div>
+                <div class="modal-body">
+                    <form id="ad_form" name="ad_form" method="post" action="/setup/properties?a=create">
+                        刊例属性&#12288;
+                        <input type="text" id="attr_name" name="attr_name" value=""><br /><br />
+                        刊例属性值
+                        <input type="text" id="value_name" name="value_name" value=""><br /><br />
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn" onclick="on_ad_create()">新建</button>
+                    <button class="btn" data-dismiss="modal" aria-hidden="true">取消</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<table class="table table-bordered table-hover vert-align">
+    <thead>
+        <tr class="res_tbl_title">
+            <td>序号</td>
+            <td>属性</td>
+            <td>属性值</td>
+            <td>操作</td>
+        </tr>
+    </thead>
+    {% for item in index_info %}
+    <tbody>
+        <tr>
+            <td>{{ item['idx'] }}</td>
+            <td>{{ item['attr_name'] }}</td>
+            <td>{{ item['value_name'] }}</td>
+            <td>
+                <a class="btn btnThin" data-target="#ad_dialog{{ item['id'] }}" data-toggle="modal">变更</a>
+                <div id="ad_dialog{{ item['id'] }}" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">X</button>
+                                <h4 id="ad_create_title{{ item['id'] }}">编辑刊例属性-属性值</h4>
+                            </div>
+                            <div class="modal-body">
+                                <form id="ad_form{{ item['id'] }}" name="ad_form" method="post" action="/setup/properties?a=update">
+                                    <input type="hidden" id="attr_value_id{{ item['id'] }}" name="attr_value_id" value="{{ item['id'] }}">
+                                    <input type="hidden" id="attr_id{{ item['id'] }}" name="attr_id" value="{{ item['attr_id'] }}">
+                                    <input type="hidden" id="value_id{{ item['id'] }}" name="value_id" value="{{ item['value_id'] }}">
+                                    刊例属性&#12288;
+                                    <input type="text" id="attr_name{{ item['id'] }}" name="attr_name" value="{{ item['attr_name'] }}"><br /><br />
+                                    刊例属性值
+                                    <input type="text" id="value_name{{ item['id'] }}" name="value_name" value="{{ item['value_name'] }}"><br /><br />
+                                </form>
+                            </div>
+                            <div class="modal-footer">
+                                <button class="btn" name="{{ item['id'] }}" onclick="on_ad_update(this)">保存</button>
+                                <button class="btn" data-dismiss="modal" aria-hidden="true">取消</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <a class="btn btnThin" href="/setup/properties?a=delete&id={{ item['id'] }}" onclick="return confirm('确认删除?');">删除</a>
+            </td>
+        </tr>
+    </tbody>
+    {% end %}
+</table>
+<div>
+    {% raw page_html %}
+</div>
+{% end %}

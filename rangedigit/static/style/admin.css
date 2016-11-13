@@ -1,0 +1,43 @@
+
+.status_title{
+    height: 60px;
+}
+
+.status_title div{
+    float:left;
+    margin-top: 18px;
+    margin-bottom: 22px;
+    margin-right: 2px;
+}
+
+.result_filter{
+    float: left;
+    height: 60px;
+    width: 100%;
+}
+
+#result_filter form{
+    float: left;
+    max-width: 500px;
+    margin-right: 10px;
+    overflow: hidden;
+}
+
+.res_tbl_title td{
+    background-color: #eeeeee;
+    font-weight: bold;
+    color: #555555;
+    text-align: left;
+    border: 0;
+}
+
+.res_tbl_td_title{
+    background-color: #eeeeee;
+    font-weight: bold;
+    color: #555555;
+    text-align: left;
+    border: 0;
+}
+#business_table,#operation_table{
+    margin-top: 60px;
+}

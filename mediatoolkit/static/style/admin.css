@@ -1,0 +1,76 @@
+
+.status_title{
+    height: 60px;
+}
+
+.status_title div{
+    float:left;
+    margin-top: 18px;
+    margin-bottom: 22px;
+    margin-right: 2px;
+}
+
+.result_filter{
+    float: left;
+    height: 60px;
+    width: 100%;
+}
+
+#result_filter form{
+    /*float: left;
+    max-width: 500px;
+    margin-right: 10px;
+    /*overflow: hidden;*/
+}
+
+.res_tbl_title td{
+    background-color: #eeeeee;
+    font-weight: bold;
+    color: #555555;
+    text-align: left;
+    border: 0;
+}
+
+.res_tbl_td_title{
+    background-color: #eeeeee;
+    font-weight: bold;
+    color: #555555;
+    text-align: left;
+    border: 0;
+}
+#business_table,#operation_table{
+    margin-top: 60px;
+}
+
+.container .social-btn {
+    display: block;
+    text-align: center;
+    /*width: 300px;*/
+    height: 40px;
+    line-height: 25px;
+    font-size: 14px;
+    color: #fff;
+    border-radius: 3px;
+    text-decoration:none;
+}
+
+.social-wechat {
+    background: url("/static/images/wechat.png") no-repeat;
+    background-color: #62cf69;
+    background-position: 0 -2px;
+    margin-bottom: 10px;
+}
+
+.social-weibo {
+    background: url("/static/images/weibo_new.png") no-repeat;
+    background-color: #e24f48;
+    background-position: 0 -2px;
+    margin-bottom: 10px;
+}
+
+.social-qq {
+    background: url("/static/images/qq.png") no-repeat;
+    background-color: #2fa2d7;
+    background-position: 0 -2px;
+    margin-bottom: 20px;
+}

@@ -1,0 +1,71 @@
+{% extends '../public/main.html' %}
+{% block title%}我发布的广告需求{% end %}
+{% block body %}
+<link href="{{ static_url('style/uc.css') }}" type="text/css" rel="stylesheet">
+<link href="{{ static_url('style/jquery.mCustomScrollbar.min.css') }}" type="text/css" rel="stylesheet">
+
+{% include 'my_top.html' %}
+<div class="ucContainer clearfix">
+{% include 'my_menu.html' %}
+<div class="ucMain">
+    <div class="title">
+        <hr>
+        <h3>我发布的广告需求</h3>
+    </div>
+    <div class="content">
+        <div class="statusNav">
+            <div><strong>需求状态：</strong></div>
+            <ul>
+                <li id="status0" class="status"><a href="/user?a=demand">全部</a></li>
+                <li id="status1" class="status"><a href="/user?a=demand&status=1">待审核</a></li>
+                <li id="status2" class="status"><a href="/user?a=demand&status=2">接单中</a></li>
+                <li id="status3" class="status"><a href="/user?a=demand&status=3">营销中</a></li>
+                <li id="status4" class="status"><a href="/user?a=demand&status=4">已结束</a></li>
+                <li id="status5" class="status"><a href="/user?a=demand&status=5">审核未通过</a></li>
+                <li id="status6" class="status"><a href="/user?a=demand&status=6">已过期</a></li>
+                <li id="status7" class="status"><a href="/user?a=demand&status=7">已撤销</a></li>
+            </ul>
+        </div>
+        <ul class="demandList">
+            {% for item in demand %}
+            <li class="demandBox clearfix">
+                <div class="demandInfo">
+                    <span class="demandDate"><strong>{{ item['time_begin'] }}</strong> 至 <strong>{{ item['time_end'] }}</strong></span>
+                    <span class="demandCategory">{% if item['demand_form'] %}{{ item['demand_form'] }}{% end %}</span>
+                    <a href="/demand?a=view&id={{ item['demand_id'] }}">{{ item['title'] }}</a>
+                </div>
+                {% if item['status'] == 2 and item['cart_count'] > 0 %}
+                <div class="demandCart"><a href="/demand?a=cart&id={{ item['demand_id'] }}" target=""><span class="ydi yd-list"></span><strong>预选单</strong><em>{{ item['cart_count'] }}</em></a></div>
+                {% end %}
+                <div class="demandStatus">
+                    {% if item['status'] == 1 %}
+                    <span class="statusCheck">待审核</span>
+                    {% elif item['status'] == 2 %}
+                    <span class="statusReady">接单中</span>
+                    {% elif item['status'] == 3 %}
+                    <span class="statusGoing">营销中</span>
+                    {% elif item['status'] == 4 %}
+                    <span class="statusFinish">已结束</span>
+                    {% elif item['status'] == 5 %}
+                    <span class="statusFailed">未通过审核</span>
+                    {% elif item['status'] == 6 %}
+                    <span class="statusFinish">已过期</span>
+                    {% elif item['status'] == 7 %}
+                    <span class="statusFinish">已撤销</span>
+                    {% end %}
+                </div>
+            </li>
+            {% end %}
+        </ul>
+        <div class="listPagination">
+            {% raw page %}
+        </div>
+    </div>
+</div>
+</div>
+<script type="text/javascript">
+$(document).ready(function(){
+    $('#status{{ status }}').addClass('current');
+});
+</script>
+{% end %}

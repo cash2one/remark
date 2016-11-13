@@ -1,0 +1,151 @@
+{% extends '../../public/main.html' %}
+
+{% block body %}
+<script type="text/javascript" xmlns="http://www.w3.org/1999/html">
+    function updateResult(obj){
+        var id = obj.name;
+        var form_id = 'result_form' + id;
+        var res = document.getElementById('result'+id).value;
+        var refund =document.getElementById('refund_money'+id).value;
+        var price = '{{info['price']}}';
+        //alert(price)
+        if ((refund == "")||(refund>price)){
+            alert("请填写正确的退款金额");
+            return false;
+        }
+        if (res == "") {
+            alert("申诉结论不能为空");
+            return false;
+        }
+        //alert(1)
+        var update = document.getElementById(form_id);
+        console.log(update);
+        update.submit();
+    }
+</script>
+<div class="status_title">
+    <div>
+        <a href="javascript:history.go(-1);">返回</a>
+    </div>
+</div>
+<table class="table table-bordered table-hover vert-align">
+    <thead>
+
+    </thead>
+    <tbody>
+        <tr class="res_tbl_title">
+            <td>申诉人</td>
+            <td>
+                <a href="/user?a=detail&id={{ info['ad_user_id'] }}" target="_blank">{{ info['nickname'] }}</a>
+            </td>
+        </tr>
+        <tr>
+            <td>申诉内容</td>
+            <td>{{info['description']}}</td>
+        </tr>
+        <tr>
+            <td>申诉需求</td>
+            <td>
+                <a href="/demand?a=detail&id={{ info['demand_id'] }}" target="_blank">{{ info['dtitle'] }}</a>
+            </td>
+        </tr>
+        <tr>
+            <td>申诉时间</td>
+            <td>{{info['create_time']}}</td>
+        </tr>
+        <tr>
+            <td>接单自媒体</td>
+            <td>
+                <a href="/yidao/media?a=detail&id={{ info['media_id'] }}" target="_blank">{{ info['media_name'] }}</a>
+            </td>
+        </tr>
+        <tr>
+            <td>订单价格</td>
+            <td>{{info['price']}}</td>
+        </tr>
+        <tr>
+            <td>自媒体发布时间</td>
+            <td>{{info['publish_time']}}</td>
+        </tr>
+        <tr>
+            <td>反馈链接</td>
+            <td><a href="{{info['url']}}" target="_blank">{{info['title']}}</a></td>
+        </tr>
+        <tr>
+            <td>反馈图片</td>
+            <td>
+                <a href="{{info['p1']}}" target="_blank" ><img src="{{info['p1']}}" height="100" width="100"></a>
+                <a href="{{info['p2']}}" target="_blank" ><img src="{{info['p2']}}" height="100" width="100"></a>
+                <a href="{{info['p3']}}" target="_blank" ><img src="{{info['p3']}}" height="100" width="100"></a>
+            </td>
+        <tr>
+            <td>申诉状态</td>
+            {% if info['status']==1 %}
+                <td>等待处理</td>
+            {% end %}
+            {% if info['status']==3 %}
+                <td>审核中</td>
+            {% end %}
+            {% if info['status']==2 %}
+                <td>申诉完成</td>
+            {% end %}
+        </tr>
+        {% if info['status']==1 %}
+        <tr>
+            <td>操作</td>
+            <td>
+                <button class="btn btnThin" data-target="#result_dialog{{ info['id'] }}" data-toggle="modal" onclick="process({{ info['id'] }})">处理</button>
+                <div id="result_dialog{{ info['id'] }}" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">X</button>
+                                <h4 id="result_title{{ info['id'] }}">记录申诉结论</h4>
+                            </div>
+                            <div class="modal-body brickWall">
+                                <form id="result_form{{ info['id'] }}" name="result_form" method="post" action="/demand/appeal?a=updateAppealResult&id={{info['id']}}">
+                                    <div>
+                                        <strong>退款金额</strong>
+                                        <input id="refund_money{{ info['id'] }}" name="refund_money" type="text" value="{{ info['refund_money'] }}">（小于成交金额）
+                                    </div>
+                                    <div class="uediter">
+                                        <strong>申诉结果</strong>
+                                        <textarea id="result{{ info['id'] }}" name="result">{% raw info['result'] %}</textarea>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="modal-footer">
+                                <button class="btn" name="{{ info['id'] }}" onclick="updateResult(this)">提交审核</button>
+                                <button class="btn" data-dismiss="modal" aria-hidden="true">取消</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </td>
+        {% end %}
+        </tr>
+        {% if info['status']==3 %}
+        <tr>
+            <td>申诉结论</td>
+            <td>{% raw info['result'] %}</td>
+        </tr>
+        <tr>
+            <td>退款金额</td>
+            <td>{{info['refund_money']}}</td>
+        </tr>
+        <tr>
+            <td>审核</td>
+            <td><a class="btn btnThin" href="/demand/appeal?a=allow&id={{info['id']}}" >通过</a> <a href="/demand/appeal?a=denied&id={{info['id']}}" class="btn btnThin" >不通过</a></td>
+        </tr>
+        {% end %}
+
+    </tbody>
+<script type="text/javascript">
+    function process(str_id){
+        var str = 'result'+str_id;
+        uediter(str);
+    }
+</script>
+    {% end %}
+</table>
+

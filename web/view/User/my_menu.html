@@ -1,0 +1,24 @@
+{% if my_menu_focus in ['media', 'demand', 'demand_take_order', 'demand_order', 'demand_feedback'] %}
+<div class="ucSubNav">
+    <ul>
+        <li class="{% if my_menu_focus is 'media' %}current{% end %}"><a href="user?a=media">我的自媒体</a></li>
+        <li>
+            <span>我的广告需求</span>
+            <ul>
+                <li class="{% if my_menu_focus is 'demand' %}current{% end %}"><a href="user?a=demand">我发布的广告需求</a></li>
+                <li class="{% if my_menu_focus is 'demand_take_order' %}current{% end %}"><a href="user?a=demand_take_order">我接单的广告需求</a></li>
+            </ul>
+        </li>
+        <!--<li class="{% if my_menu_focus is 'demand_feedback' %}current{% end %}"><a href="user?a=demand_feedback">我的投放效果</a></li>-->
+        <li class="{% if my_menu_focus is 'demand_order' %}current{% end %}"><a href="user?a=demand_order">我的订单</a></li>
+    </ul>
+</div>
+{% elif my_menu_focus in ['information', 'bind', 'bind_email', 'password'] %}
+<div class="ucSubNav">
+    <ul>
+        <li class="{% if my_menu_focus is 'information' %}current{% end %}"><a href="user">基本信息</a></li>
+        <li class="{% if my_menu_focus in ['bind' , 'bind_email'] %}current{% end %}"><a href="user?a=bind">账号绑定</a></li>
+        <li class="{% if my_menu_focus is 'password' %}current{% end %}"><a href="user?a=password">修改密码</a></li>
+    </ul>
+</div>
+{% end %}

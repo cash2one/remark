@@ -1,0 +1,13 @@
+{% extends '../public/main.html' %}
+{% block title %}
+404
+{% end %}
+{% block body %}
+<link href="/static/style/wrong.css" type="text/css" rel="stylesheet" >
+
+<div class="center">
+    <img src="{{ static_url('images/web404.png') }}" width="264" height="289">
+    <div class="lbtn" style="left:0;margin-left:-20px;"><a href="/"><img src="{{ static_url('images/back-home.png') }}"></a></div>
+    <div class="lbtn" style="right:10px;" onclick="javascript:history.go(-1);"><img src="{{ static_url('images/last-page.png') }}"></div>
+</div>
+{% end %}

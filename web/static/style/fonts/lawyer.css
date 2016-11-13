@@ -1,0 +1,75 @@
+/* rights */
+
+.page-rights{margin-top:60px;}
+.page-rights .main{max-width:1240px;margin:0 auto;}
+.page-rights .content h2{margin-top:140px;color:#fff;font-weight:400;font-size:30px;line-height:40px;text-align:center;}
+.page-rights .identity div{transition: all 0.3s;cursor:pointer;position:absolute;width:220px;height:320px;top:50%;margin-top:-180px;border-radius:10px;border:2px solid #53a7ef;color:#fff;text-align:center;}
+.page-rights .identity div:hover{background-color:#1987e1;}
+.page-rights .identity div.selected{border-color:#fff;background-color:#1987e1;}
+.page-rights .identity h3{margin-top:220px;font-weight:400;font-size:24px;line-height:30px;}
+.page-rights .identity p{margin-top:10px;font-size:12px;line-height:20px;}
+.page-rights .identity .lawyer{right:50%;margin-right:60px;background:url(../images/lawyer.png) 50% 23px no-repeat;}
+.page-rights .identity .wemedia{left:50%;margin-left:60px;background:url(../images/wemedia.png) 50% 36px no-repeat;}
+.page-rights .main .btn button{transition:all 0.3s;cursor:pointer;outline:none;position:absolute;top:50%;left:50%;width:200px;height:40px;margin-top:180px;margin-left:-100px;border-radius:8px;border:none;background-color:#f90;color:#fff;font-size:16px;line-height:40px;}
+.page-rights .main .btn button:hover{background-color:#f80;}
+.page-rights .main .btn{border:none;}
+
+/* lawyer-info */
+.pli-main{max-width:1240px;margin:100px auto;}
+.pli-content{position:relative;padding:50px 0;border:1px solid #e6e6e6;background-color:#fff;font-size:16px;}
+.pli-item{margin:10px 60px;line-height:30px;}
+.pli-item label{float:left;width:120px;padding-right:10px;font-weight:700;font-size:18px;text-align:right;}
+.pli-item span{float:left;}
+.pli-item span.long-text{float:none;clear:both;display:block;margin-left:20px;}
+.pli-verify-status{position:absolute;right:50px;top:50px;width:80px;height:80px;padding:16px;border-radius:50%;background-color:#f70;color:#fff;font-size:24px;line-height:24px;}
+.pli-verify-status-pending{background-color:#f70;}
+.pli-verify-status-verified{background-color:#0db;}
+.pli-verify-status-failed{background-color:#e14779;}
+
+/* rights-info */
+.page-rights-info .main{max-width:1240px;margin:100px auto;}
+.page-rights-info .plaintiff{float:right;width:260px;border:1px solid #e6e6e6;background-color:#fff;font-size:12px;}
+.page-rights-info h2{padding-left:30px;border-bottom:1px solid #e6e6e6;font-size:20px;line-height:60px;}
+.page-rights-info .plaintiff dl{padding:10px 30px;font-size:16px;line-height:30px;}
+.page-rights-info .plaintiff dt{float:left;font-weight:700;}
+.page-rights-info .rights-detail{margin-right:280px;border:1px solid #e6e6e6;background-color:#fff;font-size:12px;}
+.page-rights-info .rights-detail .original,.page-rights-info .rights-detail .copy{margin-bottom:20px;padding:10px 30px;}
+.page-rights-info .rights-detail h3{margin-bottom:10px;border-bottom:1px solid #e6e6e6;font-size:18px;line-height:40px;}
+.page-rights-info .rights-detail .item{padding:20px 0;}
+.page-rights-info .rights-detail .avatar{overflow:hidden;float:left;width:60px;height:60px;border-radius:12px;border:1px solid #e6e6e6;}
+.page-rights-info .rights-detail .avatar img{width:60px;height:60px;}
+.page-rights-info .rights-detail .title{margin-top:7px;margin-left:80px;font-size:16px;line-height:24px;}
+.page-rights-info .rights-detail .title a:hover{text-decoration:underline;}
+.page-rights-info .rights-detail .title i{padding-left:20px;color:#999;font-style:normal;font-size:12px;}
+.page-rights-info .rights-detail .source-name{margin-left:80px;color:#666;font-size:14px;line-height:24px;}
+.page-rights-info .rights-detail .add-wechat-tips{display:inline-block;margin-left:80px;padding:3px 3px 3px 10px;border-radius:3px;background-color:#f0f0f0;font-size:14px;line-height:24px;}
+.page-rights-info .rights-detail .add-wechat-tips strong{padding:0 3px;}
+.page-rights-info .rights-detail .add-wechat-tips a{display:inline-block;padding:0 5px;border-radius:2px;background-color:#5AAAF5;color:#fff;}
+.page-rights-info .rights-detail .add-wechat-tips a:hover{background-color:#2891EB;}
+
+/* form */
+.page-form{background-color:#fff;margin-top:60px;}
+.page-form .main{width:100%;max-width: 3000px;}
+.page-form .caption{height:160px;background-color:#2891EB;position: relative;width:100%;}
+.page-form h2{width:400px;margin-left:-200px;color:#fff;font-weight:400;font-size:32px;line-height:32px;position: absolute;left:50%;bottom: 30px;}
+.page-form .content{padding:40px 0;}
+.page-form .item{width:960px;margin:0 auto 16px;line-height:44px;}
+.page-form .item label{float:left;width:260px;margin-right:18px;color:#666;font-size:16px;text-align:right;}
+.page-form .item span{float:left;margin-bottom:-18px;line-height: 44px;}
+.page-form .item span b{display:inline-block;padding-left:20px;color:#999;font-weight:400;}
+.page-form .item span img{width:200px;margin-bottom:20px;}
+.page-form .item .text{outline:none;transition: all 0.3s;display:block;width:380px;height:44px;margin-bottom:18px;padding:11px 10px;box-shadow:inset 1px 1px 2px #e6e6e6;border-radius:3px;border:2px #fff solid;background:#F0F0F0;font:inherit;font-size:16px;line-height:18px;}
+.page-form .item .text:focus{box-shadow:none;border-color:#2891EB;background-color:#e9f4fd;}
+.page-form .item .text:hover{box-shadow:inset 0 0 1px #2891EB;background-color:#e9f4fd;}
+.page-form .item textarea{resize:none;overflow:auto;outline:none;transition: all 0.3s;width:380px;height:120px;padding:11px 10px;box-shadow:inset 1px 1px 2px #e6e6e6;border-radius:3px;border:2px #fff solid;background:#F0F0F0;font:inherit;font-size:16px;line-height:22px;}
+.page-form .item textarea:focus{box-shadow:none;border-color:#2891EB;background-color:#e9f4fd;}
+.page-form .item textarea:hover{box-shadow:inset 0 0 1px #2891EB;background-color:#e9f4fd;}
+.page-form .item .file{cursor:pointer;transition:all 0.3s;outline:none;height:40px;padding:0 15px;border-radius:4px;border:none;background-color:#f0f0f0;color:#666;font:inherit;font-size:14px;}
+.page-form .item .file:hover{box-shadow:0 0 2px #2891EB;background-color:#e9f4fd;}
+.page-form .item em{float:right;width:260px;padding-top:10px;color:#999;font-style:normal;line-height:24px;}
+.page-form .item em img{height:100px;}
+.page-form .addbtn{float:left;width:400px;margin-top:18px;margin-left:200px;background-color:#e6e6e6;font-size:14px;line-height:20px;text-align:center;}
+.page-form .addbtn strong{float:left;font-weight:400;font-size:20px;}
+.page-form .btn{margin-top:58px;text-align:center;border:none;margin-left:40%;}
+.page-form .btn button{cursor:pointer;transition:all 0.3s;outline:none;width:200px;height:50px;border-radius:10px;border:none;background-color:#5AAAF5;color:#fff;font:inherit;font-size:18px;}
+.page-form .btn button:hover{background-color:#2891EB;}

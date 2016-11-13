@@ -1,0 +1,96 @@
+{% extends '../public/main.html' %}
+{% block title %}预选单{% end %}
+{% block body %}
+
+<link href="{{ static_url('style/cart.css') }}" type="text/css" rel="stylesheet" >
+
+<script type="text/javascript">
+    function pay_for_cart(){
+        var object = {};
+        object.title = '{{ demand_detail["title"] }}';
+        object.total_price = '{{ total_price }}';
+        object.cart_detail = '{{ cart }}';
+        document.getElementById('cart_data').value = JSON.stringify(object);
+        document.getElementById('pay_cart_form').submit();
+    }
+</script>
+<div class="demandInfo">
+    <span class="demandCategory">{{ demand_detail['demand_form'] }}</span>
+    <a href="/demand?a=view&id={{ demand_detail['id'] }}">{{ demand_detail['title'] }}</a>
+</div>
+{% if cart %}
+<div class="cartContainer">
+    <div class="title">
+        <div class="itemInfo">自媒体</div>
+        <div class="itemAttribute">广告位</div>
+        <div class="itemContact">联系手机</div>
+        <div class="itemPrice">报价</div>
+    </div>
+    <div class="content">
+        <ul class="itemList">
+            {% for item in cart %}
+            <li class="itemBox clearfix">
+                <div class="itemInfo">
+                    <a href="/media?a=view&id={{ item['media_id'] }}" target="_blank">
+                        <img src="{{ item['avatar'] }}" alt="{{ item['media_name'] }}">
+                        <span>{{ item['media_name'] }}</span>
+                    </a>
+                </div>
+                <div class="itemAttribute">{{ item['media_attr_value'] }}</div>
+                <div class="itemContact">{{ item['media_phone'] }}</div>
+                <div class="itemPrice"><small>¥</small><strong>{{ item['price'] }}</strong></div>
+                <div class="itemStatus">
+                    {% if item['status'] == 0 %}
+                        <button type="button" name="apply_update_price" value="{{ item['id'] }}" class="btnNext">申请改价</button>
+                    {% elif item['status'] == 1 %}
+                        <span class="statusCheck">等待改价</span>
+                    {% elif item['status'] == 2 %}
+                        <span class="statusFinish">已改价</span>
+                    {% end %}
+                    <button type="button" name="remove_cart" value="{{ item['id'] }}"  class="btnNext">移出预选</button>
+                </div>
+            </li>
+            {% end %}
+        </ul>
+    </div>
+    <div class="action">
+        <a href="/demand?a=view&id={{ demand_detail['id'] }}" class="btnNormal">返回广告需求</a>
+        <div class="totalPrice"><span>总价</span><small>¥</small><strong>{{ total_price }}</strong></div>
+        <button class="btnOk" id="pay_for_cart" onclick="pay_for_cart()">确认购买</button>
+    </div>
+</div>
+<form id="pay_cart_form" action="/demand?a=pay&demand_id={{ demand_detail['id'] }}" method="post">
+    <input type="hidden" id="cart_data" name="cart_data" value="">
+</form>
+{% end %}
+<script type="text/javascript">
+$(document).ready(function(){
+    $("button[name='apply_update_price']").click(function(){
+        $.ajax({
+            url:'/demand?a=cart_update',
+            method:'post',
+            dataType:'json',
+            data: {'cart_id': $(this).val()},
+            success:function(d){
+                if(d.status==200){
+                    location.reload(true);
+                }
+            }
+        })
+    });
+    $("button[name='remove_cart']").click(function(){
+        $.ajax({
+            url:'/demand?a=cart_delete',
+            method:'post',
+            dataType:'json',
+            data: {'cart_id': $(this).val()},
+            success:function(d){
+                if(d.status==200){
+                    location.reload(true);
+                }
+            }
+        })
+    });
+});
+</script>
+{% end %}

@@ -1,0 +1,31 @@
+{% extends '../public/main.html' %}
+{% block title%}
+我的联盟
+{% end %}
+{% block body %}
+<link href="{{ static_url('style/user_zone.css') }}" type="text/css" rel="stylesheet">
+<link href="{{ static_url('style/self_media.css') }}" type="text/css" rel="stylesheet" >
+<link href="{{ static_url('style/diamond.css') }}" type="text/css" rel="stylesheet">
+<link href="{{ static_url('style/jquery.mCustomScrollbar.min.css') }}" type="text/css" rel="stylesheet">
+
+<div class="self-media-main box-location">
+    {% include 'my_menu.html' %}
+    <div class="invite-line" id="suInfo">可查找并加入<a href="/union">更多联盟</a>或
+        <a class="btn btn-with-blueBg-and-addBtn invite-btn" href="/user?a=union_form"><b>+</b><p>创建联盟</p></a>
+    </div>
+    <div class="my-unions">
+        {% for item in union %}
+        <div class="union" style="display:inline-block">
+            <a href="/union?a=view&id={{ item['id'] }}">
+                <img src="{{ item['logo'] }}" alt="" />
+            </a>
+            <div class="info">
+                <a href="/union?a=view&id={{ item['id'] }}">{{ item['name'] }}</a>
+                <div class="creator">创建者：{{ item['username'] }}</div>
+                <div class="classmates">成员数：{{ item['member'] }}</div>
+            </div>
+        </div>
+        {% end %}
+    </div>
+</div>
+{% end %}

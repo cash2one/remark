@@ -1,0 +1,132 @@
+<div class="sm-first-pick-sm-get">
+    <div class="title">反馈投放结果给广告主</div>
+    <div class="case-more-box clear-margin">
+        <div class="self-media-main">
+            <div class="container clear-padding">
+                {% for item in feedback_sumbit['official'] %}
+                <div class="media-box">
+                    <div class="media-main deposit-page">
+                        <div class="media-title">
+                            <a href="/media?a=view&id={{ item['official_id'] }}">{{ item['name'] }}</a>
+                        </div>
+                        <div class="am-choose-pick-form for-deposit-page">
+                            <h5>投放位置</h5>
+                            <div class="choose-btn">{{ feedback_jiedan_position[str(item['id'])] }}</div>
+                        </div>
+                        <div class="right-btn submit" data-id="{{ item['id'] }}">提交结果</div>
+                        <input type="hidden" value="{{ item['id'] }}" />
+                    </div>
+                    <div class="media-head">
+                        <a href="">
+                            <img src="{{ item['avatar'] }}" alt="" style="width:60px;height:60px;" />
+                        </a>
+                    </div>
+                </div>
+                {% end %}
+            </div>
+        </div>
+    </div>
+</div>
+<div class="light-cover" id="link-tips-box" style="display: none;">
+    <div class="alert-box-first-level">
+        <div><span class="icon-close" onClick="lightbox('link-tips-box');"></span></div>
+        <div class="title">
+            提交结果图文链接
+        </div>
+        <div class="tips-msg">提交后不可更改，请确保填写正确</div>
+        <input type="text" placeholder="http://mp.weixin.qq.com/..." id="feedback_url">
+        <div class="btn-with-blueBg-and-addBtn submit-location" id="feedback_check">提交</div>
+    </div>
+</div>
+<div class="light-cover" id="link-accept-box" style="display: none;">
+    <div class="alert-box-first-level">
+        <div><span class="icon-close" onClick="lightbox('link-accept-box');"></span></div>
+        <div class="title">
+            确认提交链接
+        </div>
+        <div class="link-location" id="link-url"><a></a></div>
+        <div class="btn-with-blueBg-and-addBtn accepted-btn" id="feedback_submit">确定</div>
+        <div class="btn-with-blueBg-and-addBtn change-btn" onclick="backToTips();">修改</div>
+        <input type="hidden" id="" />
+    </div>
+</div>
+<script>
+$(function(){
+
+    var feedback_submit = function(){
+        var strJiedanId = '';
+        var strFeedbackUrl = '';
+
+        // 监听打开输出框
+        $('.submit').click(function(){
+            var strId = $(this).attr('data-id');
+            if(!strId){
+                return false;
+            }
+            strJiedanId = strId;
+            lightbox('link-tips-box');
+        });
+
+        // 监听检测
+        $('#feedback_check').click(function(){
+            strFeedbackUrl = $.trim($('#feedback_url').val());
+            if(!strFeedbackUrl){
+                return False;
+            }
+
+            $('#link-url a').attr('href',strFeedbackUrl);
+            var strCutUrl = ''
+            if(strFeedbackUrl.length>50){
+                strCutUrl = strFeedbackUrl.substr(0,50) + '...';
+            }
+            $('#link-url a').text(strCutUrl ? strCutUrl : strFeedbackUrl);
+            lightbox('link-accept-box');
+            lightbox('link-tips-box');
+        });
+
+        // 监听提交
+        $('#feedback_submit').click(function(){
+            if(!strJiedanId || !strFeedbackUrl){
+                showTipsBox('alert','数据有误，请刷新重试');
+                return false;
+            }
+
+            $.ajax({
+                url: '/demand?a=feedback_create',
+                type: 'POST',
+                dataType: 'JSON',
+                data: {
+                    'jiedan_id': strJiedanId,
+                    'feedback_url': strFeedbackUrl
+                }
+            }).then(function(d){
+                alert('提交成功');
+                location.reload();
+                //showAcceptBox('系统提示','提交成功',false,function(){
+                //    location.reload();
+                //})
+            });
+        });
+    }();
+    
+})
+function submitResult(obj){
+    lightbox('link-tips-box');
+}
+
+function acceptLink(obj){
+    var url = $(obj).parent().children('input').val();
+    $('#link-url a').attr('href',url);
+    if(url.length>50){
+        url = url.substr(0,50) + '...';
+    }
+    $('#link-url a').text(url);
+    lightbox('link-accept-box');
+    lightbox('link-tips-box');
+}
+
+function backToTips(){
+    lightbox('link-accept-box');
+    lightbox('link-tips-box');
+}
+</script>

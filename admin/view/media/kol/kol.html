@@ -1,0 +1,121 @@
+{% extends '../../public/main.html' %}
+
+{% block body %}
+<script type="text/javascript">
+    function create(){
+        var a = document.getElementById('kol_name').value;
+        if (a == "") {
+            alert("名称不能为空");
+            return false;
+        }
+        document.getElementById('kol_form').submit();
+    }
+    $(document).ready(function(){
+        uediter('kol_description');
+    })
+</script>
+<div class="nav">
+    <a class="btnAdd" name="kol_create" data-target="#kol_create_dialog" data-toggle="modal">增加KOL</a>
+</div>
+<div>
+    <div id="kol_create_dialog" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" id="kol_create_close" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 id="kol_create_title">增加KOL</h4>
+                </div>
+                <div class="modal-body">
+                    <form class="form-horizontal" id="kol_form" name="kol_form" method="post" action="/media/kol?a=create">
+                        <div class="form-group">
+                            <div class="form-group">
+                                <label for="kol_name" class="col-sm-2 control-label">名称</label>
+                                <div class="col-sm-7">
+                                    <input class="form-control" type="text" id="kol_name" name="kol_name">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="kol_area" class="col-sm-2 control-label">所在地</label>
+                                <div class="col-sm-7">
+                                    <input class="form-control" type="text" id="kol_area" name="kol_area">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="kol_company" class="col-sm-2 control-label">单位</label>
+                                <div class="col-sm-7">
+                                    <input class="form-control" type="text" id="kol_company" name="kol_company">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group uediter">
+                            <label for="kol_name" class="col-sm-2 control-label">描述</label>
+                            <textarea id="kol_description" name="kol_description"></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-success" onclick="create()">保存</button>
+                    <button class="btn btn-default" data-dismiss="modal" aria-hidden="true">取消</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="result_filter funnel">
+    <div class="searchBox">
+        <form method="get" class="form-inline" action="/media/kol" id="search_form">
+            <input class="form-control" type="text" name="search" class="typeText">
+            <button type="submit" id="search" class="btn btn-default">搜索</button>
+        </form>
+    </div>
+</div>
+<div>
+    <table class="table table-bordered table-hover vert-align">
+        <thead>
+            <tr class="res_tbl_title">
+                <td>ID</td>
+                <td>名称</td>
+                <td>身份</td>
+                <td>写稿报价</td>
+                <td>其它报价</td>
+                <td>描述</td>
+                <td>备注</td>
+                <td>更新时间</td>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in kol %}
+            <tr>
+                <td width="3%">{{ item['id'] }}</td>
+                <td width="5%">
+                    <a href="/media/kol?a=detail&id={{item['id']}}">{{ item['name'] }}</a>
+                </td>
+                <td width="5%">{{ item['role'] }}</td>
+                <td width="5%">{{ item['write_price'] }}</td>
+                <td width="5%">{{ item['other_price'] }}</td>
+                <td width="20%"><div style="overflow:hidden;display:inline-block;height:30px;text-overflow:ellipsis;">{% raw item['description'] if item['description'] else '-' %}</div></td>
+                <td width="20%"><div style="overflow:hidden;display:inline-block;height:30px;text-overflow:ellipsis;">{% raw item['remark'] if item['remark'] else '-' %}</div></td>
+                <td width="5%">{{ item['last_update_time'] }}</td>
+            </tr>
+            {% end %}
+        </tbody>
+    </table>
+</div>
+<div>
+    {% raw page_html %}
+</div>
+<script type="text/javascript">
+$(document).ready(function(){
+    $("body").keyup(function () {
+        if (event.which == 13){
+            $("#search").trigger("click");
+        }
+    }); 
+})
+/*增加样式选择器*/
+$(document).ready(function(){
+        $(".edui-container").addClass("col-sm-2");
+    })
+</script>
+
+{% end %}

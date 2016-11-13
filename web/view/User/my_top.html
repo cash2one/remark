@@ -1,0 +1,11 @@
+<div class="ucNav-wrapper">
+	<div class="ucNav cc">
+	    <h2>用户中心</h2>
+	    <ul>
+	        <li class="{% if my_menu_focus in ['media', 'demand', 'demand_take_order', 'demand_order', 'demand_feedback'] %}current{% end %}"><a href="user?a=media">我的一道</a></li>
+	        <li class="{% if my_menu_focus in ['wallet'] %}current{% end %}"><a href="user?a=wallet">我的钱包</a></li>
+	        <li class="{% if my_menu_focus in ['information' , 'bind' , 'bind_email' , 'password'] %}current{% end %}"><a href="user">账号设置</a></li>
+	        <li class="{% if my_menu_focus is 'notification' %}current{% end %}"><a href="user?a=notification">通知中心</a></li>
+	    </ul>
+	</div>
+</div>

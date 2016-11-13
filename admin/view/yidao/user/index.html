@@ -1,0 +1,64 @@
+{% extends '../../public/main.html' %}
+
+{% block body %}
+<link rel="stylesheet" type="text/css" href="{{ static_url('style/bootstrap-responsive.css') }}" />
+<link rel="stylesheet" type="text/css" href="{{ static_url('style/bootstrap-datetimepicker.css') }}" />
+<script type="text/javascript" src="{{ static_url('script/bootstrap-datetimepicker.js') }}"></script>
+<div class="status_title">
+	<ol class="breadcrumb">
+		平台用户 >
+		<li><a href="/user">已注册</a></li>
+	</ol>
+</div>
+<div class="result_filter">
+	<form action='/user' method="get">
+        日期
+        <input type="text" readonly class="form_datetime form-control dateInput" name="start">
+        <span>&nbsp;至&nbsp;</span>
+        <input type="text" readonly class="form_datetime form-control dateInput" name="end">
+        <span>&nbsp;&nbsp;昵称</span>
+        <input type="text" class="form-control dateInput" name="search" />
+        <input type="submit" class="btn btn-default" value="筛选"/>
+    </form>
+	<script type="text/javascript">
+		$(".form_datetime").datetimepicker({
+			format: 'yyyy-mm-dd',
+			minView: 'month',
+			autoclose: true
+		});
+	</script>
+</div>
+<table class="table table-bordered table-hover vert-align">
+    <thead>
+		<tr class="res_tbl_title">
+			<td>id</td>
+			<td>称呼</td>
+			<td>身份</td>
+			<td>位置</td>
+			<td>自媒体</td>
+            <td>注册时间</td>
+			<td>状态</td>
+            <td>操作</td>
+		</tr>
+	</thead>
+    {% for item in index_info %}
+		<tbody>
+			<tr>
+				<td>{{ item['id'] }}</td>
+				<td>{{ item['nickname'] }}</td>
+				<td>{{ item['vip_label'] }}</td>
+				<td>{{ item['area'] }}</td>
+				<td>{{ item['media_num'] }}</td>
+				<td>{{ item['create_time'] }}</td>
+				<td>{{ item['status_label'] }}</td>
+				<td>
+                    <a href="/user?a=detail&id={{ item['id'] }}">查看详细信息</a>
+				</td>
+			</tr>
+		</tbody>
+    {% end %}
+</table>
+<div>
+	{% raw page_html %}
+</div>
+{% end %}

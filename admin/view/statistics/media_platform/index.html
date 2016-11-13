@@ -1,0 +1,95 @@
+{% extends '../../public/main.html' %}
+
+{% block body %}
+<link rel="stylesheet" type="text/css" href="{{ static_url('style/loading.css') }}" />
+<div class="status_title">
+    <ol class="breadcrumb">
+        <li><a href="#"></a>数据统计</li>
+        <li><a href="/statistics/media/platform"> 媒体库平台统计</a></li>
+   </ol>
+</div>
+<div id="data">
+    <table class="table table-bordered table-hover vert-align">
+        <thead>
+            <tr class="res_tbl_title">
+                <td width="16%">媒体类型</td>
+                <td width="10%">今日新增</td>
+                <td width="10%">今日更新</td>
+                <td width="10%">最近7天新增</td>
+                <td width="10%">最近7天更新</td>
+                <td width="10%">最近30天新增</td>
+                <td width="10%">最近30天更新</td>
+                <td width="10%">总数</td>
+            </tr>
+        </thead>
+        <tbody id="media-statistics_by_platform">
+
+        </tbody>
+    </table>
+    <br>
+    <!-- 数据载入中 -->
+    <div class="loading">
+        <div class="spinner">
+            <div class="bounce1"></div>
+            <div class="bounce2"></div>
+            <div class="bounce3"></div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    $(function(){
+        $(document).ajaxStart(function(){
+            $(".loading").show();
+        });
+        $(document).ajaxStop(function(){
+            $(".loading").hide();
+        });
+        $.getJSON("/statistics/media/platform?a=statistics", function(json){
+            var $html = "";
+//            console.log(json.data);
+            for(var i in json.data.platform){
+                $html += "<tr>";
+                $html += "<td>" + json.data.platform[i] + "</td>";
+                for(var j in json.data.today_create){
+                    if(i == json.data.today_create[j].platform_id){
+                        $html += "<td>" + json.data.today_create[j].count + "</td>";
+                    }
+                };
+                for(var j in json.data.today_update){
+                    if(i == json.data.today_update[j].platform_id){
+                        $html += "<td>" + json.data.today_update[j].count + "</td>";
+                    }
+                };
+                for(var j in json.data.week_create){
+                    if(i == json.data.week_create[j].platform_id){
+                        $html += "<td>" + json.data.week_create[j].count + "</td>";
+                    }
+                };
+                for(var j in json.data.week_update){
+                    if(i == json.data.week_update[j].platform_id){
+                        $html += "<td>" + json.data.week_update[j].count + "</td>";
+                    }
+                };
+                for(var j in json.data.month_create){
+                    if(i == json.data.month_create[j].platform_id){
+                        $html += "<td>" + json.data.month_create[j].count + "</td>";
+                    }
+                };
+                for(var j in json.data.month_update){
+                    if(i == json.data.month_update[j].platform_id){
+                        $html += "<td>" + json.data.month_update[j].count + "</td>";
+                    }
+                };
+                for(var j in json.data.total){
+                    if (i == json.data.total[j].platform_id) {
+                        $html += "<td>" + json.data.total[j].count + "</td>";
+                    }
+                }
+                $html += "</tr>"
+            }            
+            $("#media-statistics_by_platform").append($html);
+        });
+    })
+</script>
+
+{% end %}

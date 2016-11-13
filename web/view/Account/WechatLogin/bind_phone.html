@@ -1,0 +1,148 @@
+{% extends '../../public/main.html' %}
+{% block title%}绑定手机{% end %}
+{% block body %}
+
+<div class="passport">
+    <div class="signBox">
+        <!--<form class="form" action="/account?a=bind_phone" method="post" name="bd">-->
+            <h2>绑定手机</h2>
+            <label>
+                <span>手机</span>
+                <input type="text" id="phone" name="phone" value="" maxlength="11">
+                <em class="errorTips" id="tip2"></em>
+            </label>
+            <label>
+                <span>验证码</span>
+                <input type="text" id="verify_code" name="verify_code" value="">
+                <button class="" id="send_verify_code" type="button" onclick="sendCode()">发送验证码</button>
+                <em class="errorTips" id="tip3"></em>
+            </label>
+            <label>
+                <span>密码</span>
+                <input type="password" style="display:none;">
+                <input type="password" id="password" name="password" value="">
+                <em class="errorTips" id="tip4"></em>
+            </label>
+            <button class="submitBtn" onclick="bind_phone()">绑定</button>
+        <!--</form>-->
+    </div>
+</div>
+
+<script type="text/javascript">
+    var reg = /^(13[0-9]|15[012356789]|17[678]|18[0-9]|14[57])[0-9]{8}$/;
+    $(document).ready(function(){
+        $('#phone').blur(function(){
+            var phone = $('#phone').val();
+            if(!reg.test(phone)){
+                $('#tip2').html('<b>◆</b><i>请输入正确的手机号</i>');
+            } else {
+                $.ajax({
+                    type: "POST",
+                    url: "/account?a=check_account",
+                    dataType: "JSON",
+                    data: $.param({'phone':phone}),
+                    success: function(ret, textStatus){
+                        if(ret.status == 300)
+                            $('#tip2').html('<b>◆</b><i>该手机号已被绑定</i>');
+                        else
+                        {
+                            $('#tip2').html('');
+                            $('#phone').attr('use', '1');
+                        }
+                    }
+                });
+            }
+        });
+        $('#verify_code').blur(function(){
+            var verify_code = $('#verify_code').val();
+            if(verify_code.length != 6){
+                $('#tip3').html('<b>◆</b><i>验证码错误</i>');
+            } else {
+                $('#tip3').html('');
+            }
+        });
+        $('#password').blur(function(){
+            var password = $('#password').val();
+            if(password.length < 6 || password.length > 32){
+                $('#tip4').html('<b>◆</b><i>长度为6-32个字符</i>');
+            } else {
+                $('#tip4').html('');
+            }
+        });
+    });
+    function bind_phone(){
+        var phone = $('#phone').val();
+        var verify_code = $('#verify_code').val();
+        var password = $('#password').val();
+        var flag = true;
+        if(!reg.test(phone)){
+            $('#tip2').html('<b>◆</b><i>请输入正确的手机号</i>');
+            flag = false;
+        } else {
+            $('#tip2').html('');
+        }
+        if(verify_code.length != 6){
+            flag = false;
+            $('#tip3').html('<b>◆</b><i>验证码错误</i>');
+        } else {
+            $('#tip3').html('');
+        }
+        if(password.length < 6 || password.length > 32){
+            flag = false;
+            $('#tip4').html('<b>◆</b><i>长度为6-32个字符</i>');
+        } else {
+            $('#tip4').html('');
+        }
+        if (flag) {
+            var params = {'verify_code':verify_code, 'phone':phone, 'password':password};
+            $.ajax({
+                type: "POST",
+                url: "/account?a=bind_phone",
+                dataType: "JSON",
+                data: $.param(params),
+                success: function(ret){
+                    if(ret.status == 200) {
+                        showTipsBox('message', dicStatusMsg['bind_phone'][ret.status]);
+                        location.href = "/";
+                    }
+                    else{
+                        showTipsBox('alert', dicStatusMsg['bind_phone'][ret.status]);
+                    }
+                }
+            });
+        }
+    }
+    function sendCode(){
+        var phone = $('#phone').val();
+        if($('#send_verify_code').hasClass('sending')) {
+            return;
+        }
+
+        if($('#phone').attr('use') !== '1')
+            return;
+
+        count = 60;
+        $.ajax({
+            url:'/account?a=verify_phone',
+            method:'post',
+            dataType:'json',
+            data:{phone:phone}
+        });
+        $('#send_verify_code').addClass('sending').text(count + '秒后重试');
+        setTimeout(counting,1000);
+    }
+
+    function counting(){
+        if(--count > 0){
+            if(!$('#send_verify_code').hasClass('sending')){
+                $('#send_verify_code').addClass('sending');
+            } else {
+                $('#send_verify_code').text(count + '秒后重试');
+                setTimeout(counting,1000);
+            }
+        }else{
+            $('#send_verify_code').removeClass('sending').text('发送验证码');
+        }
+    }
+</script>
+{% end %}

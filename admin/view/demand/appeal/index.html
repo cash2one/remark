@@ -1,0 +1,71 @@
+{% extends '../../public/main.html' %}
+
+{% block body %}
+<link rel="stylesheet" type="text/css" href="{{ static_url('style/bootstrap-responsive.css') }}" />
+<link rel="stylesheet" type="text/css" href="{{ static_url('style/bootstrap-datetimepicker.css') }}" />
+<script type="text/javascript" src="{{ static_url('script/bootstrap-datetimepicker.js') }}"></script>
+
+<div class="status_title">
+    <ol class="breadcrumb">
+        <li><a href="#">交易申诉</a></li>
+        <li><a href="/demand/appeal?status=1">申诉中</a></li>
+        <li><a href="/demand/appeal?status=3">审核中</a></li>
+        <li><a href="/demand/appeal?status=2">申诉完成</a></li>
+    </ol>
+</div>
+<div class="result_filter">
+    <form action='/demand' method="get">
+        <input type="hidden" name="status" value="{{ status }}" />
+        日期
+        <input size="16" type="text" readonly class="form_datetime form-control dateInput" name="start">
+        <span>&nbsp;至&nbsp;</span>
+        <input size="16" type="text" readonly class="form_datetime form-control dateInput" name="end">
+        <span>&nbsp;&nbsp;主题</span>
+        <input type="text" name="search" class="form-control dateInput" />
+        <input type="submit" class="btn btn-default" value="筛选"/>
+    </form>
+    <script type="text/javascript">
+        $(".form_datetime").datetimepicker({
+            format: 'yyyy-mm-dd',
+            minView: 'month',
+            autoclose: true
+        });
+    </script>
+</div>
+<div>
+    <table class="table table-bordered table-hover vert-align">
+        <thead>
+            <tr class="res_tbl_title">
+                <td>序号</td>
+                <td>申诉用户</td>
+                <td>订单id</td>
+                <!--<td>需求id</td>-->
+                <td>申诉内容</td>
+                <td>申诉结论</td>
+                <td>申诉时间</td>
+                <td>操作</td>
+            </tr>
+        </thead>
+        {% for item in index_info %}
+        <tbody>
+            <tr>
+                <td>{{item['idx']}}</td>
+                <td>{{item['nickname']}}</td>
+                <td>{{item['order_id']}}</td>
+               
+                <td>{{item['description']}}</td>
+                <td>{{item['result']}}</td>
+                <td>{{item['create_time']}}</td>
+                <td>
+                    <a class="btn btnThin" href="/demand/appeal?a=detail&id={{ item['id'] }}">处理</a>
+                    <!--<a href="/demand?a=delete&status={{ item['status'] }}&id={{ item['id'] }}" onclick="return confirm('确认删除?');">删除</a>-->
+                </td>
+            </tr>
+        </tbody>
+        {% end %}
+    </table>
+</div>
+<div>
+    {% raw page_html %}
+</div>
+{% end %}

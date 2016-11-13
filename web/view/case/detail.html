@@ -1,0 +1,159 @@
+{% extends '../public/main.html' %}
+{% block title %}成功案例 | {{detail['title']}}{% end %}
+{% block body %}
+<link href="/static/style/case.css" type="text/css" rel="stylesheet">
+<div class="caseDemandInfo">
+    <div class="caseSign">成功案例</div>
+	<div class="demandTitle">
+        <span class="demandType">{{detail['form_name']}}</span>
+        <a href="/demand?a=view&id={{detail['id']}}" target="_blank">{{detail['title']}}</a>
+    </div>
+    <div class="demandDetail">
+		{% if detail['original'] %}
+    	<div class="original"><span class="yd-original"></span>需要原创号</div>
+		{% end %}
+    	<div class="category">
+			{% for item in detail['category'] %}
+            <span>{{item['name']}}</span>
+            {% end %}
+        </div>
+        <div class="tag">
+			{% for item in detail['tag'] %}
+            <span>{{item['name']}}</span>
+            {% end %}
+        </div>
+    </div>
+    <div class="demandDetailOther">
+        <div class="gender">
+        	<em>性别要求</em>
+        	<span>{{detail['gender']}}</span>
+        </div>
+        <div class="area">
+        	<em>地域要求</em>
+        	<span>{{detail['area']}}</span>
+        </div>
+        <div class="follower">
+            <em>粉丝数要求</em>
+            <span>
+            	{% if detail['audience_num'] > 0 %}
+                {{detail['audience_num']}} 以上
+                {% else %}
+                不限
+                {% end %}
+            </span>
+        </div>
+        <div class="readNumber">
+            <em>阅读数要求</em>
+            <span>
+            	{% if detail['view'] > 0 %}
+                {{detail['view']}} 以上
+                {% else %}
+                不限
+                {% end %}
+            </span>
+        </div>
+        <div class="readNumber">
+        	<em>自媒体数要求</em>
+        	<span>{{ detail['num'] if detail['num'] else '不限'}}</span>
+        </div>
+    </div>
+</div>
+<div class="caseBoard">
+	<div class="title">
+		<h3>最终效果</h3>
+	</div>
+	<div class="caseResult clearfix">
+		<dl class="resultMedia">
+			<dt>成交自媒体</dt>
+			<dd><strong>{{detail['media_num']}}</strong></dd>
+		</dl>
+		<dl class="resultReadNumber">
+			<dt>阅读总数</dt>
+			<dd><strong></strong></dd>
+		</dl>
+		<dl class="resultPrice">
+			<dt>成交金额</dt>
+			<dd><strong>{{detail['total_price']}}</strong></dd>
+		</dl>
+	</div>
+</div>
+<div class="caseContainer">
+	<div class="title">
+		<h3>成交自媒体</h3>
+		<div class="caseCount">有<strong>{{detail['take_order_num']}}</strong>人接单，<strong>{{detail['media_num']}}</strong>人成交。</div>
+	</div>
+	<ul class="caseMediaList clearfix">
+		{% for item in detail['media_info'] %}
+		<li>
+			<div class="mediaDesc">
+				<div class="mediaAvatar">
+	                <a href="/media?a=view&id={{item['id']}}" target="_blank">
+	                    <img src="{{item['avatar']}}" alt="{{item['name']}}">
+	                </a>
+	            </div>
+	            <div class="mediaInfo">
+	                <div class="mediaTitle">
+	                    <span class="mediaName"><a href="/media?a=view&id={{item['id']}}" target="_blank">{{item['name']}}</a></span>
+						{% if item['original'] %}
+	                    <span class="original" title="原创">原创</span>
+						{% end %}
+						{% if item['identify'] %}
+	                    <span class="wechatVerify ydi yd-checked" title="微信认证">已认证</span>
+						{% end %}
+	                    <span class="level" title="综合级别">级别<strong>{{item['value_level']}}</strong></span>
+	                    <span class="qrcode"><img src="/static/images/qr-mini.png" alt="二维码"><img src="{{item['qrcode']}}" alt="{{item['name']}}" class="codeL"></span>
+	                </div>
+	                <div class="mediaCategory">
+	                    <span>{{item['category']}}</span>
+	                </div>
+	                <div class="mediaTag">
+						{% for tag in item['tags'] %}
+	                    <span data="">{{tag['name']}}</span>
+	                    {% end %}
+	                </div>
+	                <dl class="mediaAudience">
+	                    <dt>针对地域：</dt>
+	                    <dd>{{item['area']}}</dd>
+	                    <dt>针对性别：</dt>
+	                    <dd>{{item['audience_gender']}}</dd>
+	                </dl>
+	            </div>
+	        </div>
+            <div class="caseResult clearfix">
+            	<dl class="resultAdvertising">
+            		<dt>投放位置</dt>
+            		<dd><strong>{{item['trade']['price']['attr_value_info']}}</strong></dd>
+            	</dl>
+            	<dl class="resultReadNumber">
+            		<dt>阅读总数</dt>
+            		<dd><strong></strong></dd>
+            	</dl>
+            	<dl class="resultPrice">
+            		<dt>成交金额</dt>
+            		<dd><strong>{{item['trade']['real_price']}}</strong></dd>
+            	</dl>
+            </div>
+            <div class="caseFeedback">
+                <div class="feedbackScreenshot">
+					{% if item['trade']['feedback'].has_key('picture_1') %}
+                    <a href="{{item['trade']['feedback']['picture_1']}}" target="_blank"><img src="{{item['trade']['feedback']['picture_1']}}"></a>
+                    {% end %}
+					{% if item['trade']['feedback'].has_key('picture_2') %}
+                    <a href="{{item['trade']['feedback']['picture_2']}}" target="_blank"><img src="{{item['trade']['feedback']['picture_2']}}"></a>
+                    {% end %}
+					{% if item['trade']['feedback'].has_key('picture_3') %}
+                    <a href="{{item['trade']['feedback']['picture_3']}}" target="_blank"><img src="{{item['trade']['feedback']['picture_3']}}"></a>
+                    {% end %}
+                </div>
+                <div class="feedbackLink">
+					{% if item['trade']['feedback'].has_key('url') %}
+                	<a href="{{item['trade']['feedback']['url']}}" target="_blank"><span class="ydi yd-link"></span>反馈链接</a>
+					{% end %}
+                </div>
+
+            </div>
+        </li>
+		{% end %}
+	</ul>
+</div>
+{% end %}

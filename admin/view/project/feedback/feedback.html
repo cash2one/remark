@@ -1,0 +1,131 @@
+{% extends '../../public/main.html' %}
+
+{% block body %}
+<!--<script type="text/javascript">-->
+<!--$(document).ready(function(){-->
+    <!--$("button[name='update_feedback']").click(function(){-->
+        <!--id = $(this).attr('id');-->
+        <!--param = {-->
+            <!--'id': $('#fd_id' + id).val(),-->
+            <!--'plan_id': $('#fd_plan_id' + id).val(),-->
+            <!--'media_id': $('#fd_media_id' + id).val(),-->
+            <!--'plan_demand_id': $('#fd_plan_demand_id' + id).val(),-->
+            <!--'demand_id': $('#fd_demand_id' + id).val(),-->
+            <!--'read_num': $('#fd_read_num' + id).val(),-->
+            <!--'like_num': $('#fd_like_num' + id).val(),-->
+            <!--'register_num': $('#fd_register_num' + id).val(),-->
+            <!--'ticket_num': $('#fd_ticket_num' + id).val(),-->
+            <!--'order_num': $('#fd_order_num' + id).val(),-->
+            <!--'trade_num': $('#fd_trade_num' + id).val(),-->
+            <!--'trade_money': $('#fd_trade_money' + id).val(),-->
+            <!--'sale_money': $('#fd_sale_money' + id).val(),-->
+            <!--'roi': $('#fd_roi' + id).val(),-->
+<!--//            'effect_level': $('#fd_effect_level' + id).val(),-->
+            <!--'comment': $("option[name=comment"+ id +"]:selected").val(),-->
+            <!--'effect_level': $("option[name=effect_level"+ id +"]:selected").val(),-->
+            <!--'description': $('#fd_description' + id).val()-->
+        <!--};-->
+<!--//        console.log(param)-->
+        <!--$.ajax({-->
+            <!--url:'/project/feedback?a=update',-->
+            <!--method:'post',-->
+            <!--dataType:'json',-->
+            <!--data: param,-->
+            <!--success:function(d){-->
+                <!--if(d.status==200){-->
+                    <!--location.reload(true);-->
+                <!--}-->
+                <!--else-->
+                    <!--alert("保存失败");-->
+            <!--}-->
+        <!--});-->
+    <!--});-->
+<!--});-->
+<!--</script>-->
+<div class="nav">
+    <p>在相应的<b>广告需求详情页</b>中增加投放效果</p>
+</div>
+<div class="funnel">
+    <div class="searchBox ">
+    <form class="form-inline" action='/project/feedback' method="get">
+        ROI
+        <input class="form-control" type="text" name="roi_left" class="typeText" value="{{ cond['roi_left']}}"/> 至
+        <input class="form-control" type="text" name="roi_right" class="typeText" value="{{ cond['roi_right']}}"/>
+        效果等级
+        <select class="form-control" title="效果等级" name="effect_level">
+            <option name="effect_level" value="-1">不限</option>
+            <option name="effect_level" value="1">很差</option>
+            <option name="effect_level" value="2">差</option>
+            <option name="effect_level" value="3">一般</option>
+            <option name="effect_level" value="4">好</option>
+            <option name="effect_level" value="5">很好</option>
+        </select>
+        <button type="submit" class="form-control btn btn-default">搜索</button>
+    </form>
+    </div>
+</div>
+<br/>
+<table class="table table-bordered table-hover vert-align">
+    <thead>
+        <tr class="res_tbl_title">
+            <td>ID</td>
+            <td>自媒体</td>
+            <td>业务需求</td>
+            <!--<td>平台需求</td>-->
+            <td>阅读数</td>
+            <td>点赞数</td>
+            <!--<td>新增粉丝数</td>-->
+            <td>评论数</td>
+            <!--<td>注册量</td>-->
+            <!--<td>领券数</td>-->
+            <!--<td>下单数</td>-->
+            <!--<td>成单数</td>-->
+            <td>成交金额</td>
+            <td>销售金额</td>
+            <td>ROI</td>
+            <!--<td>效果等级</td>-->
+            <td>详细说明</td>
+            <td>操作</td>
+        </tr>
+    </thead>
+    <tbody>
+    {% for item in ad_feedback %}
+        <tr>
+            <td>{{ item['id'] }}</td>
+            <td>{% if item['media_id'] %}<a href="/media/wechat?a=detail&id={{ item['media_id'] }}" style="overflow:hidden;display:inline-block;max-width:150px;white-space:nowrap;text-overflow:ellipsis;">{{ item['media_name'] }}</a>{% else %}-{% end %}</td>
+            <td>{% if item['plan_demand_id']  %}<a href="/project/demand?a=detail&id={{ item['plan_demand_id'] }}" style="overflow:hidden;display:inline-block;max-width:150px;white-space:nowrap;text-overflow:ellipsis;">{{ item['plan_demand_name'] }}</a>{% else %}-{% end %}</td>
+            <!--<td>{% if item['demand_id'] %}<a href="/demand?a=detail&id={{ item['demand_id'] }}" style="overflow:hidden;display:inline-block;max-width:100px;white-space:nowrap;text-overflow:ellipsis;">{{ item['web_demand_name'] }}</a>{% else %}-{% end %}</td>-->
+            <td>{{ item['read_num'] if item['read_num'] else '-'}}</td>
+            <td>{{ item['like_num'] if item['like_num'] else '-'}}</td>
+            <!--<td>{{ item['fans_num'] if item['fans_num'] else '-'}}</td>-->
+            <td>{{ item['comment_num'] if item['comment_num'] else '-'}}</td>
+            <!--<td>{{ item['register_num'] if item['register_num'] else '-' }}</td>-->
+            <!--<td>{{ item['ticket_num'] if item['ticket_num'] else '-' }}</td>-->
+            <!--<td>{{ item['order_num'] if item['order_num'] else '-' }}</td>-->
+            <!--<td>{{ item['trade_num'] if item['trade_num'] else '-' }}</td>-->
+            <td>{{ item['trade_money'] if item['trade_money'] else '-' }}</td>
+            <td>{{ item['sale_money'] if item['sale_money'] else '-' }}</td>
+            <td>{{ item['roi'] }}</td>
+            <!--<td>{{ item['effect_level'][1] if item['effect_level'] else '-'}}</td>-->
+            <td>{% raw item['description'] if item['description'] else '-' %}</td>
+            <td>
+                <div>
+                    <a href="/project/feedback?a=detail&id={{item['id']}}" class="btn btnColor btn-info">查看</a>
+                </div>
+            </td>
+        </tr>
+    {% end %}
+    </tbody>
+</table>
+<div>
+    {% raw page_html %}
+</div>
+<script type="text/javascript">
+$(document).ready(function(){
+    var level = "{{ cond['level'] }}";
+    if (level != "") {
+        $("option[name=effect_level][value=" + level + "]").attr("selected", true);
+    }
+});
+</script>
+{% end %}

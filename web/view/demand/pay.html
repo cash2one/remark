@@ -1,0 +1,117 @@
+{% extends '../public/main.html' %}
+{% block title %}付款{% end %}
+{% block body %}
+<link href="{{ static_url('style/self_media.css') }}" type="text/css" rel="stylesheet" >
+<link href="{{ static_url('style/demand_case.css') }}" type="text/css" rel="stylesheet" >
+
+<!--<div class="case-title">-->
+    <!--<div class="main-box past-page" >-->
+        <!--自媒体接单-->
+        <!--<div class="riangle-right"></div>-->
+    <!--</div>-->
+    <!--<div class="main-box box-middle current-page">-->
+        <!--广告主选择自媒体并付款-->
+        <!--<div class="riangle-left"></div>-->
+        <!--<div class="riangle-right"></div>-->
+    <!--</div>-->
+    <!--<div class="main-box box-right">-->
+        <!--自媒体支付押金-->
+        <!--<div class="riangle-left"></div>-->
+    <!--</div>-->
+<!--</div>-->
+<div class="pay-page-container">
+    <div class="title"><h4>{{ pay['title'] }}</h4></div>
+    <div class="right"><span class="static-word">
+        订单总额：
+        </span><span class="cost"><small>￥</small>{{ pay['total_price'] }}</span></div>
+    <div class="left-btn" onclick="backToLastPage();">
+        返回预选单
+    </div>
+    <div class="right-btn" onclick="payMethod();">前往付款</div>
+    <h5>选择支付方式</h5>
+    <div class="method-box">
+        <div class="pay-method" onclick="choosethis(this)" name="alipay">
+            <label>
+                <input type="radio" name="method" checked="checked"/>
+                <img src="{{ static_url('images/bank/alipay.jpg') }}">
+            </label>
+        </div>
+        
+        <!--<div class="pay-method" onclick="choosethis(this)" name="ABC">-->
+            <!--<label>-->
+                <!--<input type="radio" name="method" />-->
+                <!--<img src="{{ static_url('images/bank/ABC.jpg') }}">-->
+            <!--</label>-->
+        <!--</div>-->
+        <!--<div class="pay-method" onclick="choosethis(this)" name="BOCB2C"><label><input type="radio" name="method" /><img src="{{static_url('images/bank/BOCB2C.jpg') }}"></label></div>-->
+        <!--<div class="pay-method" onclick="choosethis(this)" name="CCB"><label><input type="radio" name="method" /><img src="{{ static_url('images/bank/CCB.jpg') }}"></label></div>-->
+        <!--<div class="pay-method" onclick="choosethis(this)" name="CEB"><label><input type="radio" name="method" /><img src="{{ static_url('images/bank/CEB.jpg') }}"></label></div>-->
+        <!--<div class="pay-method" onclick="choosethis(this)" name="CIB"><label><input type="radio" name="method" /><img src="{{ static_url('images/bank/CIB.jpg') }}"></label></div>-->
+        <!--<div class="pay-method" onclick="choosethis(this)" name="CITIC"><label><input type="radio" name="method" /><img src="{{ static_url('images/bank/CITIC.jpg') }}"></label></div>-->
+        <!--<div class="pay-method" onclick="choosethis(this)" name="CMB"><label><input type="radio" name="method" /><img src="{{ static_url('images/bank/CMB.jpg') }}"></label></div>-->
+        <!--<div class="pay-method" onclick="choosethis(this)" name="CMBC"><label><input type="radio" name="method" /><img src="{{ static_url('images/bank/CMBC.jpg') }}"></label></div>-->
+        <!--<div class="pay-method" onclick="choosethis(this)" name="COMM"><label><input type="radio" name="method" /><img src="{{ static_url('images/bank/COMM.jpg') }}"></label></div>-->
+        <!--<div class="pay-method" onclick="choosethis(this)" name="GDB"><label><input type="radio" name="method" /><img src="{{static_url('images/bank/GDB.jpg') }}"></label></div>-->
+        <!--<div class="pay-method" onclick="choosethis(this)" name="HXB"><label><input type="radio" name="method" /><img src="{{ static_url('images/bank/HXB.jpg') }}"></label></div>-->
+        <!--<div class="pay-method" onclick="choosethis(this)" name="ICBCB2C"><label><input type="radio" name="method" /><img src="{{ static_url('images/bank/ICBCB2C.jpg') }}"></label></div>-->
+        <!--<div class="pay-method" onclick="choosethis(this)" name="POSTGC"><label><input type="radio" name="method" /><img src="{{ static_url('images/bank/POSTGC.jpg') }}"></label></div>-->
+        <!--<div class="pay-method" onclick="choosethis(this)" name="SPABANK"><label><input type="radio" name="method" /><img src="{{ static_url('images/bank/SPABANK.jpg') }}"></label></div>-->
+        <!--<div class="pay-method" onclick="choosethis(this)" name="SPDB"><label><input type="radio" name="method" /><img src="{{ static_url('images/bank/SPDB.jpg') }}"></label></div>-->
+
+    </div>
+</div>
+<div id="pay-result" class="light-cover" style="display: none;">
+    <div class="pay-page-tips-box">
+        <h4>请在打开的页面完成付款</h4>
+        <div class="pay-success" onclick="onPayEnd('success')">已付款</div>
+        <div class="pay-fail" onclick="onPayEnd('fail')">付款出错</div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    var methodName='alipay';
+    function choosethis(obj){
+       /* $("input[type='radio']").removeAttr('checked');
+        $(obj).children('input').attr('checked','');*/
+        methodName = $(obj).attr('name');
+        console.log(methodName);
+    }
+
+    function backToLastPage(){
+        window.history.go(-1);
+    }
+    function onPayEnd(str){
+        if (str == 'success'){
+            location.href = '/user?a=demand_order'
+        } else {
+            location.href = '/demand?a=cart&id={{ pay["demand_id"] }}';
+        }
+
+    }
+
+    function payMethod(){
+
+        window.open('/pay?bank='+methodName + '&demand_id={{ pay['demand_id'] }}&host=http://'+location.host + '/');
+        lightbox('pay-result');
+    }
+
+    $(function(){
+        //checkResult();
+    });
+
+    function checkResult(){
+        $.ajax({
+            url:'/api/pay/pay_monitor?pid={pay.id}',
+            method:'get',
+            dataType:'json',
+            success:function(data){
+                if(data.success==1){
+                    location.href = '/demand/';
+                }else{
+                    setTimeout(checkResult,3000);
+                }
+            }
+        })
+    }
+</script>
+{% end %}

@@ -1,0 +1,108 @@
+{% extends '../../public/main.html' %}
+
+{% block body %}
+
+<script type="text/javascript" src="{{ static_url('script/admin_user/role_manager/role_manager.js')}}"></script>
+<link rel="stylesheet" href="{{ static_url('style/admin_user/role_manage.css') }}" />
+
+<div class="result_filter1" id="result_filter">
+    <button data-target="#admin_role_dialog" data-toggle="modal" class="btnAdd">增加角色</button>
+</div>
+<div>
+    <div id="admin_role_dialog" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">X</button>
+                    <h4 id="admin_role_create_title">新增角色</h4>
+                </div>
+                <div class="modal-body">
+                        角色名称
+                        <input type="text" id="role_label" name="role_label" value="" class="form-control inputStyle"><br /><br />
+                        标&#12288;&#12288;识
+                        <input type="text" id="role_name" name="role_name" value="" class="form-control inputStyle"><span>用作标识,添加后不允许修改</span>
+                        <div style="margin: 20px">
+                            请选择可操作模块:
+                            <div id="role_module_id"></div>
+                        </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-success" onclick="on_create_admin_role()">新建</button>
+                    <button class="btn" data-dismiss="modal" aria-hidden="true">取消</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="col-md-2 role_manager_left">
+    <div class="role_manager_head">角色</div>
+    <div id="show_list"></div>
+    
+</div>
+<div class="col-md-9" id="show_authority_col">
+    <div class="role_manager_head">权限
+        <div class="change_authority"></div>
+    </div>
+    <div class="save_authority"></div>
+    <div id="authority_content"></div>
+    <div id="edit_authority"></div>
+</div>
+
+<script type="text/javascript">
+    function display(father_id, access_id){
+//        console.log(" 1 access_id = "+access_id+" father_id = "+father_id);
+        var checked = true;
+        if($("#"+access_id).is(':checked')){
+	        $("#"+father_id).prop("checked",true);
+            $("input[name='role_module_id'][father_id="+access_id+"]").prop("checked",true);
+        }else{
+            $("input[name='role_module_id'][father_id="+father_id+"]").each(function(){
+            if (true == $(this).is(':checked')) {
+                 checked = false;
+            }})
+            if (checked){
+                $("#"+father_id).removeAttr("checked");
+            }
+            $("input[name='role_module_id'][father_id="+access_id+"]").removeAttr("checked");
+        }
+
+        $("input[name='role_module_id'][father_id="+access_id+"]").each(function(){
+            var child_id = $(this).attr("id");
+            var child_split = child_id.split("_").pop();
+            if (parseInt(child_split) > 0) {
+                display(access_id, child_id);
+            }
+        });
+    }
+
+
+    function show(obj, parent_id, strID, type, tab){
+        module_cb = "";
+        index = 0;
+        for (var i = 0; i < obj.data.length; i++) {
+            if (obj.data[i].access_level >1 && obj.data[i].parent_id ==parent_id){
+                module_cb += '<div><span>';
+                module_cb +=tab;
+                if (type==1){
+                    if (obj.data[i].checked == 1){
+                        module_cb += '<input type="checkbox" name="role_module_id" father_id='+strID+ obj.data[i].parent_id+' id='+strID+ obj.data[i].access_id + ' value='+ obj.data[i].id + ' onclick="oncheck(this)" checked /> ';
+                    }
+                    else {
+                        module_cb += '<input type="checkbox" name="role_module_id" father_id='+strID+ obj.data[i].parent_id+' id='+strID+ obj.data[i].access_id + ' value='+ obj.data[i].id + ' onclick="oncheck(this)" > ';
+                    }
+                }else{
+                    module_cb += '<input type="checkbox" name="role_module_id" father_id='+strID+ obj.data[i].parent_id+' id='+strID+ obj.data[i].access_id + ' value='+ obj.data[i].id + ' onclick="oncheck(this)" > ';
+                }
+                module_cb += obj.data[i].label;
+                if (obj.data[i].is_exsit_child == 1 && obj.data[i].parent_id ==parent_id) {
+                    module_cb +=tab;
+                    module_cb += show(obj, obj.data[i].access_id, strID, type, tab+tab);
+                }
+                module_cb += '</span></div>';
+            }
+        }
+        return module_cb;
+    }
+</script>
+{% end %}

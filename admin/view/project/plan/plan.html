@@ -1,0 +1,87 @@
+{% extends '../../public/main.html' %}
+
+{% block body %}
+
+<script type="text/javascript">
+    function on_plan_commit(){
+        var a = document.getElementById('plan_advertiser_id').value;
+        var b = document.getElementById('plan_title').value;
+        var c = document.getElementById('plan_money').value;
+        if (a == "" || b == "" || c == "") {
+            alert("输入不能为空");
+            return false;
+        }
+        document.getElementById('plan_form').submit();
+    }
+    function update_plan(obj){
+        var id = obj.name;
+        var form_id = 'plan_form' + id;
+        var a = document.getElementById('plan_advertiser_id'+id).value;
+        var b = document.getElementById('plan_title'+id).value;
+        var c = document.getElementById('plan_money'+id).value;
+        if (a == "" || b == "" || c == "") {
+            alert("输入不能为空");
+            return false;
+        }
+        document.getElementById(form_id).submit();
+    }
+</script>
+<div class="nav">
+    <p>在相应的<b>广告需求详情页</b>中增加投放计划</p>
+</div>
+<div class="funnel">
+    <div class="searchBox">
+    <form class="form-inline" action='/project/plan' method="get">
+        <input class="form-control" type="text" name="search" class="typeText"/>
+        <button class="form-control btn btn-default" type="submit" class="btnOk">搜索</button>
+    </form></div>
+</div>
+<br/>
+<table class="table table-bordered table-hover vert-align">
+    <thead>
+        <tr class="res_tbl_title">
+            <td>ID</td>
+            <td>投放计划</td>
+            <td>公司</td>
+            <td>简介</td>
+            <td>投放时间</td>
+            <td>预算总额</td>
+            <td>项目跟踪</td>
+            <!--<td>负责人</td>-->
+            <!--<td>总结</td>-->
+            <td>投放状态</td>
+            <td>更新时间</td>
+            <!--<td>操作</td>-->
+        </tr>
+    </thead>
+    <tbody>
+    {% for item in plan %}
+        <tr>
+            <td width="3%">{{ item['id'] }}</td>
+            <td width="10%"><div class="contentDisplay"><a title="{{item['title']}}" href="/project/plan?a=detail&id={{ item['id'] }}">{{ item['title'] }}</a></div></td>
+            <td width="10%"><div class="contentDisplay"><a title="{{item['company']}}" href="/project/advertiser?a=detail&id={{ item['advertiser_id'] }}">{{ item['company'] }}</a></div></td>
+            <td width="10%"><div class="contentDisplay">{% raw  item['brief'] if item['brief'] else '-' %}</div></td>
+            <td width="10%">{{ item['time_begin'] }} <br>到<br> {{ item['time_end'] }}</td>
+            <td width="10%">{{ item['money'] }}</td>
+            <td width="20%"><div class="contentDisplay">{% raw item['progress'] if item['progress'] else '-' %}</div></td>
+            <!--<td width="10%">{{ item['follower'] if item['follower'] else '-'}}</td>-->
+            <!--<td>{{ item['summary'] if item['summary'] else '-'}}</td>-->
+            <td width="5%">{% if item['status'] == 1 %}准备中{% elif item['status'] == 2 %}进行中{% else %}已结束{% end %}</td>
+            <td width="6%">{{ item['last_update_time']}}</td>
+            <!--
+            <td>
+                <div>
+                    <a class="btn btnThin" href="/project/plan?a=delete&id={{ item['id'] }}" onclick="return confirm('确认删除?');">删除</a>
+                    <a href="/project/plan?a=detail&id={{ item['id'] }}" class="btnThin">查看</a>
+                </div>
+            </td>
+            -->
+        </tr>
+    {% end %}
+    </tbody>
+</table>
+
+<div>
+    {% raw page_html %}
+</div>
+{% end %}

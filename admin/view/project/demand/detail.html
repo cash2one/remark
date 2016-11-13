@@ -1,0 +1,795 @@
+{% extends '../../public/main.html' %}
+
+{% block body %}
+<link rel="stylesheet" type="text/css" href="{{ static_url('style/bootstrap-datetimepicker.css') }}" />
+<script type="text/javascript" src="{{ static_url('script/bootstrap-datetimepicker.js') }}"></script>
+<script type="text/javascript">
+
+function update_demand(obj){
+    var id = obj.name;
+    var form_id = 'demand_form' + id;
+    //var a = document.getElementById('plan_id'+id).value;
+    var b = document.getElementById('name'+id).value;
+    var start_time = document.getElementById('start_time'+id).value;
+    var end_time = document.getElementById('end_time'+id).value;
+    if ( b == "" || start_time == "" || end_time == "") {
+        alert("输入不能为空");
+        return false;
+    }
+    if (time_compare(start_time, end_time) == false){
+        return false;
+    }
+    document.getElementById(form_id).submit();
+}
+
+function create_potential(obj){
+    var d = document.getElementById('potential_desc').value;
+    if ( d == "") {
+        alert("输入不能为空");
+        return false;
+    }
+    document.getElementById('potential_create').submit();
+}
+
+function start_end_modify_compare(id){
+    //a , b 格式為 yyyy-MM-dd
+    var start_time = document.getElementById('start_time'+id).value;
+    var end_time = document.getElementById('end_time'+id).value;
+    time_compare(start_time, end_time)
+}
+$(document).ready(function(){
+    $('#demand_follow').text("{{ '取消跟踪' if follow else '加入跟踪'}}");
+
+    $('#follow_btn').click(function(){
+        var chk_value =[];
+        $('input[name="group"]:checked').each(function(){
+            chk_value.push($(this).val());
+        });
+        $.ajax({
+            type: "post",
+            dataType: "json",
+            url: "/project/demand?a=follow",
+            data: {'plan_demand_id': "{{ detail['id'] }}", 'remark': $('#follow_remark').val(), 'group_id': chk_value.join(',')},
+            success: function (d) {
+                if(d.status==200){
+                    if (d.data.follow == 1){
+                        $('#follow_btn').text("取消跟踪");
+                    } else {
+                        $('#follow_btn').text("加入跟踪");
+                    }
+                } else {
+                    alert('加入跟踪失败。。。')
+                }
+                $('#demand_follow_close').click();
+                location.reload();
+            }
+        })
+    });
+
+    $("button[name='update_potential']").click(function(){
+        var str_id = $(this).attr('id');
+        var id = str_id.split("_").pop();
+        param = {'id'           :id,
+                'remark'   : $('#remark'+$(this).attr('id')).val(),
+                'status'        : $(this).attr('status')}
+//        console.log(param)
+        $.ajax({
+            url:'/project/demand?a=update_potential',
+            method:'post',
+            dataType:'json',
+            data: param,
+            success:function(d){
+                if(d.status==200){
+                    location.reload(true);
+                }
+                else{
+                    alert('修改失败')
+                }
+            }
+        });
+    });
+
+    $("button[name='edit_potential']").click(function(){
+        param = {'id'           : $(this).attr('id'),
+            'start_time'   : $('#edit_start_time'+$(this).attr('id')).val(),
+            'link'   : $('#edit_link'+$(this).attr('id')).val(),
+            'money'   : $('#edit_money'+$(this).attr('id')).val(),
+            'remark'   : $('#edit_remark'+$(this).attr('id')).val(),
+            'description'   : $('#edit_description'+$(this).attr('id')).val(),
+            'status'        : $(this).attr('status')}
+//        console.log(param)
+        $.ajax({
+            url:'/project/demand?a=update_potential',
+            method:'post',
+            dataType:'json',
+            data: param,
+            success:function(d){
+                if(d.status==200){
+                    location.reload(true);
+                }
+                else{
+                    alert('修改失败')
+                }
+            }
+        });
+    });
+
+    $("button[name='create_feedback']").click(function(){
+        var str_id = $(this).attr('id');
+        var id = str_id.split("_").pop();
+        param = {
+            'plan_id': $('#fd_plan_id_' + id).val(),
+            'media_id': $('#fd_media_id_' + id).val(),
+            'plan_demand_id': $('#fd_plan_demand_id_' + id).val(),
+            'sale_money': $('#fd_sale_money_' + id).val(),
+            'roi': $('#fd_roi_' + id).val(),
+            'description': $('#fd_description_' + id).val()
+        };
+//        console.log(param)
+        $.ajax({
+            url:'/project/feedback?a=create',
+            method:'post',
+            dataType:'json',
+            data: param,
+            success:function(d){
+                if(d.status==200){
+                    location.reload(true);
+                }else{
+                    alert("投放保存失败");
+                }
+            }
+        });
+    });
+
+    $("button[name='update_feedback']").click(function(){
+        var str_id = $(this).attr('id');
+        var id = str_id.split("_").pop();
+        param = {
+            'id': $('#fd_id' + id).val(),
+            'plan_id': $('#fd_plan_id' + id).val(),
+            'media_id': $('#fd_media_id' + id).val(),
+            'plan_demand_id': $('#fd_plan_demand_id' + id).val(),
+            'sale_money': $('#fd_sale_money' + id).val(),
+            'roi': $('#fd_roi' + id).val(),
+            'description': $('#fd_description' + id).val()
+        };
+//        console.log(param)
+        $.ajax({
+            url:'/project/feedback?a=update',
+            method:'post',
+            dataType:'json',
+            data: param,
+            success:function(d){
+                if(d.status==200){
+                    location.reload(true);
+                }
+                else
+                    alert("保存失败");
+            }
+        });
+    });
+
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    // 自媒体筛选工具
+    $.ajax({
+        type: "get",
+        contentType: "application/json",
+        url: "/media/common?a=get_media_cart",
+        success: function (result) {
+            var obj = JSON.parse(result);
+            var media_list_html = '';
+            for (var i = 0; i < obj.data.length; i++) {
+                var m_id = obj.data[i].media_id;
+                var m_name = obj.data[i].name;
+                var p_name = obj.data[i].platform_name;
+                media_list_html += " <li>" +
+                        "<strong><a href='/media/" + p_name + "?a=detail&id=" + m_id + "'>" + m_name + "</a></strong>" +
+                        "<span>" + "<button op='select' mid='" + m_id + "' class='btnThin'>选择</button></span></li>";
+            }
+            $('#mediaList').html(media_list_html);
+            // 点击事件
+            $("button[class=btnThin]").click(function(){
+                var op = $(this).attr('op');
+                var mid = $(this).attr('mid');
+                var id = "{{ detail['id'] }}";
+                var pid = "{{ detail['plan_id'] }}";
+                if(op == 'select') {
+                    select_media(id, mid, pid);
+                    del_media(mid)
+                }
+            });
+        }
+    });
+//    media_list();
+
+//    $("button[class=btnThin]").click(function(){
+//        var id = $(this).attr('id');
+//        param = {
+//            'id': "{{ detail['id'] }}",
+//            'media_id': id,
+//            'plan_id': "{{ detail['plan_id'] }}"
+//        };
+////        console.log(param);
+//        $.ajax({
+//            url:'/project/demand?a=create_potential',
+//            method:'post',
+//            dataType:'json',
+//            data: param,
+//            success:function(d){
+//                if(d.status==200){
+//                var media_array = $.cookie('medialist').split(',');
+//                var new_media_array = new Array();
+//                for(idx in media_array) {
+//                    media = media_array[idx];
+//                    media_fields = media.split('-');
+//                    if(media_fields[0] != id)
+//                        new_media_array.push(media);
+//                }
+//
+//                if(new_media_array.length != 0)
+//                    $.cookie('medialist', new_media_array.join(","), { expires: 7, path: '/'});
+//                else
+//                    $.cookie('medialist', '', {path: '/'});
+//                    location.reload(true);
+////                    media_list();
+//                    alert("添加成功");
+//                }
+//                else{
+//                    alert("添加失败");
+//                }
+//            }
+//        });
+//
+////        location.reload(true);
+//    });
+});
+    function select_media(did, mid, pid) {
+        param = {
+            'id': did,
+            'media_id': mid,
+            'plan_id': pid
+        };
+        $.ajax({
+            url:'/project/demand?a=create_potential',
+            method:'post',
+            dataType:'json',
+            data: param,
+            success:function(d){
+                if(d.status==200){
+                    alert('添加成功');
+                } else {
+                    alert('添加失败');
+                }
+            }
+        })
+    }
+    function del_media(mid) {
+        $.ajax({
+            type: "post",
+            dataType: "json",
+            url: "/media/common?a=del_media_cart",
+            data: {'media_id': mid},
+            success: function (d) {
+                if(d.status==200){
+                    location.reload();
+                } else {
+                    alert('出错啦。。。')
+                }
+            }
+        })
+    }
+//
+//function media_list()
+//{
+//    var media_list_html = "";
+//    if (typeof($.cookie('medialist')) != 'undefined' && $.cookie('medialist') != '')
+//    {
+//        var media_array = $.cookie('medialist').split(',');
+//        for(idx in media_array)
+//        {
+//            media = media_array[idx];
+//            media_fields = media.split('-');
+//            media_list_html += " <li>" +
+//                    "<strong><a href='/media/wechat?a=detail&id=" + media_fields[0] + "'>" + media_fields[1] + "</a></strong><span>"+
+//                    "<button op='select' id='" + media_fields[0] + "' type='button' class='btnThin'>选择</button></span></li>";
+//        }
+//    }
+//    $('#mediaList').html(media_list_html);
+//}
+    $(document).ready(function(){
+        uediter('follow_remark');
+    });
+
+    function demand_follow_upt(obj){
+        var id=obj.id;
+        uediter('summary'+id);
+        uediter('target'+id);
+        uediter('description'+id);
+    }
+    function choose_media(obj){
+        var str_id=obj.id;
+        var id = str_id.split("_").pop();
+        uediter('remark'+id);
+    }
+    function edit_demand_media(obj){
+        uediter('edit_remark'+obj.id);
+    }
+    function rechoose_media(obj){
+        var str_id=obj.id;
+        var id = str_id.split("_").pop();
+        uediter('remarks'+id);
+    }
+
+    function create_feedback(obj){
+        var str_id=obj.id;
+        var id = str_id.split("_").pop();
+        uediter('fd_description_'+id);
+    }
+</script>
+<div class="nav">
+    <a href="/project/demand">返回上页</a>
+</div>
+<div class="colcon">
+<table class="table table-bordered table-hover vert-align">
+    <thead>
+    <tr class="res_tbl_title">
+        <td>基本信息</td>
+        <td>属性</td>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+        <td>ID</td>
+        <td>{{ detail['id'] }}</td>
+    </tr>
+    <tr>
+        <td>广告需求</td>
+        <td>{{ detail['name'] }}</td>
+    </tr>
+    <tr>
+        <td>负责人</td>
+        <td>{{ detail['follower'] if detail['follower'] else '-' }}</td>
+    </tr>
+    <tr>
+        <td>起始时间</td>
+        <td>{{ detail['start_time'] }} 至 {{detail['end_time']}}</td>
+    </tr>
+    <tr>
+        <td>投放计划</td>
+        <td><a href="/project/plan?a=detail&id={{ detail['plan_id'] }}" >{{ detail['plan_title'] }}</a></td>
+    </tr>
+    <tr>
+        <td>预算金额</td>
+        <td>{{ int(detail['money']) }}</td>
+    </tr>
+    <tr>
+        <td>投放总额</td>
+        <td>{{ fd_info.get('total_money', 0) }}</td>
+    </tr>
+    <tr>
+        <td>投放目标</td>
+        <td>{% raw detail['target'] if detail['target'] else '' %}</td>
+    </tr>
+    <tr>
+        <td>投放策略</td>
+        <td>{% raw detail['description'] if detail['description'] else '' %}</td>
+    </tr>
+    <tr>
+        <td>总结</td>
+        <td>{% raw detail['summary'] if detail['summary'] else '' %}</td>
+    </tr>
+    <tr>
+        <td>效果统计</td>
+        <td>
+            {% if fd_info %}
+            <table class="table table-bordered table-hover vert-align">
+                <thead>
+                    <tr class="res_tbl_title">
+                        <td>阅读数</td>
+                        <td>点赞数</td>
+                        <td>注册数</td>
+                        <td>领券数</td>
+                        <td>下单数</td>
+                        <td>成单数</td>
+                        <td>成交金额</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>{{ fd_info['read_num'] }}</td>
+                        <td>{{ fd_info['like_num'] }}</td>
+                        <td>{{ fd_info['reg_num'] }}</td>
+                        <td>{{ fd_info['ticket_num'] }}</td>
+                        <td>{{ fd_info['order_num'] }}</td>
+                        <td>{{ fd_info['trade_num'] }}</td>
+                        <td>{{ fd_info['trade_money'] }}</td>
+                    </tr>
+                </tbody>
+                <thead>
+                    <tr class="res_tbl_title">
+                        <td>效果投放金额</td>
+                        <td>销售金额</td>
+                        <td>ROI</td>
+                        <td>CPM</td>
+                        <td>UCP</td>
+                        <td>BUCP</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>{{ fd_info['sale'] }}</td>
+                        <td>{{ fd_info['sale_money'] }}</td>
+                        <td>{{ fd_info['roi'] }}</td>
+                        <td>{{ fd_info['cpm'] }}</td>
+                        <td>{{ fd_info['ucp'] }}</td>
+                        <td>{{ fd_info['bucp' ]}}</td>
+                    </tr>
+                </tbody>
+            </table>
+            {% end %}
+        </td>
+    </tr>
+    <tr>
+        <td>更新时间</td>
+        <td>{{ detail['last_update_time'] }}</td>
+    </tr>
+    </tbody>
+</table>
+</div>
+<div class="opc">
+    <button class="btnNormal" id="demand_follow" data-target="#demand_follow_dialog" data-toggle="modal">加入跟踪</button>
+    <button data-target="#demand_dialog{{ detail['id'] }}" data-toggle="modal" class="btnNormal" id="{{ detail['id'] }}"  onclick="demand_follow_upt(this)">修改广告需求</button>
+</div>
+<div id="demand_follow_dialog" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" id="demand_follow_close" class="close" data-dismiss="modal" aria-hidden="true">X</button>
+                <h4 id="demand_follow_title">{{ '跟踪广告需求' if not follow else '取消跟踪广告需求'}}</h4>
+            </div>
+            <div class="modal-body brickWall">
+                {% if not follow %}
+                <div id="group_checkbox">
+                    <strong>跟踪分组</strong>
+                    {% for g_item in group %}
+                    <label><input type="checkbox" name="group" value="{{g_item['id']}}">{{g_item['name']}}</label>
+                    {% end %}
+                </div>
+                <div class="uediter">
+                    <strong>备注信息</strong>
+                    <textarea id="follow_remark" name="follow_remark" >{% raw follow.get('remark', '') if follow else '' %}</textarea><i>备注信息，可为空</i>
+                </div>
+                {% end %}
+            </div>
+            <div class="modal-footer">
+                <button class="btn" name="follow_btn" id="follow_btn">确定</button>
+                <button class="btn" data-dismiss="modal" aria-hidden="true">取消</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="demand_dialog{{ detail['id'] }}" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">X</button>
+                <h4 id="demand_update_title{{ detail['id'] }}">修改广告需求</h4>
+            </div>
+            <div class="modal-body brickWall">
+                <form id="demand_form{{ detail['id'] }}" name="demand_form" method="post" action="/project/demand?a=update">
+                    <input type="hidden" id="id{{ detail['id'] }}" name="id" value="{{ detail['id'] }}">
+                    <input type="hidden" id="status{{ detail['id'] }}" name="status" value="{{ detail['status'] }}" >
+                    <div>
+                        <strong>需求名称</strong>
+                        <input type="text" id="name{{ detail['id'] }}" name="name" value="{{ detail['name'] }}"> <b>*</b> <i>需求主题或者简要描述</i>
+                    </div>
+                    <div>
+                        <strong>起始时间</strong>
+                        <input size="16" type="text" readonly class="form_datetime1" id="start_time{{ detail['id'] }}" name="start_time" value="{{ detail['start_time']}}" onchange="start_end_modify_compare({{ detail['id'] }})">
+                        <span>&nbsp;至&nbsp;</span>
+                        <input size="16" type="text" readonly class="form_datetime1" id="end_time{{ detail['id'] }}" name="end_time" value="{{ detail['end_time']}}" onchange="start_end_modify_compare({{ detail['id'] }})"> <b>*</b> <i>起始时间区间</i>
+                    </div>
+                    <div>
+                        <strong>投放金额</strong>
+                        <input type="number" id="money{{ detail['id'] }}" name="money" value="{{ detail['money'] if detail['money'] else 0}}"> <i>投放金额，只可为整数</i>
+                    </div>
+                    <div>
+                        <strong>负责人</strong>
+                        <input type="text" id="follower{{ detail['id'] }}" name="follower" value="{{ detail['follower'] if detail['follower'] else ''}}"> <i>负责人</i>
+                    </div>
+                    <div class="uediter">
+                        <strong>总结</strong>
+                        <textarea id="summary{{ detail['id'] }}" name="summary">{% raw detail['summary'] if detail['summary'] else '' %}</textarea><i>总结</i>
+                    </div>
+                    <div class="uediter">
+                        <strong>投放目标</strong>
+                        <textarea id="target{{ detail['id'] }}" name="target" >{% raw detail['target'] if detail['target'] else '' %}</textarea> <i>投放目标</i>
+                    </div>
+                    <div class="uediter">
+                        <strong>投放策略</strong>
+                        <textarea id="description{{ detail['id'] }}" name="description" >{% raw detail['description'] if detail['description'] else ''%}</textarea> <b>*</b><i>需求详细要求，包括受众要求、自媒体要求、效果要求等</i>
+                    </div>
+                </form>
+                <script type="text/javascript">
+                    $(".form_datetime1").datetimepicker({
+                        format: 'yyyy-mm-dd',
+                        minView: 'month',
+                        autoclose: true
+                    });
+                </script>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-success" name="{{ detail['id'] }}" onclick="update_demand(this)">保存</button>
+                <button class="btn btn-default" data-dismiss="modal" aria-hidden="true">取消</button>
+            </div>
+        </div>
+    </div>
+</div>
+<hr>
+<h3>决选自媒体</h3>
+<table class="table table-bordered table-hover vert-align">
+    <thead>
+    <tr class="res_tbl_title">
+        <td>ID</td>
+        <td>自媒体</td>
+        <td>头条平<br/>均阅读</td>
+        <!--<td>头三条<br/>平均阅读</td>-->
+        <td>点<br/>赞</td>
+        <td>评<br/>论</td>
+        <td>赞赏<br/>数</td>
+        <!--<td>KOL</td>-->
+        <td>头条<br/>价格</td>
+        <td>投放时间</td>
+        <td>文案<br/>链接</td>
+        <td>投放金额</td>
+        <!--
+        <td>投放策略</td>
+        -->
+        <td>操作备注</td>
+        <td>操作</td>
+    </tr>
+    </thead>
+    <tbody>
+    {% for item in media %}
+    {% if item['status'] == 0 and item['media_id'] != '-'%}
+    <tr>
+        <td>{{item['media_id']}}</td>
+        <td><a href="/media/wechat?a=detail&id={{item['media_id']}}" >{{item['name']}}</a></td>
+        <td>{{item['top_avg_read_num']}}</td>
+        <!--<td>{{item['top_three_avg_read_num']}}</td>-->
+        <td>{{item['like_num']}}</td>
+        <td>{{item['award']}}</td>
+        <td>{{item['comment']}}</td>
+        <!--<td>{{item['kol']}}</td>-->
+        <td>{{item['first_price']}}</td>
+        <td>{{ item['start_time'] }}</td>
+        <td>{% if item['link'] != '-' %} <a href="{{ item['link'] }}">链接</a> {% else %} - {% end %}</td>
+        <td>{{ item['money'] }}</td>
+        <!--<td><textarea rows="4" cols="40" disabled="disabled">{{item['description']}}</textarea></td>-->
+        <td>{% raw item['remark'] %}</td>
+        {% if item['feedback']%}
+        <td>
+            <button class="btn btnThin" data-target="#edit_demand_media_dialog{{item['id']}}" data-toggle="modal" id="{{item['id']}}" onclick="edit_demand_media(this)">编辑</button><br/>
+            <a class="btn btnThin" href="/project/feedback?a=detail&id={{item['feedback']['id']}}">查看效果</a>
+        </td>
+        {% else %}
+        <td>
+            <button class="btn btnThin" data-target="#choose_media_dialog{{item['id']}}" data-toggle="modal" id="choose_media_{{item['id']}}" onclick="choose_media(this)">筛除</button><br/>
+            <button class="btn btnThin" data-target="#edit_demand_media_dialog{{item['id']}}" data-toggle="modal" id="{{item['id']}}" onclick="edit_demand_media(this)">编辑</button><br/>
+            <button class="btn btnThin" data-target="#create_feedback_dialog{{item['id']}}" data-toggle="modal" id="create_feedback_dia_{{item['id']}}" onclick="create_feedback(this)">添加效果</button>
+        </td>
+        {% end %}
+        <div id="choose_media_dialog{{item['id']}}" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">X</button>
+                        <h4>筛除自媒体</h4>
+                    </div>
+                    <div class="modal-body brickWall">
+                        <div class="uediter">
+                            <strong>操作备注</strong>
+                            <textarea id="remark{{item['id']}}">{% raw item['remark'] %}</textarea> <b>*</b><i>筛除理由</i>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-success" name="update_potential" id="choose_media_btu_{{item['id']}}" status="1">保存</button>
+                        <button class="btn btn-default" data-dismiss="modal" aria-hidden="true">取消</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="edit_demand_media_dialog{{item['id']}}" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">X</button>
+                        <h4>编辑自媒体</h4>
+                    </div>
+                    <div class="modal-body brickWall">
+                        <div>
+                            <strong>开始时间</strong>
+                            <input size="16" type="text" readonly class="form_datetime" id="edit_start_time{{item['id']}}" name="edit_start_time" value="{{item['start_time']  if item['start_time'] != '-' else ''}}">
+                        </div>
+                        <div>
+                            <strong>文案链接</strong>
+                            <input type="text" id="edit_link{{item['id']}}" value="{{item['link'] if item['link'] != '-' else ''}}"> <i>文案链接</i>
+                        </div>
+                        <div>
+                            <strong>投放金额</strong>
+                            <input type="number" id="edit_money{{item['id']}}" value="{{item['money'] if item['money'] != '-' else ''}}"> <i>投放金额</i>
+                        </div>
+                        <!--
+                        <div>
+                            <strong>投放策略</strong>
+                            <textarea id="edit_description{{item['id']}}">{{item['description'] if item['description'] != '-' else ''}}</textarea> <br><i>投放描述</i>
+                        </div>
+                        -->
+                        <div class="uediter">
+                            <strong>操作备注</strong>
+                            <textarea id="edit_remark{{item['id']}}">{%  raw item['remark'] if item['remark'] != '-' else '' %}</textarea><i>操作备注</i>
+                        </div>
+                    </div>
+                    <script type="text/javascript">
+                        $(".form_datetime").datetimepicker({
+                            format: 'yyyy-mm-dd',
+                            minView: 'month',
+                            autoclose: true
+                        });
+                    </script>
+                    <div class="modal-footer">
+                        <button class="btn btn-success" name="edit_potential" id="{{item['id']}}" status="0">保存</button>
+                        <button class="btn btn-default" data-dismiss="modal" aria-hidden="true">取消</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {% if item['feedback'] %}
+        <div id="update_feedback_dialog{{item['id']}}" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">X</button>
+                        <h4>编辑投放效果</h4>
+                    </div>
+                    <div class="modal-body brickWall">
+                        <input type="hidden" id="fd_id{{item['id']}}" value="{{item['feedback']['id']}}">
+                        <input type="hidden" id="fd_plan_demand_id{{item['id']}}" value="{{item['feedback']['plan_demand_id']}}">
+                        <input type="hidden" id="fd_media_id{{item['id']}}" value="{{item['feedback']['media_id']}}">
+                        <div>
+                            <strong>销售金额</strong>
+                            <input type="text" id="fd_sale_money{{item['id']}}" value="{{item['feedback']['sale_money']}}"> <b>*</b> <i>销售金额，只可填写整数</i>
+                        </div>
+                        <div>
+                            <strong>ROI</strong>
+                            <input type="text" id="fd_roi{{item['id']}}" value="{{item['feedback']['roi']}}"> <b>*</b> <i>投入产出比</i>
+                        </div>
+                        <div class="uediter">
+                            <strong>详细描述</strong>
+                            <textarea id="fd_description{{item['id']}}">{% raw item['feedback']['description'] %}</textarea> <b>*</b><i>除以上信息的投放情况描述</i>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-success" name="update_feedback" id="update_feedback_{{item['id']}}">保存</button>
+                        <button class="btn btn-default" data-dismiss="modal" aria-hidden="true">取消</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <div id="create_feedback_dialog{{item['id']}}" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">X</button>
+                        <h4>增加投放效果</h4>
+                    </div>
+                    <div class="modal-body brickWall">
+                        <input type="hidden" id="fd_plan_id_{{item['id']}}" value="{{detail['plan_id']}}">
+                        <input type="hidden" id="fd_plan_demand_id_{{item['id']}}" value="{{detail['id']}}">
+                        <input type="hidden" id="fd_media_id_{{item['id']}}" value="{{item['media_id']}}">
+                        <div>
+                            <strong>销售金额</strong>
+                            <input type="text" id="fd_sale_money_{{item['id']}}"/> <b>*</b> <i>销售金额，只可填写整数</i>
+                        </div>
+                        <div>
+                            <strong>ROI</strong>
+                            <input type="text" id="fd_roi_{{item['id']}}"/> <b>*</b> <i>投入产出比</i>
+                        </div>
+                        <div class="uediter">
+                            <strong>详细描述</strong>
+                            <textarea id="fd_description_{{item['id']}}"></textarea> <b>*</b><i>除以上信息外的投放情况描述</i>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-success" name="create_feedback" id="create_feedback_{{item['id']}}">保存</button>
+                        <button class="btn btn-default" data-dismiss="modal" aria-hidden="true">取消</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% end %}
+    </tr>
+    {% end %}
+    {% end %}
+    </tbody>
+</table>
+<hr>
+<h3>初选自媒体</h3>
+<table class="table table-bordered table-hover vert-align">
+    <thead>
+    <tr class="res_tbl_title">
+        <td>ID</td>
+        <td>自媒体</td>
+        <!--<td>头条平均阅读</td>-->
+        <td>头三条平均阅读</td>
+        <td>点赞</td>
+        <td>评论数</td>
+        <td>赞赏数</td>
+        <!--<td>KOL</td>-->
+        <td>头条价格</td>
+        <td>备注</td>
+        <td>操作</td>
+    </tr>
+    </thead>
+    <tbody>
+    {% for item in media %}
+    {% if item['status'] == 1 %}
+    <tr>
+        <td>{{item['media_id']}}</td>
+        <td><a href="/media/wechat?a=detail&id={{item['media_id']}}" >{{item['name']}}</a></td>
+        <!--<td>{{item['top_avg_read_num']}}</td>-->
+        <td>{{item['top_three_avg_read_num']}}</td>
+        <td>{{item['like_num']}}</td>
+        <td>{{item['award']}}</td>
+        <td>{{item['comment']}}</td>
+        <!--<td>{{item['kol']}}</td>-->
+        <td>{{item['first_price']}}</td>
+        <td>{% raw  item['remark'] %}</td>
+
+        <td><button class="btn btnThin" data-target="#rechoose_media_dialog{{item['id']}}" data-toggle="modal" id="rechoose_media_{{item['id']}}" onclick="rechoose_media(this)">重新选择</button></td>
+        <div id="rechoose_media_dialog{{item['id']}}" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">X</button>
+                        <h4>选择自媒体</h4>
+                    </div>
+                    <div class="modal-body brickWall">
+                        <div class="uediter">
+                            <strong>备注</strong>
+                            <textarea id="remarks{{item['id']}}">{{item['remark']}}</textarea> <b>*</b><i>选择自媒体的理由</i>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-success" name="update_potential" id="rechoose_media_btu_{{item['id']}}" status="0">保存</button>
+                        <button class="btn btn-default" data-dismiss="modal" aria-hidden="true">取消</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </tr>
+    {% end %}
+    {% end %}
+    </tbody>
+</table>
+<br><br><br>
+<div class="mediaCart">
+    <div class="title">自媒体筛选工具</div>
+    <div class="dick">-</div>
+    <ul id="mediaList" class="mediaList">
+        <!--
+        <li>
+            <strong><a href="/media/wechat?a=detail&id=810531">猜火车</a></strong>
+            <span>
+                <button type="button" class="btnThin">选择</button>
+                <button type="button" class="btnThin">移出</button>
+            </span>
+        </li>
+        -->
+    </ul>
+</div>
+{% end %}

@@ -1,0 +1,98 @@
+{% extends '../../public/main.html' %}
+
+{% block body %}
+<script type="text/javascript">
+    function on_demand_commit(){
+        var demand_id = document.getElementById('demand_id').value;
+        if (demand_id == "") {
+            alert("需求单ID不能为空");
+            return false;
+        }
+        document.getElementById('demand_form').submit();
+    }
+    function update_demand(obj){
+        var id = obj.name;
+        var form_id = 'demand_form' + id;
+        var demand_id = document.getElementById('demand_id'+id).value;
+        if (demand_id == "") {
+            alert("需求单ID不能为空");
+            return false;
+        }
+        document.getElementById(form_id).submit();
+    }
+</script>
+<div class="result_filter" id="result_filter">
+    <button class="btnAdd" data-target="#demand_dialog" data-toggle="modal">新增需求单</button>
+</div>
+<div>
+    <div id="demand_dialog" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">X</button>
+                    <h4 id="demand_create_title">新增需求单</h4>
+                </div>
+                <div class="modal-body">
+                    <form id="demand_form" name="demand_form" method="post" action="/index_op/demand?a=create">
+                        需求单ID
+                        <input type="text" id="demand_id" name="demand_id" value="">
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-success" onclick="on_demand_commit()">保存</button>
+                    <button class="btn btn-default" data-dismiss="modal" aria-hidden="true">取消</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<table class="table table-bordered table-hover vert-align">
+    <thead>
+        <tr class="res_tbl_title">
+            <td>序号</td>
+            <td>标题</td>
+            <td>排序</td>
+            <td>更新时间</td>
+            <td>操作</td>
+        </tr>
+    </thead>
+    {% for item in index_info %}
+    <tbody>
+        <tr>
+            <td>{{ item['id'] }}</td>
+            <!--<td>-->
+                <!--<a href="/demand?a=detail&id={{ item['demand_id'] }}">{{ item['title'] }}</a>-->
+            <!--</td>-->
+            <td>{{ item['title'] }}</td>
+            <td>{{ item['sort'] }}</td>
+            <td>{{ item['last_update_time'] }}</td>
+            <td>
+                <a class="btn btnThin" data-target="#demand_dialog{{ item['id'] }}" data-toggle="modal">变更</a>
+                <div id="demand_dialog{{ item['id'] }}" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">X</button>
+                                <h4 id="demand_update_title{{ item['id'] }}">变更需求单</h4>
+                            </div>
+                            <div class="modal-body">
+                                <form id="demand_form{{ item['id'] }}" name="demand_form" method="post" action="/index_op/demand?a=update">
+                                    <input type="hidden" id="idx_demand_id{{ item['id'] }}" name="idx_demand_id" value="{{ item['id'] }}">
+                                    需求单ID
+                                    <input type="text" id="demand_id{{ item['id'] }}" name="demand_id" value="">
+                                </form>
+                            </div>
+                            <div class="modal-footer">
+                                <button class="btn btn-success" name="{{ item['id'] }}" onclick="update_demand(this)">保存</button>
+                                <button class="btn btn-default" data-dismiss="modal" aria-hidden="true">取消</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <a class="btn btnThin" href="/index_op/demand?a=delete&id={{ item['id'] }}" onclick="return confirm('确认删除?');">删除</a>
+            </td>
+        </tr>
+    </tbody>
+    {% end %}
+</table>
+{% end %}

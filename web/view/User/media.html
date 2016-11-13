@@ -1,0 +1,466 @@
+{% extends '../public/main.html' %}
+{% block title%}我的自媒体{% end %}
+{% block body %}
+<link href="{{ static_url('style/uc.css') }}" type="text/css" rel="stylesheet">
+
+{% include 'my_top.html' %}
+<div class="ucContainer clearfix">
+{% include 'my_menu.html' %}
+<div class="ucMain myMedia">
+    <div class="title">
+        <hr>
+        <h3>我的自媒体</h3>
+        <div><a href="javascript:onlink('/user?a=media_create')" class="btnOp">自媒体入驻<span class="ydi yd-add"></span></a></div>
+    </div>
+    <ul class="content">
+        {% for media in list_media %}
+        <li class="mediaBox" id="media-{{ media['id'] }}">
+            <div class="mediaAvatar">
+                <a href="/media?a=view&id={{ media['id'] }}" target="_blank">
+                    <img src="{{ media['avatar'] }}" alt="{{ media['name'] }}">
+                </a>
+            </div>
+            <div class="mediaInfo">
+                <div class="mediaTitle">
+                    <span class="mediaName"><a href="/media?a=view&id={{ media['id'] }}" target="_blank">{{ media['name'] }}</a></span>
+                    {% if media['original'] %}
+                    <span class="original" title="原创">原创</span>
+                    {% end %}
+                    {% if media['identify'] %}
+                    <span class="wechatVerify ydi yd-checked" title="微信认证">已认证</span>
+                    {% end %}
+                    <span class="level" title="综合级别">级别<strong>{{ media['value_level'] }}</strong></span>
+                    <span class="qrcode"><img src="/static/images/qr-mini.png" alt="二维码"><img src="http://7sbnkf.com2.z0.glb.qiniucdn.com/{{ media['qrcode'] }}-avatar" alt="{{ media['name'] }}二维码" class="codeL"></span>
+                </div>
+                {% if media['category'] %}
+                <div class="mediaCategory">
+                    <span>{{ media['category']['name'] }}</span>
+                </div>
+                {% end %}
+                <div class="mediaTag">
+                    {% for tag in media['tag'] %}
+                        <span data="">{{ tag['name'] }}</span>
+                    {% end %}
+                </div>
+                <dl class="mediaAudience">
+                    <dt>针对地域：</dt>
+                    <dd>{{ media['area'] }}</dd>
+                    <dt>针对性别：</dt>
+                    <dd>{{ media['audience_gender'] }}</dd>
+                </dl>
+            </div>
+            <div class="more">
+                <a href="/media?a=view&id={{ media['id'] }}" target="_blank" class="btnMore">查看详情</a>
+                <a href="/user?a=media_edit&id={{ media['id'] }}" target="_blank" class="btnMore" data-id="{{ media['id'] }}"  data-onclick="load_data({{ media['id'] }}); lightbox('case-cost')">编辑信息</a>
+            </div>
+        </li>
+        {% end %}
+    </ul>
+</div></div>
+
+<div class="light-cover" id="case-cost" style="display: none;" data-id="">
+    <form name='smedia_info' action="/user?a=media_update" method="post" autocomplete="off"
+          enctype="multipart/form-data">
+    <div class="change-msg-box">
+        <input name="oid" id="media_id" type="hidden" value="" />
+        <input name="category_list" id="category_list" type="hidden" value="" />
+        <input name="tag_list" id="tag_list" type="hidden" value="" />
+        <div class="login-close"><span class="icon-close" onClick="lightbox('case-cost');"></span></div>
+        <div class="bg-box-line"></div>
+        <!--
+        <div class="bg-box-line2"></div>
+        <div class="title title-one">接单报价</div>
+        -->
+        <div class="title title-one">其他信息</div>
+        <!--
+        <div class="m-row">
+            <span class="m-left">单图文</span>
+            <span class="m-middle"><input name="price_1x" type="text" class="text" /></span>
+            <span class="m-right">单图文消息</span>
+        </div>
+        <div class="m-row">
+            <span class="m-left">多图文首条</span>
+            <span class="m-middle"><input name="price_x1" type="text" class="text" /></span>
+            <span class="m-right">多图文消息的第一条</span>
+        </div>
+        <div class="m-row">
+            <span class="m-left">多图文二条</span>
+            <span class="m-middle"><input name="price_x2" type="text" class="text" /></span>
+            <span class="m-right">多图文消息的第二条</span>
+        </div>
+        <div class="m-row">
+            <span class="m-left">多图文其他</span>
+            <span class="m-middle"><input name="price_xx" type="text" class="text" /></span>
+            <span class="m-right">多图文消息的其他条</span>
+        </div>
+        -->
+        <div class="m-row more-spacing">
+            <span class="m-left">行业</span>
+            <span class="m-middle ">
+                <div style="display:inline-block;float:left;" id="trade-container"></div>
+                <div class="pick-btn btn-with-blueBg-and-addBtn" id="show-side-list"><span>+</span>选择</div>
+            </span>
+            <span class="m-right" style="line-height:14px;">选择你所属的行业</span>
+        </div>
+        <div class="m-row">
+            <span class="m-left">针对性别</span>
+            <span class="m-middle">
+                <label><input name="audience_gender" type="radio" value="0" class="audience_gender" /> 不限</label>
+                <label><input name="audience_gender" type="radio" value="1" class="audience_gender" /> 女性</label>
+                <label><input name="audience_gender" type="radio" value="2" class="audience_gender" /> 男性</label>
+            </span>
+            <span class="m-right">选择你的受众性别</span>
+        </div>
+        <div class="m-row" style="height:auto;">
+            <span class="m-left">针对地域</span>
+            <span class="m-middle">
+                <label><input type="radio" name="audience_area" value="0" class="audience_area" checked="checked" /> 全国性</label>
+                <label><input type="radio" name="audience_area" value="1" class="audience_area" /> 地方性</label>
+            </span>
+            <span class="m-right">选择你的受众地域</span>
+        </div>
+        <div class="m-row" id="o-area" style="display:none;">
+            <span class="m-left"></span>
+            <span class="m-middle" style="width:420px;">
+                <input type="hidden" value="" name="city_id"/>
+                <select name="province" id="province" style="width:100px;">
+                    <option value="province">省份</option>
+                </select>
+                <select name="city" id="city" class="add-margin" style="width:100px;">
+                    <option value="city">城市</option>
+                </select>
+                <select name="county" id="county" style="width:100px;">
+                    <option value="county">区县</option>
+                </select>
+            </span>
+        </div>
+        <div class="m-row m-tags">
+            <span class="m-left" >标签</span>
+            <span class="m-middle ">
+                <div style="display:inline-block;float:left;" id="trade-container-tag"></div>
+                <div class="pick-btn btn-with-blueBg-and-addBtn" id="show-side-list-tag"><span>+</span>选择</div>
+            </span>
+            <span class="m-right" style="line-height:14px;">根据公众号特性选择标签，最多可选3项</span>
+        </div>
+        <div class="m-row">
+            <span class="m-left" ></span>
+            <span class="m-middle">
+                <button id="post_btn" type="button" onclick="saveInfo()" class="submit-btn">保存</button>
+            </span>
+            <span class="m-right"></span>
+        </div>
+    </div>
+    </form>
+</div>
+
+<script src="{{ static_url('script/jquery.mCustomScrollbar.concat.min.js')}}" type="text/javascript"></script>
+<script type="text/javascript">
+    var loading = false;
+
+    var basic_url = '/area?a=get_list';
+    var cityList = [-1,-1,-1];
+    var change_parent;
+    var isAuto = false;
+
+    $(function(){
+        var media = function(){
+            var self = this;
+
+            var listen = function(){
+                $('.edit_media').click(function(){
+                    var id = $(this).attr('data-id');
+                    if(!id){
+                        return false;
+                    }
+
+                    self.loadData(id);
+                });
+            }();
+
+            self.loadData = function(id){
+                // check
+                var boxId = $('#case-cost').attr('data-id');
+                if(boxId != id) {
+                    // set boxid
+                    $('#case-cost').attr('data-id', id);
+                    // set media_id
+                    $('#media_id').val(id);
+                    // get data
+                    // price
+                    var price = $('#price_' + id).val();
+                    // category
+                    var categoryName = $('#category_' + id).val();
+                    var categoryId = $('#category_' + id).attr('data-id');
+                    // tag
+                    var tag_id = $('#tag_id_' + id).val();
+                    var tag_name = $('#tag_name_' + id).val();
+                    // audience_gender
+                    var audienceGender = $('#audience_gender_' + id).val();
+                    // audience_province_id
+                    var audienceProvinceId = $('#audience_province_id_' + id).val();
+                    // audience_city_id
+                    var audienceCityId = $('#audience_city_id_' + id).val();
+                    // audience_county_id
+                    var audienceCountyId = $('#audience_county_id_' + id).val();
+
+                    // price
+                    var prices = price.split(',');
+                    if (prices.length == 4) {
+                        $('form[name="smedia_info"] input[name="price_1x"]').val(prices[0]);
+                        $('form[name="smedia_info"] input[name="price_x1"]').val(prices[1]);
+                        $('form[name="smedia_info"] input[name="price_x2"]').val(prices[2]);
+                        $('form[name="smedia_info"] input[name="price_xx"]').val(prices[3]);
+                    }
+
+                    // category
+                    if(categoryId && parseInt(categoryId) > 0) {
+                        $('#trade-container').html('');
+                        $('#category_list').val(categoryId);
+                        tradeList.push(categoryId);
+                        var _html_category = '<div class="interestedBox media_category_item" id="inner' + categoryId + '" data="' + categoryId + '">' +
+                                '<span class="deleteBtn">删除</span>' + categoryName + '</div>';
+                        $('#trade-container').prepend(_html_category);
+                        // listen category del
+                        self.listenCategoryDel(id);
+                    }
+
+                    // audience_gender
+                    $('.audience_gender').removeAttr('checked');
+                    $('.audience_gender').eq(audienceGender).click();
+
+                    // audience_area
+                    if(audienceProvinceId == 0){
+                        $('.audience_area').eq(0).click();
+                    }else{
+                        $('.audience_area').eq(1).click();
+                        if(audienceProvinceId) {
+                            cityList = [audienceProvinceId, audienceCityId, audienceCountyId];
+                            isAuto = true;
+                        }
+                    }
+                    getSelectList(0,'main');
+
+                    // tag
+                    if(tag_id) {
+                        $('#trade-container-tag').html('');
+                        $('#tag_list').val(tag_id);
+                        var tag_ids = tag_id.split(',');
+                        var tag_names = tag_name.split(',');
+                        var tag_len = tag_ids.length;
+                        for (var i = 0; i < tag_len; i++) {
+                            var _html_tag = '<div class="interestedBox media_tag_item" id="inner' + tag_ids[i] + '" data="' + tag_ids[i] + '">' +
+                                    '<span class="deleteBtn">删除</span>' + tag_names[i] + '</div>';
+                            $('#trade-container-tag').prepend(_html_tag);
+                            tradeListTag.push(tag_ids[i]);
+                        }
+                        // listen tag del
+                        self.listenTagDel(id);
+                    }
+                }
+
+                // open 
+                lightbox('case-cost');
+            }
+
+            // listen category del
+            self.listenCategoryDel = function(id){
+                $('.media_category_item').unbind('click').click(function(){
+                    // remove value from input
+                    $('#category_' + id).val('');
+                    $('#category_list').val('');
+                    tradeList = [];
+                    // remove item
+                    $(this).remove();
+                });
+            }
+
+            // listen tag del
+            self.listenTagDel = function(id){
+                $('.media_tag_item').unbind('click').click(function(){
+                    // get tag_id
+                    var this_tag_id = $(this).attr('data');
+                    // get value form input
+                    var tag_id = $('#tag_id_' + id).val();
+                    if(tag_id) {
+                        var tag_ids = tag_id.split(',');
+                        var tag_ids_len = tag_ids.length;
+                        for(var i = 0; i < tag_ids_len; i++){
+                            if(this_tag_id == tag_ids[i]){
+                                tag_ids.splice(i, 1);
+                                tradeListTag.splice(i, 1);
+                            }
+                        }
+                        var str_tag_id = tag_ids.join(',');
+                        $("#tag_id_" + id).val(str_tag_id);
+                        $('#tag_list').val(str_tag_id);
+                    }
+                    $(this).remove();
+                });
+            }
+        }();
+
+        $('#case-cost input').keyup(function(){
+            if(!isNaN(this.value)){
+                checkTfNumber = this.value.split(' ').join('');
+            }else{
+                this.value = checkTfNumber;
+            }
+        }).focus(function(){
+            checkTfNumber = this.value;
+        }).focusout(function(){
+            this.value = checkTfNumber;
+        });
+        
+
+        // select area
+        $('.audience_area').click(function(){
+            var value = $(this).val();
+            if(value == 0){
+                $('#o-area').css('display', 'none');
+            }else{
+                $('#o-area').css('display', 'block');
+            }
+        });
+
+        $('select').change(function(){
+            var target = $(this).attr('name');
+            var id = $(this).val();
+            if(id==''){
+                if(target=='province'){
+                    $('#city').empty().append('<option value="">城市</option>');
+                    $('#county').empty().append('<option value="">区县</option>');
+                    cityList = [-1,-1,-1];
+                }else if(target=='city'){
+                    $('#county').empty().append('<option value="">区县</option>');
+                    cityList[1] = cityList[2] = -1;
+                }else{
+                    cityList[2] = -1;
+                }
+                return;
+            }
+            if(target!='county'){
+                getSelectList(id,target);
+                if(target=='province'){
+                    cityList[0] = id;
+                }else{
+                    cityList[1] = id;
+                }
+            }else{
+                cityList[2] = id;
+            }
+        });
+    });
+
+    function load_data(id){
+        var prices_list = $("#media-"+id + " .prices_list");
+        var len = tradeList.length;
+        for(var t=0;t<len;t++){
+            $('#inner'+ tradeList[t]).remove();
+            $('#c_'+tradeList[t]).removeClass('picked');
+        }
+        tradeList = [];
+        $("#media-"+id + ' .interestedBox').each(function(i,e){
+            tradeList.push($(e).attr('data'));
+            console.log(tradeList);
+            $('#trade-container').prepend('<div class="interestedBox"id=inner' + $(e).attr('data') + ' data="'+ $(e).attr('data') +'"><span class="deleteBtn">删除</span>'+$(e).text() + '</div>');
+            $('#c_'+$(e).attr('data')).addClass('picked');
+        });
+
+        $('#trade-container .interestedBox').click(function(e){
+            var sa = $(this).attr('data');
+             tradeList.splice(getListNum(tradeList,sa), 1);
+              $(this).remove();
+            $('#c_'+sa).removeClass('picked');
+            $('input[name="category_list"]').val(tradeList.join(','));
+        });
+
+        $('input[name="category_list"]').val(tradeList.join(','));
+        $('input[name="oid"]').val(id);
+    }
+
+    function saveInfo(){
+        lightbox('case-cost');
+        setTimeout(save_info,500);
+    }
+
+    function save_info(){
+        //这里要加控件判断
+        var a1 = $('form[name="smedia_info"] input[name="price_1x"]').val();
+        var a2 = $('form[name="smedia_info"] input[name="price_x1"]').val();
+        var a3 = $('form[name="smedia_info"] input[name="price_x2"]').val();
+        var a4 = $('form[name="smedia_info"] input[name="price_xx"]').val();
+        a1 = a1==''?0:a1;
+        a2 = a2==''?0:a2;
+        a3 = a3==''?0:a3;
+        a4 = a4==''?0:a4;
+        $('form[name="smedia_info"] input[name="price_1x"]').val(a1);
+        $('form[name="smedia_info"] input[name="price_x1"]').val(a2);
+        $('form[name="smedia_info"] input[name="price_x2"]').val(a3);
+        $('form[name="smedia_info"] input[name="price_xx"]').val(a4);
+        var sum = a1+a2+a3+a4;
+        if(sum==0){
+            showTipsBox('alert','至少填写一个投放位的报价');
+            return;
+        }
+
+        document.forms.smedia_info.submit();
+    }
+
+    function getSelectList(id,idfrom){
+        change_parent = idfrom;
+        var obj = {};
+        obj.method='get';
+        obj.url = basic_url + '&parent_id='+id;
+        obj.dataType = 'json';
+        obj.success = function(data){
+            var target;
+            var tarWord;
+            var tarId;
+            var tar2 = '';
+            switch (change_parent){
+                case 'province':
+                    target = 'city';
+                    tarWord = '城市';
+                    tarId = cityList[1];
+                    tar2 = 'county';
+                    break;
+                case 'city':
+                    target = 'county';
+                    tarWord = '区县';
+                    tarId = cityList[2];
+                    break;
+                case 'main':
+                    target = 'province';
+                    tarWord = '省份';
+                    tarId = cityList[0];
+                    break;
+            }
+            var main = $('#' + target);
+            main.empty();
+            main.append('<option value="">' + tarWord + '</option>');
+            if(!isAuto && target=='city')cityList[1]=-1;
+            if(tar2!=''){
+                $('#' + tar2).empty().append('<option value="">区县</option>');
+                if(isAuto){
+                    isAuto = !isAuto;
+                }else{
+                    cityList[2] = -1;
+                }
+            }
+
+            var list = data.data;
+            for(var i=0;i<list.length;i++){
+                main.append('<option value="' + list[i].id + '">' + decodeURIComponent(list[i].name) + '</option>');
+            }
+            if(tarId!=-1){
+                main.val(tarId);
+            }
+            if(change_parent!='city' && main.val()!=''){
+                getSelectList(main.val(),target);
+            }
+
+        };
+        $.ajax(obj)
+    }
+</script>
+{% end %}

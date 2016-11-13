@@ -1,0 +1,58 @@
+{% extends '../../public/main.html' %}
+
+{% block body %}
+<script type="text/javascript">
+
+</script>
+<div class="nav">
+    <p>在相应的<b>广告需求详情页</b>中增加广告需求</p>
+</div>
+<div class="funnel">
+    <div class="searchBox">
+    <form class="form-inline" action='/project/demand' method="get">
+        <input class="form-control" type="text" name="search" class="typeText"/>
+        <button type="submit" class="form-control btn btn-default">搜索</button>
+    </form></div>
+</div>
+<br/>
+<table class="table table-bordered table-hover vert-align">
+    <thead>
+    <tr class="res_tbl_title">
+        <td>ID</td>
+        <td>广告需求</td>
+        <td>投放计划</td>
+        <td>开始时间</td>
+        <td>结束时间</td>
+        <td>负责人</td>
+        <!--<td>总结</td>-->
+        <td>更新时间</td>
+        <!--<td>操作</td>-->
+    </tr>
+    </thead>
+    <tbody>
+    {% for item in demand %}
+    <tr>
+        <td>{{ item['id'] }}</td>
+        <td><a href="/project/demand?a=detail&id={{item['id']}}">{{ item['name'] }}</a></td>
+        <td><a href="/project/plan?a=detail&id={{item['plan_id']}}">{{ item['plan_title'] }}</a></td>
+        <td>{{ item['start_time'] }}</td>
+        <td>{{ item['end_time'] }}</td>
+        <td>{{ item['follower'] if item['follower'] else '-'}}</td>
+        <!--<td><textarea rows="5" cols="60" disabled="disabled">{{ item['summary'] if item['summary'] else '-'}}</textarea></td>-->
+        <td>{{ item['last_update_time'] }}</td>
+        <!--
+        <td>
+            <div>
+                <a class="btn btnThin" href="/project/plan?a=delete&id={{ item['id'] }}" onclick="return confirm('确认删除?');">删除</a>
+                <a href="/project/demand?a=detail&id={{ item['id'] }}" class="btnThin">查看</a>
+            </div>
+        </td>
+        -->
+    </tr>
+    {% end %}
+    </tbody>
+</table>
+<div>
+    {% raw page_html %}
+</div>
+{% end %}

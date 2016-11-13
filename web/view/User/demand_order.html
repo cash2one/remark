@@ -1,0 +1,73 @@
+{% extends '../public/main.html' %}
+{% block title%}我的订单{% end %}
+{% block body %}
+<link href="{{ static_url('style/uc.css') }}" type="text/css" rel="stylesheet">
+
+{% include 'my_top.html' %}
+<div class="ucContainer clearfix">
+{% include 'my_menu.html' %}
+<div class="ucMain">
+    <div class="title">
+        <hr>
+        <h3>我的订单</h3>
+    </div>
+    <div class="content">
+        <div class="statusNav">
+            <div><strong>订单状态：</strong></div>
+            <ul>
+                <li id="status0" class="status"><a href="/user?a=demand_order">全部</a></li>
+                <!--<li id="status1" class="status"><a href="/user?a=demand_order&status=1">等待付款</a></li>-->
+                <li id="status2" class="status"><a href="/user?a=demand_order&status=2">等待反馈</a></li>
+                <li id="status3" class="status"><a href="/user?a=demand_order&status=3">等待验收</a></li>
+                <li id="status4" class="status"><a href="/user?a=demand_order&status=4">已完成</a></li>
+            </ul>
+        </div>
+        <ul class="orderList">
+            {% for item in demand_order %}
+            <li class="orderBox clearfix">
+                <div class="mediaAvatar">
+                    <a href="/media?a=view&id={{ item['media_detail']['media_id'] }}" target="_blank">
+                        <img src="{{ item['media_detail']['avatar'] }}" alt="{{ item['media_detail']['name'] }}">
+                    </a>
+                </div>
+                <div class="orderInfo">
+                    <span class="mediaName"><a href="/media?a=view&id={{ item['media_detail']['media_id'] }}" target="_blank">{{ item['media_detail']['name'] }}</a></span>
+                    <span class="mediaAdvertising">{{ item['media_attr_value'] }}</span>
+                    <span class="demandInfo">
+                        <span class="demandCategory">
+                            {% if item['demand_detail'].has_key('demand_form') %}
+                            {{ item['demand_detail']['demand_form'] }}
+                            {% end %}
+                        </span>
+                        <a href="/demand?a=view&id={{ item['demand_detail']['id'] }}">{{ item['demand_detail']['title'] }}</a>
+                    </span>
+                </div>
+                <div class="orderDate"><strong>{{ item['create_time'] }}</strong></div>
+                <div class="orderPrice"><small>¥</small><strong>{{ item['price'] }}</strong></div>
+                <div class="orderStatus">
+                    {% if item['status'] == 1 %}
+                    <span class="statusCheck">等待付款</span>
+                    {% elif item['status'] == 2 %}
+                    <span class="statusReady">等待反馈</span>
+                    {% elif item['status'] == 3 %}
+                    <span class="statusGoing">等待验收</span>
+                    {% elif item['status'] == 4 %}
+                    <span class="statusFinish">已完成</span>
+                    {% end %}
+                    <a href="/user?a=demand_order_detail&id={{ item['id'] }}" class="btnMore" target="_blank">订单详情</a>
+                </div>
+            </li>
+            {% end %}
+        </ul>
+        <div class="listPagination">
+            {% raw page %}
+        </div>
+    </div>
+</div>
+</div>
+<script type="text/javascript">
+$(document).ready(function(){
+    $('#status{{ status }}').addClass('current');
+});
+</script>
+{% end %}

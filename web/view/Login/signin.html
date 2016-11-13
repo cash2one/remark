@@ -1,0 +1,20 @@
+{% extends '../public/main.html' %}
+{% block title %}登录{% end %}
+{% block body %}
+
+<div class="passport">
+    <div class="signBox">
+        <h2>登录</h2>
+        <h3>使用第三方账号登录</h3>
+        <div class="oauth">
+            <a href="" target="_blank" class="oauthWechat"><img src="/static/images/wei.png" alt="微信">微信登录</a>
+        </div>
+        <h3>使用邮箱或手机登录</h3>
+        <label><span>邮箱/手机</span><input type="text" value=""><em class="errorTips"><b>◆</b>邮箱/手机错误提示</em></label>
+        <label><span>密码</span><input type="password" value=""><em class="errorTips"><b>◆</b>密码错误提示</em></label>
+        <button class="submitBtn" type="submit" onclick="checkForm_login(this)">登录</button>
+        <div class="forget"><a href="/login?a=forget_pwd" target="_blank">忘记密码</a></div>
+        <div class="signup">没有账号？<a href="">点击注册</a></div>
+    </div>
+</div>
+{% end %}

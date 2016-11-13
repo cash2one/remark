@@ -1,0 +1,234 @@
+{% extends '../../public/main.html' %}
+
+{% block body %}
+<link rel="stylesheet" type="text/css" href="{{ static_url('style/bootstrap-responsive.css') }}" />
+<link rel="stylesheet" type="text/css" href="{{ static_url('style/bootstrap-datetimepicker.css') }}" />
+<script type="text/javascript" src="{{ static_url('script/bootstrap-datetimepicker.js') }}"></script>
+<script type="text/javascript">
+    function formatDay(dayDelta){
+        var now = new Date();
+        now.setDate(now.getDate() + dayDelta); //获取dayDelta天后的日期
+        var y = now.getFullYear();
+        var m = now.getMonth()+1; //获取当前月份的日期
+        var d = now.getDate();
+        m = m < 10 ? "0"+m : m; //补0
+        d = d < 10 ? "0"+d : d; //补0
+        return y + "-" + m + "-" + d;
+    }
+    function onLastWeek(){
+        document.getElementById('last_week_start').value = formatDay(-7);
+        document.getElementById('last_week_end').value = formatDay(0);
+        document.getElementById('last_week_form').submit();
+    }
+    function onLastMonth(){
+        document.getElementById('last_month_start').value = formatDay(-30);
+        document.getElementById('last_month_end').value = formatDay(0);
+        document.getElementById('last_month_form').submit();
+    }
+</script>
+<div class="status_title">
+    <ol class="breadcrumb">
+        <li><a href="#"></a>数据统计</li>
+        <li><a href="/statistics/web"> 实时动态</a></li>
+   </ol >
+</div>
+<table class="table table-bordered table-hover vert-align">
+    <thead>
+        <tr class="res_tbl_title">
+            <td>新增注册用户</td>
+            <td>总用户数</td>
+            <!--<td>新增自媒体</td>-->
+            <!--<td>新增联盟</td>-->
+            <!--<td>新增需求</td>-->
+            <!--<td>等待接单</td>-->
+            <!--<td>等待反馈</td>-->
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>{{ today['user_today'] }}</td>
+            <td>{{ total['user_total'] }}</td>
+            <!--<td>{{ today['media_today'] }}</td>-->
+            <!--<td>{{ today['union_today'] }}</td>-->
+            <!--<td>{{ today['demand_today'] }}</td>-->
+        </tr>
+    </tbody>
+    <thead>
+        <tr class="res_tbl_title">
+            <td>新增自媒体</td>
+            <td>总自媒体数</td>
+            <!--<td>总联盟数</td>-->
+            <!--<td>总需求数</td>-->
+            <!--<td>申诉中</td>-->
+            <!--<td>已完成</td>-->
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>{{ today['media_today'] }}</td>
+            <td>{{ total['media_total'] }}</td>
+        </tr>
+    </tbody>
+    <thead>
+        <tr class="res_tbl_title">
+            <td>新增需求</td>
+            <td>总需求数</td>
+        </tr>
+    </thead>
+
+
+    <tbody>
+        <tr>
+            <td>{{ today['demand_today'] }}</td>
+            <td>{{ total['demand_total'] }}</td>
+        </tr>
+    </tbody>
+</table>
+<table class="table table-bordered table-hover vert-align">
+    <thead>
+        <tr class="res_tbl_title">
+            <td>进行中的需求</td>
+            <td>等待接单的需求</td>
+            <td>已完成的需求</td>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>{{in_demand}}</td>
+            <td>{{wait_order}}</td>
+            <td>{{complete}}</td>
+        </tr>
+    </tbody>
+</table>
+<table class="table table-bordered table-hover vert-align">
+    <thead>
+        <tr class="res_tbl_title">
+            <td>等待反馈的订单</td>
+            <td>申诉中的订单</td>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>{{wait_feedback}}</td>
+            <td>{{in_appeal}}</td>
+        </tr>
+    </tbody>
+    
+</table>
+<!--<div class="result_filter" id="result_filter">-->
+    <!--<form id="last_week_form" action='/statistics/web' method="get">-->
+        <!--<input type="hidden" id="last_week_start" name="start" >-->
+        <!--<input type="hidden" id="last_week_end" name="end">-->
+        <!--<input type="button" onclick="onLastWeek()" value="最近七天"/>-->
+    <!--</form>-->
+    <!--<form id="last_month_form" action='/statistics/web' method="get">-->
+        <!--<input type="hidden" id="last_month_start" name="start">-->
+        <!--<input type="hidden" id="last_month_end" name="end">-->
+        <!--<input type="button" onclick="onLastMonth()" value="最近三十天"/>-->
+    <!--</form>-->
+    <!--<form action='/statistics/web' method="get">-->
+        <!--日期-->
+        <!--<input size="16" type="text" readonly class="form_datetime" name="start">-->
+        <!--<span>&nbsp;至&nbsp;</span>-->
+        <!--<input size="16" type="text" readonly class="form_datetime" name="end">-->
+        <!--<input type="submit" value="筛选"/>-->
+    <!--</form>-->
+    <!--<script type="text/javascript">-->
+        <!--$(".form_datetime").datetimepicker({-->
+            <!--format: 'yyyy-mm-dd',-->
+            <!--minView: 'month',-->
+            <!--autoclose: true-->
+        <!--});-->
+    <!--</script>-->
+<!--</div>-->
+<!--<div>-->
+<!--<table class="table table-bordered table-hover vert-align">-->
+    <!--<thead>-->
+        <!--<tr class="res_tbl_title">-->
+            <!--<td>数据指标</td>-->
+            <!--<td>注册用户</td>-->
+            <!--<td>自媒体</td>-->
+            <!--&lt;!&ndash;<td>联盟</td>&ndash;&gt;-->
+            <!--<td>已上线订单</td>-->
+            <!--<td>等待接单</td>-->
+            <!--<td>等待反馈</td>-->
+            <!--<td>已反馈</td>-->
+            <!--<td>交易成功</td>-->
+            <!--<td>已撤销</td>-->
+            <!--<td>申诉中</td>-->
+        <!--</tr>-->
+    <!--</thead>-->
+    <!--{% for day in index_info %}-->
+    <!--<tbody>-->
+        <!--<tr>-->
+            <!--<td>{{ day[0] }}</td>-->
+            <!--<td>{{ day[1]['user_counts'] }}</td>-->
+            <!--<td>{{ day[1]['media_counts'] }}</td>-->
+            <!--&lt;!&ndash;<td>{{ day[1]['union_counts'] }}</td>&ndash;&gt;-->
+            <!--<td>{{ day[1]['demand_online_counts'] }}</td>-->
+            <!--<td>{{ day[1]['demand_wait_rcv_counts'] }}</td>-->
+            <!--<td>{{ day[1]['demand_wait_fbk_counts'] }}</td>-->
+            <!--<td>{{ day[1]['demand_feedback_counts'] }}</td>-->
+            <!--<td>{{ day[1]['demand_success_counts'] }}</td>-->
+            <!--<td>{{ day[1]['demand_cancel_counts'] }}</td>-->
+            <!--<td>{{ day[1]['demand_appeal_counts'] }}</td>-->
+        <!--</tr>-->
+    <!--</tbody>-->
+    <!--{% end %}-->
+<!--</table>-->
+    <!--<table class="table table-bordered table-hover vert-align">-->
+    <!--<thead>-->
+        <!--<tr class="res_tbl_title">-->
+            <!--<td>数据指标</td>-->
+            <!--<td>全站pv</td>-->
+            <!--<td>全站uv</td>-->
+            <!--&lt;!&ndash;<td>联盟</td>&ndash;&gt;-->
+            <!--<td>全站ip</td>-->
+            <!--<td>首页pv</td>-->
+            <!--<td>首页uv</td>-->
+            <!--<td>首页ip</td>-->
+            <!--<td>登录用户数</td>-->
+        <!--</tr>-->
+    <!--</thead>-->
+    <!--{% for day in index_info %}-->
+    <!--<tbody>-->
+        <!--<tr>-->
+            <!--<td>{{ day[0] }}</td>-->
+            <!--<td>{{ day[2]['stat_pv_day'] }}</td>-->
+            <!--<td>{{ day[2]['stat_uv_day'] }}</td>-->
+            <!--<td>{{ day[2]['stat_ip_day'] }}</td>-->
+            <!--<td>{{ day[3]['index_pv_day'] }}</td>-->
+            <!--<td>{{ day[3]['index_uv_day'] }}</td>-->
+            <!--<td>{{ day[3]['index_ip_day'] }}</td>-->
+            <!--<td>{{ day[2]['stat_user_day'] }}</td>-->
+        <!--</tr>-->
+    <!--</tbody>-->
+    <!--{% end %}-->
+<!--</table>-->
+     <!--<table class="table table-bordered table-hover vert-align">-->
+    <!--<thead>-->
+        <!--<tr class="res_tbl_title">-->
+            <!--<td>数据指标</td>-->
+            <!--<td>营销需求数</td>-->
+            <!--<td>营销需求接单数</td>-->
+            <!--<td>营销需求下单数</td>-->
+            <!--<td>营销需求完成数</td>-->
+        <!--</tr>-->
+    <!--</thead>-->
+    <!--{% for day in index_info %}-->
+    <!--<tbody>-->
+        <!--<tr>-->
+            <!--<td>{{ day[0] }}</td>-->
+            <!--<td>{{ day[4]['demand_count'] }}</td>-->
+            <!--<td>{{ day[4]['take_order_count'] }}</td>-->
+            <!--<td>{{ day[4]['order_count'] }}</td>-->
+            <!--<td>{{ day[4]['demand_comp_count'] }}</td>-->
+        <!--</tr>-->
+    <!--</tbody>-->
+    <!--{% end %}-->
+<!--</table>-->
+</div>
+<div>
+    {% raw page_html %}
+</div>
+{% end %}

@@ -1,0 +1,77 @@
+{% extends '../public/main.html' %}
+
+{% block body %}
+<link rel="stylesheet" type="text/css" href="{{ static_url('style/bootstrap-responsive.css') }}" />
+<link rel="stylesheet" type="text/css" href="{{ static_url('style/bootstrap-datetimepicker.css') }}" />
+<script type="text/javascript" src="{{ static_url('script/bootstrap-datetimepicker.js') }}"></script>
+<div class="status_title">
+	<ol class="breadcrumb">
+		<li><a href="#">联盟管理</a></li>
+		<li><a href="/union?status=0">未审核</a></li>
+		<li><a href="/union?status=-1">未通过</a></li>
+		<li><a href="/union?status=-2,1">已入驻</a></li>
+	</ol>
+</div>
+<div class="result_filter">
+	<form action='/union' method="get">
+        <input type="hidden" name="status" value="{{ status }}" />
+        日期
+        <input size="16" type="text" readonly class="form_datetime" name="start">
+        <span>&nbsp;至&nbsp;</span>
+        <input size="16" type="text" readonly class="form_datetime" name="end">
+        <span>&nbsp;&nbsp;名称</span>
+        <input type="text" name="search" />
+        <input type="submit" value="筛选"/>
+    </form>
+	<script type="text/javascript">
+		$(".form_datetime").datetimepicker({
+			format: 'yyyy-mm-dd',
+			minView: 'month',
+			autoclose: true
+		});
+	</script>
+</div>
+<table class="table table-bordered table-hover vert-align">
+    <thead>
+		<tr class="res_tbl_title">
+			<td>序号</td>
+			<td>联盟名称</td>
+			<td>联盟状态</td>
+			<td>所属用户账户</td>
+			<td>创建时间</td>
+			<td>操作</td>
+		</tr>
+	</thead>
+    {% for item in index_info %}
+		<tbody>
+			<tr>
+				<td>{{ item['idx'] }}</td>
+				<td>{{ item['name'] }}</td>
+				<td>{{ item['status_tag'] }}</td>
+				<td>
+					<a href="/user?a=detail&id={{ item['user_id'] }}">{{ item['nickname'] }}</a>
+				</td>
+				<td>{{ item['create_time'] }}</td>
+				<td>
+                    <a href="/union?a=detail&id={{ item['id'] }}">查看详细信息</a> |
+					{% if item['status'] == -2 %}
+                    <a href="/union?a=unban&status={{ status }}&id={{ item['id'] }}" onclick="return confirm('确认取消禁用?');">取消禁用</a> |
+					{% elif item['status'] == -1 %}
+					<a href="/union?a=allow&status={{ status }}&id={{ item['id'] }}" onclick="return confirm('确认通过?');">通过</a> |
+					{% elif item['status'] == 0 %}
+					<a href="/union?a=allow&status={{ status }}&id={{ item['id'] }}" onclick="return confirm('确认通过?');">通过</a> |
+					<a href="/union?a=disallow&status={{ status }}&id={{ item['id'] }}" onclick="return confirm('确认不通过?');">不通过</a> |
+					{% elif item['status'] == 1 %}
+                    <a href="/union?a=ban&status={{ status }}&id={{ item['id'] }}" onclick="return confirm('确认禁用?');">禁用</a> |
+                    {% else %}
+                	{% end %}
+					<a href="/union?a=delete&status={{ status }}&id={{ item['id'] }}" onclick="return confirm('确认删除?');">删除</a>
+				</td>
+			</tr>
+		</tbody>
+    {% end %}
+</table>
+<div>
+	{% raw page_html %}
+</div>
+{% end %}

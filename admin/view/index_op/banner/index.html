@@ -1,0 +1,170 @@
+{% extends '../../public/main.html' %}
+
+{% block body %}
+<script type="text/javascript">
+    function on_banner_commit(){
+        var a = document.getElementById('banner_title').value;
+        var c = document.getElementById('logo_image_key').value;
+        var d = document.getElementById('banner_bg_color').value;
+        var f = document.getElementById('banner_url').value;
+        if (a == "" || c == "" || d == "" || f == "") {
+            alert("banner参数不能为空");
+            return false;
+        }
+        document.getElementById('banner_form').submit();
+    }
+    function update_banner(obj){
+        var id = obj.name;
+        var form_id = 'banner_form' + id;
+        var a = document.getElementById('banner_title'+id).value;
+        var d = document.getElementById('banner_bg_color'+id).value;
+        var f = document.getElementById('banner_url'+id).value;
+        if (a == "" || d == "" || f == "") {
+            alert("友链参数不能为空");
+            return false;
+        }
+        document.getElementById(form_id).submit();
+    }
+    function iframeLoaded(iframe) {
+        var doc = iframe.contentWindow.window;
+        var html = doc.document.body.innerHTML;
+        var len = html.length;
+        if (len > 0) {
+            var obj = JSON.parse(html);
+            console.log(obj.data);
+            $('.logo_image img').attr('src', obj.data.url);
+            $('.logo_image input').attr('value', obj.data.url);
+            $('input[name="logo_image"]').val(obj.data.key);
+        }
+    }
+</script>
+</div>
+<div class="result_filter" id="result_filter">
+    <button data-target="#banner_dialog" data-toggle="modal" class="btnAdd">+banner</button>
+</div>
+<div>
+    <div id="banner_dialog" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">X</button>
+                    <h4 id="banner_create_title">新增banner</h4>
+                </div>
+                <div class="modal-body">
+                    <form id="banner_form" name="banner_form" method="post" action="/index_op/banner?a=create" class="form-horizontal">
+                        <div class="form-group">
+                            <label for="banner_title" class="control-label col-sm-2">名&#12288;称</label>
+                            <div class="col-sm-5">
+                                <input type="text" id="banner_title" name="banner_title" value="" class="form-control">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="banner_url" class="control-label col-sm-2">链&#12288;接</label>
+                            <div class="col-sm-5">
+                                <input type="text" id="banner_url" name="banner_url" value="" class="form-control">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="banner_bg_color" class="control-label col-sm-2">背景色</label>
+                            <div class="col-sm-5">
+                                <input type="text" id="banner_bg_color" name="banner_bg_color" value="" class="form-control">
+                            </div>
+                        </div>
+                        <div class="logo_image form-group" onclick="javascript:$('#logo_image').click()">
+                            <label class="control-label col-sm-2">图&#12288;片</label>
+                            <input type="hidden" id="logo_image_key" name="logo_image" value="">
+                            <img src="{{ static_url('images/logo.jpg') }}">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-success" onclick="on_banner_commit()">保存</button>
+                    <button class="btn btn-default" data-dismiss="modal" aria-hidden="true">取消</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<form id="logo_image_form" action="/index_op/banner?a=uploadLogo" method="post" enctype="multipart/form-data"  target='hiddenform1'>
+    <input type="file" onchange="document.getElementById('logo_image_form').submit();" style="display: none;" id="logo_image" name="logo_image">
+</form>
+<table class="table table-bordered table-hover vert-align">
+    <thead>
+        <tr class="res_tbl_title">
+            <td>序号</td>
+            <td>banner名称</td>
+            <td>背景色</td>
+            <td>关联图片</td>
+            <td>链接</td>
+            <td>操作</td>
+        </tr>
+    </thead>
+    {% for item in index_info %}
+    <tbody>
+        <tr>
+            <td>{{ item['id'] }}</td>
+            <td>{{ item['title'] }}</td>
+            <td>{{ item['bg_color'] }}</td>
+            <td><a href="{{ item['image'] }}" target="_blank"><img src="{{ item['image'] }}" width="120" height="48" /></a></td>
+            {% if item['link'][:4] == 'http' %}
+            <td><a target="_blank" href="{{ item['link'] }}">{{ item['link'] }}</a></td>
+            {% else %}
+            <td><a target="_blank" href="http://{{ item['link'] }}">{{ item['link'] }}</a></td>
+            {% end %}
+            <td>
+                <div>
+                    <a class="btn btnThin" data-target="#banner_dialog{{ item['id'] }}" data-toggle="modal">编辑</a>
+                    <div id="banner_dialog{{ item['id'] }}" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">X</button>
+                                    <h4 id="banner_create_title{{ item['id'] }}">编辑banner</h4>
+                                </div>
+                                <div class="modal-body">
+                                    <form id="banner_form{{ item['id'] }}" name="banner_form" method="post" action="/index_op/banner?a=update" class="form-horizontal">
+                                        <div class="form-group">
+                                            <label class="control-label col-sm-2">名&#12288;称</label>
+                                            <div class="col-sm-5">
+                                                <input class="form-control" type="text" id="banner_title{{ item['id'] }}" name="banner_title" value="{{ item['title'] }}">
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="control-label col-sm-2">链&#12288;接</label>
+                                            <div class="col-sm-5">
+                                                <input class="form-control" type="text" id="banner_url{{ item['id'] }}" name="banner_url" value="{{ item['link'] }}">
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="control-label col-sm-2">背景色</label>
+                                            <div class="col-sm-5">
+                                                <input class="form-control" type="text" id="banner_bg_color{{ item['id'] }}" name="banner_bg_color" value="{{ item['bg_color'] }}">
+                                            </div>
+                                        </div>
+                                        <div class="logo_image form-group" onclick="javascript:$('#logo_image').click()">
+                                            <label class="control-label col-sm-2">图&#12288;片</label>
+                                            <input type="hidden" id="logo_image_key{{ item['id'] }}" name="logo_image" value="">
+                                            <!--<img src="{{ static_url('images/logo.jpg') }}">-->
+                                            <img src="{{ item['image']}}" width="120" height="48" >
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="modal-footer">
+                                    <button class="btn btn-success" name="{{ item['id'] }}" onclick="update_banner(this)">保存</button>
+                                    <button class="btn btn-default" data-dismiss="modal" aria-hidden="true">取消</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <a class="btn btnThin" href="/index_op/banner?a=delete&id={{ item['id'] }}" onclick="return confirm('确认删除?');">删除</a>
+                </div>
+            </td>
+        </tr>
+    </tbody>
+    {% end %}
+</table>
+<div>
+    {% raw page_html %}
+</div>
+<iframe frameborder="0" name='hiddenform1' style="width:0;height: 0;" onload="iframeLoaded(this)"></iframe>
+{% end %}

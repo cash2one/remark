@@ -1,0 +1,160 @@
+{% extends '../../public/main.html' %}
+
+{% block body %}
+<script type="text/javascript">
+    function documents_commit(){
+        var chk_value =[];
+        $('input[name="group"]:checked').each(function(){
+            chk_value.push($(this).val());
+        });
+        $.ajax({
+            type: "post",
+            dataType: "json",
+            url: "/project/documents?a=follow",
+            data: {'id': "{{ detail_info['id'] }}", 'follow_remark': $('#follow_remark').val(), 'group': chk_value.join(',')},
+            success: function (d) {
+                if(d.status==200){
+                    window.location.href="/project/documents?a=details&id={{ detail_info['id'] }}";
+                } else {
+                    alert('加入跟踪失败。。。')
+                }
+            }
+        });
+    }
+
+    function on_documents_commit(){
+        document.getElementById('documents_load_form').submit();
+    }
+    $(function(){
+	    window.um = UM.getEditor('myEditorsUp');
+    });
+    $(document).ready(function(){
+        uediter('follow_remark');
+    });
+
+    function browseFolder(path) {
+        try {
+            var Message = "\u8bf7\u9009\u62e9\u6587\u4ef6\u5939"; //选择框提示信息
+            var Shell = new ActiveXObject("Shell.Application");
+            var Folder = Shell.BrowseForFolder(0, Message, 64, 17); //起始目录为：我的电脑
+            //var Folder = Shell.BrowseForFolder(0, Message, 0); //起始目录为：桌面
+            if (Folder != null) {
+                Folder = Folder.items(); // 返回 FolderItems 对象
+                Folder = Folder.item(); // 返回 Folderitem 对象
+                Folder = Folder.Path; // 返回路径
+                if (Folder.charAt(Folder.length - 1) != "\\") {
+                    Folder = Folder + "\\";
+                }
+                document.getElementById(path).value = Folder;
+                return Folder;
+            }
+        }
+        catch (e) {
+            alert(e.message);
+        }
+    }
+</script>
+
+<div class="nav">
+    <a href="/project/documents">返回上页</a>
+</div>
+<div class="colcon">
+<div class="col1in2">
+<table class="table table-bordered table-hover vert-align">
+    <thead>
+        <tr class="res_tbl_title">
+            <td>信息</td>
+            <td>属性</td>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>标题</td>
+            <td>{{ detail_info['media_title'] }}</td>
+        </tr>
+        <tr>
+            <td>信息</td>
+            <td type="text-overflow : clip | ellipsis ">{% raw detail_info['content_info'] %}</td>
+        </tr>
+        <tr>
+            <td>更新时间</td>
+            <td>{{ detail_info['update_time'] }}</td>
+        </tr>
+        <tr>
+            <td>创建时间</td>
+            <td>{{ detail_info['create_time'] }}</td>
+        </tr>
+        <tr>
+            <td>操作</td>
+            <td><button type="button"  data-target="#document_follow"  data-toggle="modal" class="btnAdd">{{ '加入跟踪' if not group else '取消跟踪' }}</button>
+                <a href="/project/documents?a=update_display&id={{ detail_info['media_content_id'] }}"><button type="button" data-toggle="modal" class="btnAdd">修改</button></a>
+                <button type="button"  data-target="#documents_download"  data-toggle="modal" class="btnAdd">下载</button>
+                <div >
+                    <div id="document_follow" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                        <div class="modal-dialog" >
+                            <div class="modal-content" >
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">X</button>
+                                    <h4 id="document_follow_title">{{ '跟踪文案' if not group else '取消跟踪'}}</h4>
+                                </div>
+                                <div class="modal-body brickWall">
+                                    <form id="document_follow_form" name="documents_load_form">
+                                        <input type="hidden" id="id" name="id" value="{{ detail_info['id'] }}">
+                                        {% if not group %}
+                                        <div>
+                                            <strong>跟踪分组</strong>
+                                            {% for item in groupData %}
+                                                <label><input type="checkbox" name="group" value="{{item['id']}}">{{item['name']}}</label>
+                                            {% end %}
+                                        </div>
+                                        <div class="uediter">
+                                            <strong>备注信息</strong>
+                                            <textarea id="follow_remark" name="follow_remark" ></textarea><i>备注信息，可为空</i>
+                                        </div>
+                                        {% end %}
+                                    </form>
+                                </div>
+
+                                <div class="modal-footer">
+                                    <!--<button class="btn" name="follow_btu" onclick="on_documents_commit()">下载</button>-->
+                                    <button class="btn" name="follow_btu" onclick="documents_commit()">跟踪</button>
+                                    <button class="btn" data-dismiss="modal" aria-hidden="true">取消</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                <div >
+            </td>
+        </tr>
+    </tbody>
+</table>
+</div>
+</div>
+
+<div >
+    <div id="documents_download" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog" >
+            <div class="modal-content" >
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">X</button>
+                    <h4 id="documents_load">下载</h4>
+                </div>
+
+                <div class="modal-body brickWall">
+                    <form id="documents_load_form" name="documents_load_form" method="post" action="/project/documents?a=load">
+                        <input type="hidden" id="documents_load_title" name="documents_load_title" value="{{ detail_info['media_title'] }}" readonly>
+                        <input type="hidden" id="documents_load_info" name="documents_load_info" value="{{ detail_info['content_info'] }}">
+                        <h4>文案：{{ detail_info['media_title'] }}</h4>
+                    </form>
+                </div>
+
+                <div class="modal-footer">
+                    <button class="btn" onclick="on_documents_commit()">下载</button>
+                    <button class="btn" data-dismiss="modal" aria-hidden="true">取消</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% end %}

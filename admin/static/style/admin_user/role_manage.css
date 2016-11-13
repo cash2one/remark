@@ -1,0 +1,87 @@
+/*角色管理页面*/
+.role_manager_head{
+    height: 45px;
+    line-height: 45px;
+    background-color: rgba(5,111,191,0.45);
+    font-size: large;
+    color: white;
+    padding-left: 10px;
+}
+
+.role_manager_list{
+    height: 40px;
+    line-height: 40px;
+    cursor: pointer;
+    text-decoration: none;
+    padding-left: 20px;
+    color: #999;
+}
+
+.role_manager_left {
+    padding-left: 0;
+}
+
+.role_manager_list:hover {
+    color: #333;
+}
+
+.change_authority {
+    float: right;
+    margin-right: 6px;
+}
+
+.role_click {
+    background-color: rgba(221,221,221, 0.4);
+    color: #333;
+    border-left: 3px solid #8EBEE2;
+    font-weight: bold;
+}
+
+#show_list {
+    height: 500px;
+    overflow: overlay;
+}
+
+#show_label{
+    display: inline-block;
+    width: 80px;
+    text-decoration: none;
+}
+
+.show_label:visited {
+    font-size: medium;
+    font-weight: 600;
+}
+
+.first_level {
+    padding: 5px 10px;
+    margin-top: 3px;
+    margin-left: 10px;
+    border-left-style: solid;
+    border-color: #056FBF;
+    background-color: #ddd;
+}
+
+.second_level {
+    padding: 5px 10px;
+    margin-left: 40px;
+    border-left-style: solid;
+    border-color: #056FBF;
+    background-color: rgba(221,221,221, 0.36);
+    margin-bottom: 2px;
+
+}
+
+.third_level {
+    padding: 5px 10px;
+    margin-left: 60px;
+    border-left-style: solid;
+    border-color: #056FBF;
+    margin-bottom: 2px;
+}
+
+.label_input {
+    width: 280px;
+    display: inline-block;
+    margin: 10px;
+}

@@ -1,0 +1,71 @@
+{% extends '../../public/main.html' %}
+
+{% block body %}
+<script type="text/javascript">
+    function planning_commit(){
+        var title = document.getElementById('planning_title').value;
+        if ( !title || title.length < 2  || title.length > 18){
+            alert("标题长度需2-18个字符");
+            return false
+        }
+        document.getElementById('planning_form').submit();
+    }
+    $(document).ready(function(){
+        uediter('planning_content');
+    })
+</script>
+<div class="nav">
+   <button data-target="#planning_dialog" data-toggle="modal" class="btnAdd">添加策划</button>
+</div>
+<div>
+    <div id="planning_dialog" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">X</button>
+                    <h4 id="planning_create_title">增加策划</h4>
+                </div>
+                <div class="modal-body brickWall">
+                    <form id="planning_form" name="planning_form" method="post" action="/project/planning?a=create">
+                        <div>
+                            <strong>策划标题</strong>
+                            <input type="text" id="planning_title" name="planning_title" value=""> <b>*</b>
+                        </div>
+                        <div class="uediter">
+                            <strong>策划方案</strong>
+                            <textarea id="planning_content" name="planning_content"></textarea><i>方案设计</i>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-success" onclick="planning_commit()">保存</button>
+                    <button class="btn btn-default" data-dismiss="modal" aria-hidden="true">取消</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<table class="table table-bordered table-hover vert-align">
+    <tbody>
+        <thead>
+        <tr class="res_tbl_title">
+            <td>ID</td>
+            <td>标题</td>
+            <td>更新时间</td>
+        </tr>
+        </thead>
+        {% for item in planning %}
+            <tr>
+                <td>{{ item['planID'] }}</td>
+                <td><a href="/project/planning?a=details&id={{ item['planID'] }}">{{ item['title'] }}</a></td>
+                <td>{{item['updateTime'] }}</td>
+            </tr>
+        {% end %}
+    </tbody>
+</table>
+
+<div>
+    {% raw page_html %}
+</div>
+{% end %}

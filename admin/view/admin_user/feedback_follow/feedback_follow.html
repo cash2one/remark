@@ -1,0 +1,243 @@
+{% extends '../../public/main.html' %}
+
+{% block body %}
+<script type="text/javascript">
+    function process(str_id){
+        var str = 'follow_remark'+str_id;
+        uediter(str);
+    }
+    function update_group(obj){
+        var id = obj.name;
+        $.ajax({
+            url: "/admin_user/feedback_follow?a=update",
+            method: "post",
+            dataType:'json',
+            data: {'id':id, 'group_name':$('#group_name'+id).val()},
+            success: function (result) {
+                //console.log("result = "+result);
+                if (result.status ==200){
+                    window.location.href="/admin_user/feedback_follow";
+                }else {
+                    alert("更新失败请重新操作！");
+                }
+            }
+        });
+    }
+    function update_remark(obj){
+        var id = obj.id;
+        var nameID = obj.name;
+        var group_id =[];
+        $("input[name='group_id"+nameID+"']:checked").each(function(){
+            group_id.push($(this).val());
+        });
+        var remark = $('#follow_remark'+nameID).val();
+        if (remark.length>128){
+            alert("备注输入有误，请重新输入！");
+            return false;
+        }
+        dicArgs = {
+            'id': id,
+            'remark': remark,
+            'group_id': group_id.join(',')
+        };
+        $.ajax({
+            url: "/admin_user/feedback_follow?a=remark",
+            method: "post",
+            dataType:'json',
+            data: dicArgs,
+            success: function (result) {
+                //console.log("result = "+result);
+                if (result.status ==200){
+                    window.location.href="/admin_user/feedback_follow";
+                }else {
+                    alert("更新失败请重新操作！");
+                }
+            }
+        });
+    }
+</script>
+
+<div class="nav">
+    <a class="btnAdd" name="group_create" data-target="#group_create_dialog" data-toggle="modal">新增分组</a>
+    <div id="group_create_dialog" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" id="group_create_close" class="close" data-dismiss="modal" aria-hidden="true">X</button>
+                    <h4 id="group_create_title">新增分组</h4>
+                </div>
+                <div class="modal-body brickWall">
+                    <label>分组名称：</label><input id="group_name"> 策划组
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-success" name="group_create" id="group_create">保存</button>
+                    <button class="btn btn-default" data-dismiss="modal" aria-hidden="true">取消</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <button class="btnAdd" id="view_group">查看分组</button>
+    <div id="group_list" style="display: none">
+        <br>
+        <table class="table table-bordered table-hover vert-align">
+            <thead>
+                <tr class="res_tbl_title">
+                    <td>序号</td>
+                    <td>分组名</td>
+                    <td>添加时间</td>
+                    <td>操作</td>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>0</td>
+                    <td>默认</td>
+                    <td>-</td>
+                    <td><a class="btn btnThin" href="/admin_user/feedback_follow?a=delete&id=0" onclick="return confirm('此操作将取消跟踪默认分组下的需求单,确认清空?');">清空</a></td>
+                </tr>
+                {% for item in group %}
+                <tr>
+                    <td>{{ item['id'] }}</td>
+                    <td>{{ item['name'] }}</td>
+                    <td>{{ item['create_time'] }}</td>
+                    <td>
+                        <button class="btn btnThin" name="group_update{{item['id']}}" data-target="#group_update_dialog{{item['id']}}" data-toggle="modal">修改</button>
+                        <div id="group_update_dialog{{item['id']}}" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <button type="button" id="group_update_close{{item['id']}}" class="close" data-dismiss="modal" aria-hidden="true">X</button>
+                                        <h4 id="group_update_title{{item['id']}}">修改分组</h4>
+                                    </div>
+                                    <div class="modal-body brickWall">
+                                        <label>分组名称：</label><input id="group_name{{item['id']}}" name="group_name" value="{{ item['name'] if item['name'] else ''}}">
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button class="btn" name="{{ item['id'] }}" onclick="update_group(this)">确定</button>
+                                        <button class="btn" data-dismiss="modal" aria-hidden="true">取消</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </td>
+                </tr>
+                {% end %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div>
+    <ul id="group_tab" class="nav nav-tabs">
+        {% for group_id in sorted(feedback.keys()) %}
+        <li id="group_name{{group_id}}"><a href="#group{{group_id}}" data-toggle="tab">{{ group_name[group_id]}}</a></li>
+        {% end %}
+    </ul>
+
+    <div id="group_tab_content" class="tab-content">
+        {% for group_id in sorted(feedback.keys()) %}
+
+        <div class="tab-pane" id="group{{group_id}}">
+            <table class="table table-bordered table-hover vert-align">
+                <thead>
+                    <tr class="res_tbl_title">
+                        <td>ID</td>
+                        <td>我的效果</td>
+                        <td>备注</td>
+                        <td>跟踪时间</td>
+                        <td>操作</td>
+                    </tr>
+                </thead>
+                {% for item in feedback[group_id] %}
+                <tbody>
+                    <tr>
+                        <td>{{ item['feedback_id'] }}</td>
+                        <td>
+                            <a href="/project/feedback?a=detail&id={{item['feedback_id']}}" title="描述：{{ item['media_name'] }}">{{ item['media_name'] if item['media_name'] else '-' }}</a>
+                        </td>
+                        <td>{% raw item['remark'] if item['remark'] else '-' %}</td>
+                        <td>{{ item['create_time'] }}</td>
+                        <td><button class="btn btnThin" name="change_remark{{item['id']}}" data-target="#change_remark_dialog{{item['id']}}"
+                                    data-toggle="modal" onclick="process({{item['id']}})">修改</button>
+
+                            <div id="change_remark_dialog{{item['id']}}" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <button type="button" id="change_remark_close{{item['id']}}" class="close" data-dismiss="modal" aria-hidden="true">X</button>
+                                            <h4 id="change_remark_title{{item['id']}}">修改跟踪</h4>
+                                        </div>
+                                        <div class="modal-body brickWall">
+                                            <form id="update_remark_form{{item['id']}}" method="post" >
+                                                <div>
+                                                    <strong>分组</strong>
+                                                    {% for gid in sorted(group_name.keys()) %}
+                                                        {% if str(gid)+str(item['feedback_id']) in feedbackData.keys() %}
+                                                            <label><input type="checkbox" name="group_id{{item['id']}}" value="{{ gid }}" checked />{{group_name[gid]}}</label>
+                                                        {% elif gid !=0   %}
+                                                            <label><input type="checkbox" name="group_id{{item['id']}}" value="{{ gid }}">{{group_name[gid]}}</label>
+                                                        {% end %}
+                                                    {% end %}
+                                                </div>
+
+                                                <div class="uediter">
+                                                    <strong>备注信息</strong>
+                                                    <textarea id="follow_remark{{item['id']}}" name="follow_remark">
+                                                        {% raw item['remark'] if item['remark'] else '' %}
+                                                    </textarea><i>备注信息，可为空</i>
+                                                </div>
+                                            </form>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button class="btn" name="{{ item['id'] }}" id="{{ item['feedback_id'] }}" onclick="update_remark(this)">确定</button>
+                                            <button class="btn" data-dismiss="modal" aria-hidden="true">取消</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </td>
+                    </tr>
+                </tbody>
+                {% end %}
+            </table>
+        </div>
+        {% end %}
+    </div>
+</div>
+
+
+
+<script type="text/javascript">
+    $(document).ready(function(){
+
+        $('#view_group').click(function(){
+            $("#group_list").toggle();
+        });
+
+        $('#group_create').click(function(){
+        var group = $("#group_name").val();
+        if (group == ''){
+            alert('分组名不能为空');
+            return;
+        }
+        $.ajax({
+            type: "post",
+            dataType: "json",
+            url: "/admin_user/feedback_follow?a=create",
+            data: {'group': group},
+            success: function (d) {
+                if(d.status==200){
+                    $("#group_create_close").click();
+                    alert('添加成功')
+                } else {
+                    alert('出错啦。。。')
+                }
+                location.reload();
+                }
+            })
+        });
+    });
+</script>
+{% end %}

@@ -1,0 +1,353 @@
+{% extends '../public/main.html' %}
+{% block title%}{{ user['nickname'] }}{% end %}
+{% block body %}
+<link href="{{ static_url('style/user_zone.css') }}" type="text/css" rel="stylesheet">
+<!--[if lt IE 9]>
+<script language="javascript" type="text/javascript" src="{{ static_url('script/excanvas.js') }}"></script><![endif]-->
+<script language="javascript" type="text/javascript" src="{{ static_url('script/jquery.jqplot.js') }}"></script>
+<link rel="stylesheet" type="text/css" href="{{ static_url('style/jquery.jqplot.css') }}" />
+
+{% include 'top.html' %}
+    <div class="content">
+        {% if len(media) > 0 %}
+        <ul>
+            {% for item in media %}
+            <li class="mediaBox">
+                <div class="mediaAvatar">
+                    <a href="/media?a=view&id={{ item['id'] }}" target="_blank">
+                        <img src="{{ item['avatar'] }}" alt="{{ item['name'] }}">
+                    </a>
+                </div>
+                <div class="mediaInfo">
+                    <div class="mediaTitle">
+                        <span class="mediaName"><a href="/media?a=view&id={{ item['id'] }}">{{ item['name'] }}</a></span>
+                        {% if item['original'] %}
+                        <span class="original" title="原创">原创</span>
+                        {% end %}
+                        {% if item['identify'] %}
+                        <span class="wechatVerify ydi yd-checked" title="微信认证">已认证</span>
+                        {% end %}
+                        <span class="level" title="综合级别">级别<strong>{{ item['value_level'] }}</strong></span>
+                        <span class="qrcode"><img src="/static/images/qr-mini.png" alt="二维码"><img src="http://7sbnkf.com2.z0.glb.qiniucdn.com/{{ item['qrcode'] }}-avatar" alt="{{ item['name'] }}二维码" class="codeL"></span>
+                    </div>
+                    <div class="mediaCategory">
+                        {% if item['category'] %}
+                        <span>{{ item['category']['name'] }}</span>
+                        {% end %}
+                    </div>
+                    <div class="mediaTag">
+                        {% for tag in item['tag'] %}
+                            <span data="">{{ tag['name'] }}</span>
+                        {% end %}
+                    </div>
+                    <dl class="mediaAudience">
+                        <dt>针对地域：</dt>
+                        <dd>{{ item['area'] }}</dd>
+                        <dt>针对性别：</dt>
+                        <dd>{{ item['audience_gender'] }}</dd>
+                    </dl>
+                </div>
+                <div class="more">
+                    <a href="/media?a=view&id={{ item['id'] }}" class="btnMore">查看详情</a>
+                </div>
+            </li>
+            {% end %}
+        </ul>
+        {% else %}
+        <p class="defaultTip"><span>他还没有入驻自媒体</span</p>
+        {% end %}
+    </div>
+</div>
+<!--
+    <div class="my-unions" style="display: none;">
+
+    </div>
+    <div class="container">
+        {% for item in media %}
+        <div class="media-box">
+            <div class="media-head">
+                <a href="/media?a=view&id={{ item['id'] }}">
+                    <img src="{{ item['avatar'] }}" alt="" style="width:100px;height:100px;" />
+                </a>
+            </div>
+            <div class="from-sm from-weixin">
+                <img src="/static/images/wei.png" alt="" style="width:16px;height:16px;" />
+            </div>
+            <div class="media-main">
+                <div class="media-title">
+                    <a href="/media?a=view&id={{ item['id'] }}">{{ item['name'] }}</a>
+                </div>
+                <div class="media-title-letters">{{ item['wechat_id'] }}</div>
+                <div class="artical" style="width:457px;">{{ item['breif'] }}</div>
+                <div class="chart jqplot-target" id="chart{{ item['id'] }}" data-weekread="" data-id="{{ item['id'] }}">
+                </div>
+            </div>
+        </div>
+        {% end %}
+    </div>
+</div>
+-->
+<script type="text/javascript">
+    var page=1;
+    var pagesize=20;
+    var sm_page = 1;
+    var source;
+    var sm_source;
+    var maxPage;
+    var sm_max;
+$(function(){
+    
+    var week_read_data = function(){
+        $('.chart').each(function(){
+            var data = $(this).attr('data-weekread');
+            var id = $(this).attr('data-id');
+            if(data && id){
+                getExcel(data, 'chart' + id);
+            }
+        });
+    }();
+    
+    function getExcel(data, id){
+        var list = data.split(',');
+        while(list.length<8){
+            list.unshift('0');
+        }
+        var max = getMax(list);
+        var min = getMin(list);
+        var sam = total(list);
+        if(sam>0){
+            if(max<30000){
+                if(max==0){
+                    max = 10;
+                    min = -1;
+                }else{
+                    max = max*3;
+                    min = -1*max/3;
+                }
+
+            }else if(max<70000){
+                max = max*2;
+                min = 0;
+            }else{
+                max = 105000;
+                min = 50000<min?50000:min*0.4;
+            }
+            $.jqplot(id,  [list],{title: {'text': '阅读数曲线图'}, seriesColors:['#f2faff'],
+                axesDefaults:{show:false,tickOptions:{show:false},showTicks: false,showTickMarks: false},
+                axes:{xaxis:{min:0.8,max:8.2},yaxis:{max:max,min:min}},
+                grid:{background: '#f8f9fa',borderColor: '#f8f9fa',shadow:false,gridLineColor: '#f9f9f9',show:false},
+                seriesDefaults:{fill:true,fillAndStroke:true,fillColor:'#f2faff',show:true,lineWidth:2,color:'#2891eb',pointLabels:{ypadding:6,show:true},markerOptions:{shadow:false,size:6},shadow:false}
+            });
+        }else{
+            $('.excel-main').hide();
+        }
+    }
+
+    function total(list){
+        var sam = 0;
+        for(var i=0;i<list.length;i++){
+            sam+=list[i];
+        }
+        return sam;
+    }
+
+    function getMin(list){
+
+        var min = 100000;
+        for(var i=0;i<list.length;i++){
+            if(list[i]<min)min = list[i];
+        }
+        return min;
+    }
+
+    function getMax(list){
+        var max = 0;
+        for(var i=0;i<list.length;i++){
+            if(list[i]>max)max = list[i];
+        }
+        return max;
+    }
+
+        $('.choice').click(function(){
+            if(!$(this).hasClass('choose')){
+                if($(this).attr('id')=='sm'){
+                    $('#sm').addClass('choose');
+                    $('#union').removeClass('choose');
+                    $('.container').show();
+                    $('.my-unions').hide();
+                }else{
+                    $('#sm').removeClass('choose');
+                    $('#union').addClass('choose');
+                    $('.container').hide();
+                    $('.my-unions').show();
+                }
+            }
+            checkFootLocation();
+        });
+        sm_source = $('.media-box');
+        source = $('.union');
+        getSmList();
+        getList();
+        $(window).scroll(function(){
+            if ((50 + $(window).scrollTop()) >= ($(document).height() - $(window).height())) {
+                if($('.container').is(':hidden')){
+                    if(sm_page<sm_max){
+                        sm_page++;
+                        getSmList();
+                    }
+                }else{
+                    if(page<maxPage){
+                        page++;
+                        getList();
+                    }
+                }
+            }
+        })
+    });
+
+    function getSmList(){
+        $.ajax({
+            url:'/api/smedia/smedia_others',
+            method:'get',
+            dataType:'json',
+            data:{page_size:pagesize,page:sm_page,uid:'{user.id}'},
+            success:showSmList
+        })
+    }
+
+    function showSmList(data){
+        sm_max = data.max_page;
+        var list = data.list;
+        var container = $('.container');
+        console.log(list);
+        for(var i=0;i<list.length;i++){
+            var f1 = sm_source.clone();
+            f1.children('.media-head').children('a').attr('href','/media/' + list[i].id);
+            f1.children('.media-head').children('a').children('img').attr('src',list[i].logo);
+            f1.children('.media-main').children('a').children('.media-title').text(list[i].name);
+            f1.children('.media-main').children('a').attr('href','/media/' + list[i].id);
+            f1.children('.media-main').children('.media-title-letters').text(list[i].wechat_id);
+            if(list[i].identify)f1.children('.media-main').children('.proved').text('认证：' + list[i].identify);
+            f1.children('.media-main').children('.media-detail').text(list[i].features);
+            var ttt = list[i].type;
+            switch (ttt){
+                case 1:
+                    f1.children('.from-sm').addClass('from-weixin').children('img').attr('src','/static/images/wei.png');
+                    break;
+                case 3:
+                    f1.children('.from-sm').addClass('from-yaoqi').children('img').attr('src','/static/images/yao.png');
+                    break;
+                case 2:
+                    f1.children('.from-sm').addClass('from-bilibili').children('img').attr('src','/static/images/bilibili.png');
+                    break;
+            }
+            var cid = 'chart' + list[i].id;
+            f1.children('.chart').attr('id',cid);
+            var array = list[i].read8;
+            while(array.length<8){
+                array.unshift({week_read:0});
+            }
+            for(var xx=0;xx<array.length;xx++){
+                array[xx] = Number(array[xx].week_read);
+            }
+
+            var max = getMax(array);
+            var min = getMin(array);
+            var sam = total(array);
+            if(sam>0){
+                if(max<30000){
+                    if(max<10){
+                        max = 10;
+                    }else{
+                        max = max*3;
+                    }
+                    min = -1*max/10;
+                }else if(max<70000){
+                    max = max*2;
+                    min = 0;
+                }else{
+                    max = 105000;
+                    min = 50000<min?50000:min*0.4;
+                }
+                //f1.children('.showStart').text(array[0]);
+                //f1.children('.showEnd').text(array[array.length-1]);
+                f1.show();
+                container.append(f1);
+
+                $.jqplot(cid,  [array],{title:{text:'阅读数曲线图'},
+                    axesDefaults:{show:false,tickOptions:{show:false},showTicks: false,showTickMarks: false},
+                    axes:{xaxis:{min:0.8,max:8.2},yaxis:{max:max,min:min}},
+                    grid:{background: '#fff',borderColor: '#fff',shadow:false,gridLineColor: '#f9f9f9',show:false},
+                    seriesDefaults:{fill:true,fillAndStroke:true,fillColor:'#f2faff',show:true,color:'#2891eb',pointLabels:{ypadding:6,show:true},markerOptions:{show:false},shadow:false}
+
+                });
+            }else{
+                $('.excel-main').hide();
+                f1.show();
+                container.append(f1);
+            }
+
+        }
+        checkFootLocation();
+    }
+
+    function total(list){
+        var sam = 0;
+        for(var i=0;i<list.length;i++){
+            sam+=list[i];
+        }
+        return sam;
+    }
+
+    function getMin(list){
+
+        var min = 100000;
+        for(var i=0;i<list.length;i++){
+            if(list[i]<min)min = list[i];
+        }
+        return min;
+    }
+
+    function getMax(list){
+        var max = 0;
+        for(var i=0;i<list.length;i++){
+            if(list[i]>max)max = list[i];
+        }
+        return max;
+    }
+
+    function getList(){
+        $.ajax({
+            url:'/api/auth/union_list',
+            method:'get',
+            dataType:'json',
+            data:{page_size:pagesize,page:page,type:'others',uid:'{user.id}'},
+            success:showList
+        })
+    }
+
+    function showList(data){
+        maxPage = data.max_page;
+        var main = $('.my-unions');
+        var list = data.list;
+        for(var i=0;i<list.length;i++){
+            var f1 = source.clone();
+            f1.children('a').attr('href','/union_show/' + list[i].id);
+            f1.children('a').children('img').attr('src',list[i].logo);
+            f1.children('a').children('img').attr('alt',list[i].name);
+            f1.children('.info').children('a').attr('href','/union_show/' + list[i].id).text(shortName(list[i].name,7));
+            f1.children('.info').children('.creator').text('创建者：' + shortName(list[i].user.name||list[i].user.email.split('@')[0],15));
+            f1.children('.info').children('.classmates').text('成员数：' + list[i].member_count);
+            f1.css('display','inline-block');
+            main.append(f1);
+        }
+        checkFootLocation();
+    }
+
+    function shortName(str,len){
+        if(str.length<len)return str;
+        str = str.substr(0,len-2) + '...';
+        return str;
+    }
+</script>
+{% end %}

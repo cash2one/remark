@@ -1,0 +1,199 @@
+{% extends '../public/main.html' %}
+{% block title%}账号绑定{% end %}
+{% block body %}
+<link href="{{ static_url('style/uc.css') }}" type="text/css" rel="stylesheet">
+
+{% include 'my_top.html' %}
+<div class="ucContainer clearfix">
+{% include 'my_menu.html' %}
+<div class="ucMain userinfo-body">
+    <div class="title">
+        <hr>
+        <h3>账号绑定</h3>
+    </div>
+    <div class="content-box" id="bangding-detail">
+        {% if not bind_email %}
+        <div class="mj-row">
+            <div class="mj-middle">
+                <div class="bd-box bd-hover" name="mail"><img src="/static/images/bd-mail-un.png" alt="mail"/>绑定邮箱
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <div class="mj-row has-bd">
+            <div class="mj-middle">
+                <div class="bd-box bd-mail" name="mail"><img src="/static/images/bd-mail.png" alt="mail"/>{{ bind_email }}
+                    <div class="hover-floor" onclick="unbindSomething('mail',this)">修改邮箱</div>
+                </div>
+            </div>
+        </div>
+        {% end %}
+        {% if not bind_wechat %}
+        <div class="mj-row">
+            <div class="mj-middle">
+                <div class="bd-box bd-hover" name="weixin"><img src="/static/images/bd-weixin-un.png" alt="绑定微信"/>绑定微信
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <div class="mj-row has-bd">
+            <div class="mj-middle">
+                <div class="bd-box bd-weixin" name="weixin"><img src="/static/images/bd-weixin.png" alt="weixin"/>{{ bind_wechat }}
+                    <div class="hover-floor" onclick="unbindSomething('weixin',this)">解除绑定</div>
+                </div>
+            </div>
+        </div>
+        {% end %}
+        {% if not bind_phone %}
+        <div class="mj-row">
+            <div class="mj-middle">
+                <div class="bd-box bd-hover" name="mobile"><img src="/static/images/bd-mobile-un.png" alt="mobile"/>绑定手机</div>
+            </div>
+        </div>
+        {% else %}
+        <div class="mj-row has-bd">
+            <div class="mj-middle">
+                <div class="bd-box bd-mobile" name="mobile"><img src="/static/images/bd-mobile.png" alt="mobile"/>{{ bind_phone }}
+                    <div class="hover-floor" onclick="unbindSomething('mobile',this)">修改手机</div>
+                </div>
+            </div>
+        </div>
+        {% end %}
+    </div>
+</div></div>
+<script type="text/javascript">
+    var count;
+    $(function(){
+        $('.tab-box').click(function(){
+            if(!$(this).hasClass('select-box')){
+                var id = $(this).attr('id');
+                if(id=='basic'){
+                    location.href = '/user';
+                }else{
+                    location.href = '/user?a=password';
+                }
+            }
+        });
+        $('.bd-box').click(function(){
+            var obj = $(this);
+            if(!obj.parents('.mj-row').hasClass('has-bd')||obj.hasClass('bd-mobile')||obj.hasClass('bd-mail')){
+                var str = obj.attr('name');
+                switch (str){
+                    case 'mail':
+                        location.href = '/user?a=bind_email';
+                        break;
+                    case 'weixin':
+                        location.href = 'https://open.weixin.qq.com/connect/qrconnect?appid=wxb3f7618fff2272e5&redirect_uri=http://www.yidao.info/bind_wechat&response_type=code&scope=snsapi_login&state=1#wechat_redirect';
+                        break;
+                    case 'mobile':
+                        location.href = '/account?a=bind_phone&status=1';
+//                            var sss = obj.hasClass('bd-mobile')?'修改绑定手机':'绑定手机';
+//                        showBoxDefineEverything(sss,
+//                                '<div class="ver-mobile"><p>输入手机号码</p>' +
+//                                '<input type="text" id="mobileInput" style="width:80%;margin:10px 0"  maxlength="11">' +
+//                                '<input type="text" id="vcode" maxlength="6" style="width:40%;margin:10px 10px 0 0 "><span class="sendVcode" style="display: inline-block;" onclick="sendCode()">发送验证码</span>' +
+//                                '</div>'
+//                                ,'绑定','取消',function(){
+//                                    if(!checkMovile($('#mobileInput').val())){
+//                                        showTipsBox('alert','请输入正确手机号');
+//                                        return;
+//                                    }
+//                                    if($('#vcode').val().length!=6){
+//                                        showTipsBox('alert','请输入验证码');
+//                                        return;
+//                                    }
+//                                    $.ajax({
+//                                        url:'/user?a=bind_phone',
+//                                        method:'post',
+//                                        dataType:'json',
+//                                        data:{verify_code:$('#vcode').val(),phone:$('#mobileInput').val()},
+//                                        success:function(d){
+//                                            if(d.status == 200){
+//                                                showTipsBox('message', '绑定成功');
+//                                                location.href = '/user?a=bind';
+//                                            } else if (d.status == 602){
+//                                                showTipsBox('alert', '该手机已注册或已被绑定');
+//                                            } else {
+//                                                showTipsBox('alert', '操作失败，请刷新重试');
+//                                            }
+//
+//                                        }
+//                                    })
+//                        });
+                        break;
+                }
+            }
+        });
+    });
+
+    function bindmail(){
+        showBoxDefineEverything('修改邮箱','输入新的邮箱地址<input type="text" style="height:32px;width:100%;margin-top:10px;" id="change-email-text">','修改','取消',function(){
+            if(!checkEmail($('#change-email-text').val())){
+                showTipsBox('alert','您输入的邮箱格式有误');
+                return;
+            }
+            $.ajax({
+                url:'/user?a=bind_email',
+                type:'post',
+                dataType:'json',
+                data: {
+                    'email': $.trim($('#change-email-text').val())
+                },
+                success:function(d){
+                    if(d.status == 200){
+                        showTipsBox('message','更改邮箱成功');
+                        setTimeout(reloadthis,2000);
+                    }else{
+                        showTipsBox('alert','该邮箱已存在');
+                    }
+                }
+            })
+        });
+    }
+
+    function reloadthis(){
+        location.reload();
+    }
+
+    function sendCode(){
+        if($('.sendVcode').hasClass('sending'))return;
+        if(!checkMovile($('#mobileInput').val())){
+            showTipsBox('alert','请输入正确手机号');
+            return;
+        }
+        count = 90;
+        $.ajax({
+            url:'/user?a=bind_phone_vcode',
+            method:'post',
+            dataType:'json',
+            data:{phone:$('#mobileInput').val()}
+        });
+        $('.sendVcode').addClass('sending').text(count + '秒后重试');
+        setTimeout(counting,1000);
+    }
+
+    function counting(){
+        if(--count>0){
+            if(!$('.sendVcode').hasClass('sending'))$('.sendVcode').addClass('sending');
+            $('.sendVcode').text(count + '秒后重试');
+            setTimeout(counting,1000);
+        }else{
+            $('.sendVcode').removeClass('sending').text('发送验证码');
+        }
+    }
+
+    function unbindSomething(type,obj){
+        switch (type){
+            case 'weixin':
+                $.get('/user?a=unbind_wechat',function(){location.reload()});
+                break;
+            case 'mail':
+
+                break;
+            case 'mobile':
+                //$.get('/api/auth/unbind_phone',function(){location.reload()});
+                break;
+        }
+    }
+</script>
+{% end %}

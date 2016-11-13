@@ -1,0 +1,803 @@
+{% extends '../../public/main.html' %}
+
+{% block body %}
+<script type="text/javascript">
+    var droplist//下拉菜单全局变量
+    function display(searchType,menu_route){
+        //console.log("searchType = "+searchType);
+        if (parseInt(searchType) == 1){
+            document.getElementById(menu_route).style.display="none" ;
+        }else{
+            document.getElementById(menu_route).style.display="" ;
+        }
+    }
+
+    function searchTypeFun(obj){
+        var searchType =obj.value;
+        display(searchType,"menu_route_div");
+    }
+    //编辑模块下显示项目
+    function module_editer(obj){
+        var str_id = obj.id;
+        //console.log("str_id = "+str_id);
+        var id = str_id.split("_").pop();
+        var searchType = $("#editer_"+id).val();
+        $("#editer_child_"+id).val(searchType);
+        display(searchType,"menu_route"+id);
+        var menu_val = $("#menu_"+id).val();
+        $("#menu_"+id).next("select").children("option").each(function(){
+            if ($(this).val() == menu_val) {
+                $(this).attr("selected","true");
+            };
+        })
+        showFirstList(id);
+    }
+    //显示父级修改模块
+    function showParentVert (obj){
+        var raw_id= obj.id;
+        var id = raw_id.split("_").pop()
+        if ($("#toggleBtn_"+id).val() == 1) {
+            $('.parent-vert_'+id).show().addClass("edit-on"+id);
+            $('.basic-edit_'+id).hide();
+        }else{
+            $('.parent-vert_'+id).hide().removeClass("edit-on"+id);
+            $('.basic-edit_'+id).show();
+        }
+    }
+        
+    //创建一级下拉菜单
+    function showFirstList(id){
+        var list = droplist.data;
+        for (var i = list.length - 1; i >= 0; i--) {
+            if (list[i].parent_id == 0) {
+                $('#itemClass1_'+id).append('<option class="itself-1" value="'+ list[i].access_id +'">'+ list[i].label +'</option>')
+            };
+        };
+    }
+    //创建二级下拉菜单
+    function showSecList(obj){
+        var secId = obj.id;
+        var id = secId.split("_").pop();//本模态框id
+        var innerId = $('#itemClass1_'+id).val()//菜单内id
+        //删除原有数据
+        $('#itemClass2_'+id).find('.itself-2').remove();
+
+        if (innerId ==0 || innerId =="") {
+            $('#itemClass2_'+id).attr('disabled','true');
+            $('#itemClass3_'+id).attr('disabled','true')
+        }else{
+            $('#itemClass2_'+id).removeAttr('disabled')
+        }
+        var list = droplist.data;
+        for (var i = list.length - 1; i >= 0; i--) {
+            if (innerId!=0 && list[i].parent_id == innerId) {
+                $('#itemClass2_'+id).append('<option class="itself-2" value="'+ list[i].access_id +'">'+ list[i].label +'</option>')
+            };
+        };
+    }
+    //创建其他下拉菜单
+    function showThirdList(obj){
+        var secId = obj.id;
+        var id = secId.split("_").pop();//本模态框id
+        var innerId = $('#itemClass2_'+id).val()//菜单内id
+        //删除原有数据
+        $('#itemClass3_'+id).find('.itself-3').remove()
+        if (innerId ==0 || innerId =="") {
+            $('#itemClass3_'+id).attr('disabled','true')
+        }else{
+            $('#itemClass3_'+id).removeAttr('disabled')
+        }
+        var list = droplist.data;
+        //无差别创建所有其他菜单
+        for (var i = list.length - 1; i >= 0; i--) {
+            if (list[i].access_level>2 && innerId!=0) {
+                $('#itemClass3_'+id).append('<option class="itself-3" value="'+ list[i].access_id +'">'+ list[i].label +'</option>')
+            };
+        };
+    }
+    function editerFun(obj){
+        var str_id = obj.id;
+        var id = str_id.split("_").pop();
+        var searchType =obj.value;
+        display(searchType,"menu_route"+id);
+    }
+
+    function check_value(module_label,is_exsit_child,menu_route){
+        var reg_name = /^(\w|[\u4E00-\u9FA5])|[-]*$/;
+        var reg_value = /^(\w)|[/]*$/;
+        if(module_label==null  || module_label==""){
+            alert("标签不允许为空！");
+            return false;
+        }
+        if ( !(6<module_label.length < 24) || reg_name.test(module_label) == false){
+            alert("请输入正确的格式! \n标签由中文、英文、数字组成！");
+            return false;
+        }
+        if(is_exsit_child == 0){
+            if(menu_route=="" || reg_value.test(menu_route) == false){
+                alert("链接路径不允许为空！");
+                return false;
+            }
+        }
+        return true
+    }
+    //添加权限
+    function module_new_menu(){
+        var module_label = $('#module_label').val();
+        var menu_route = $('#module_menu_route').val();
+        var is_exsit_child = $('#is_exsit_child').val();
+        var menu_validity =$('#menu_validity').val();
+        var status = check_value(module_label, is_exsit_child, menu_route);
+        if (!status){
+            return false;
+        }
+        var new_menu = {
+            'module_label':module_label,
+            'module_menu_route':menu_route,
+            'is_exsit_child':is_exsit_child,
+            'validity':menu_validity,
+        }
+        $.ajax({
+            url:'/admin_user/permission_manager?a=create',
+            method: "post",
+            dataType:'json',
+            data: new_menu,
+            success: function (result) {
+                if (result.status ==200){
+                    window.location.href="/admin_user/permission_manager";
+                }else if (result.status ==401) {
+                    alert("错误！可能原因：1.数据重复 2.无操作权限");
+                    return false;
+                }else if (result.status ==403) {
+                    alert("该用户无操作权限！");
+                    return false;
+                }else if (result.status ==500) {
+                    alert("更新用户失败请重新操作！");
+                    return false;
+                }
+            }
+        })
+    }
+    //编辑权限
+    function update_module(obj){
+        var str_id = obj.id;
+        var id = str_id.split("_").pop();
+        if ($(".edit-on"+id).length>0) {
+            var parentId=$('.on_'+id).val()
+            if (id == parentId) {
+                alert("父级权限与本权限同级！请重新设置")
+                return false;
+            };
+            var new_parent = {
+                'parent_id':parentId,
+                'access_id':id,
+            }
+            $.ajax({
+                url:'/admin_user/permission_manager?a=changePermission',
+                method:'post',
+                dataType:'json',
+                data:new_parent,
+                success: function (result) {
+                    if (result.status ==200){
+                        window.location.href="/admin_user/permission_manager";
+                    }else if (result.status ==401) {
+                        alert("错误！可能原因：1.数据重复 2.无操作权限");
+                        return false;
+                    }else if (result.status ==403) {
+                        alert("该用户无操作权限！");
+                        return false;
+                    }else if (result.status ==500) {
+                        alert("更新用户失败请重新操作！");
+                        return false;
+                    }
+                }
+            })
+        }else{
+            var access_id = $('#access_id'+id).val();
+            var module_label = $('#editer_label'+id).val();
+            var menu_route = $('#editer_menu_route'+id).val();
+            var is_exsit_child = $('#editer_child_'+id).val();
+            var sort = $('#editer_sort'+id).val();
+            var menu_validity =$('#menu_position'+id).val();
+            var status = check_value(module_label,is_exsit_child,menu_route);
+            if (!status){
+                return false;
+            }
+            var re = /^\d/;
+            if (sort && !re.test(sort)){
+                alert("请输入正确的排列顺序！");
+                return false;
+            }
+            var update_data = {
+                'id':id,
+                'access_id':access_id,
+                'editer_label':module_label,
+                'editer_menu_route':menu_route,
+                'editer_child':is_exsit_child,
+                'editer_sort':sort,
+                'validity':menu_validity,
+            }
+            $.ajax({
+                url:'/admin_user/permission_manager?a=update',
+                method:'post',
+                dataType:'json',
+                data:update_data,
+                success: function (result) {
+                    if (result.status ==200){
+                        window.location.href="/admin_user/permission_manager";
+                    }else if (result.status ==401) {
+                        alert("错误！可能原因：1.数据重复 2.无操作权限");
+                        return false;
+                    }else if (result.status ==403) {
+                        alert("该用户无操作权限！");
+                        return false;
+                    }else if (result.status ==500) {
+                        alert("更新用户失败请重新操作！");
+                        return false;
+                    }
+                }
+            })
+        }  
+    }
+    //模块有效还是无效
+    function setValidity(obj){
+        var status ;
+        var valid = obj.getAttribute('validity');
+        var haschild = obj.getAttribute('hasChild');
+        var newValid ;
+        if (valid == 0) {
+            status = confirm('确认设置此为有效 ！！！');
+            newValid = 1;
+        }else{
+            status = confirm('确认设置此为无效 ！！！');
+            newValid = 0;
+        }
+        if(status == false){
+            return false;
+        }
+        var id = obj.getAttribute('identity');
+        var valid_json = {
+            'id':id,
+            'child':haschild,
+            'validity':newValid
+        }
+        $.ajax({
+            url: "/admin_user/permission_manager?a=delete",
+            method: "post",
+            dataType:'json',
+            data: valid_json,
+            success: function (result) {
+                if (result.status ==200){
+                    window.location.href="/admin_user/permission_manager";
+                }else if (result.status ==401) {
+                    alert("错误！可能原因：1.数据重复 2.无操作权限");
+                    return false;
+                }else if (result.status ==403) {
+                    alert("该用户无操作权限！");
+                    return false;
+                }else if (result.status ==500) {
+                    alert("更新用户失败请重新操作！");
+                    return false;
+                }
+            }
+        })
+        }
+
+    function moduleAddFun(obj){
+        var str_id = obj.id;
+        var id = str_id.split("_").pop();
+        var moduleType = obj.value;
+        display(moduleType,"module_add_menu_route"+id);
+    }
+
+    function module_add_submit(obj){
+        var str_id = obj.id;
+        var id = str_id.split("_").pop();
+        var module_label = $('#module_add_label'+id).val();
+        var menu_route = $('#add_menu_route'+id).val();
+        var is_exsit_child = $('#module_add_child'+id).val();
+        var status = check_value(module_label,is_exsit_child,menu_route);
+        if (!status){
+            return false;
+        }
+        document.getElementById('module_add_form'+id).submit();
+    }
+
+    function selectFun(obj){
+        var selectType = parseInt(obj.value);
+        if (selectType == 1  || selectType == 2){
+            document.getElementById("search_level").style.display="none" ;
+            document.getElementById("search_txt").style.display="" ;
+        }else{
+            document.getElementById("search_level").style.display="" ;
+            document.getElementById("search_txt").style.display="none" ;
+        }
+    }
+
+    $(document).ready(function() {
+        
+        var searchType = "{{listSearch['searchType']}}";
+        if (searchType== "3"){
+            document.getElementById("search_level").style.display="" ;
+            document.getElementById("search_txt").style.display="none" ;
+            $("#searchType").val("3");
+            $("#search_level").val("{{listSearch['search_level']}}");
+        }else{
+            document.getElementById("search_level").style.display="none" ;
+            document.getElementById("search_txt").style.display="" ;
+            if (searchType == "1" || searchType == "2" ){
+                $("#searchType").val(searchType);
+                $("#search_level").val("{{listSearch['search_level']}}");
+            }else{
+                $("#searchType").val("1");
+                $("#search_level").val("1");
+            }
+        }
+        $(".btn-setvalid").each(function(){
+            if ($(this).attr('validity')==0) {
+                $(this).addClass("btn-success").text("设为有效");
+            }else{
+                $(this).addClass("btn-warning").text("设为无效");
+            }
+        })
+        $.ajax({
+            type: "get",
+            url: "/admin_user/permission_manager?a=getAllPermission",
+            dataType: "json",
+            success: function(data) {
+                droplist = data;
+            },
+            error: function(error) {
+            alert("没有获得数据");
+            }
+        });
+        //隐藏修改父级菜单模块
+        $(".parent-edit").hide();
+
+        $(".class-2").find('select').attr('disabled','true');
+        $(".class-other").find('select').attr('disabled','true');
+
+        //建立选中下拉菜单唯一标示
+        $("[name='itemClass']").click(function(){
+            var raw_id= $(this).attr('id');
+            var id = raw_id.split("_").pop();
+            $('select').removeClass('on_'+id);
+            if ($(this).val() == 0 || $(this).val() == "") {
+                if (raw_id.split("_")[0]=="itemClass3") {
+                    $("#itemClass2_"+id).addClass('on_'+id);
+                };
+                if (raw_id.split("_")[0]=="itemClass2") {
+                    $("#itemClass1_"+id).addClass('on_'+id);
+                };
+            }else{
+                $(this).addClass('on_'+id);
+            }
+        })
+        
+    })
+
+    function action_add_submit(obj){
+        var id = obj.name;
+        var action_name = $('#name_'+id).val();
+        var access_level = $('#access_level'+id).val();
+        var label = $('#label_'+id).val();
+        var action_id = $('#action_id'+id).val();
+        var reg_name = /^(\w|_)*$/;
+        if (label.length < 2  || label.length > 32 ) {
+            alert("请输入正确格式的标签格式！由2-32位的中文、英文、数字组成！");
+            return false;
+        }
+        if (action_name.length < 2  || action_name.length > 32 || reg_name.test(action_name) == false ) {
+            alert("请输入正确格式的action！由2-32位的英文组成！");
+            return false;
+        }
+        $.ajax({
+            url: "/admin_user/permission_manager?a=addAction",
+            method: "post",
+            dataType:'json',
+            data: {'action_name':action_name, 'id':action_id, 'access_level':access_level,'label':label},
+            success: function (result) {
+                //console.log("result = "+result);
+                if (result.status ==200){
+                    window.location.href="/admin_user/permission_manager";
+                }else if (result.status ==401) {
+                    alert("错误！可能原因：1.数据重复 2.无操作权限");
+                }else if (result.status ==500) {
+                    alert("更新用户失败请重新操作！");
+                }
+            }
+        });
+    }
+    function action_update_submit(obj){
+        var id = obj.name;
+        var action_name = $('#action_name'+id).val();
+        var label = $('#label'+id).val();
+        var reg_name = /^(\w|_)*$/;
+        if (label.length < 2  || label.length > 32) {
+            alert("请输入正确格式的标签格式！由2-32位的中文、英文、数字组成！");
+            return false;
+        }
+        if (action_name.length < 2  || action_name.length > 32 || reg_name.test(action_name) == false ) {
+            alert("请输入正确格式的！由2-32位的英文组成！");
+            return false;
+        }
+        $.ajax({
+            url: "/admin_user/permission_manager?a=updateAction",
+            method: "post",
+            dataType:'json',
+            data: {'action_name':action_name, 'id':id,'label':label},
+            success: function (result) {
+                //console.log("result = "+result);
+                if (result.status ==200){
+                    window.location.href="/admin_user/permission_manager";
+                }else if (result.status ==401) {
+                    alert("错误！可能原因：1.数据重复 2.无操作权限");
+                    return false;
+                }else if (result.status ==403) {
+                    alert("该用户无操作权限！");
+                    return false;
+                }else if (result.status ==500) {
+                    alert("更新用户失败请重新操作！");
+                    return false;
+                }
+            }
+        });
+    }
+</script>
+
+<div class="nav">
+    <button  class="btnAdd" data-target="#module_create_dialog" data-toggle="modal" >添加权限</button>
+</div>
+
+<div class="funnel" >
+    <div class="searchBox">
+        <form class="form-inline" action='/admin_user/permission_manager' method="get">
+
+            <select class="form-control" name="searchType" id="searchType" onchange="selectFun(this)">
+                <option value="1">文本搜索</option>
+                <option value="2">搜索子权限(名称)</option>
+                <option value="3">等级搜索</option>
+            </select>
+
+            <input class="form-control" type="text" name="search_txt"  id="search_txt" class="typeText" value="{{listSearch['search_txt']}}"/>
+            <select class="form-control" name="search_level" id="search_level" >
+                <option value="1">等级 1</option>
+                <option value="2">等级 2</option>
+                <option value="3">等级 3</option>
+                <option value="4">等级 4</option>
+            </select>
+            <button type="submit" class="btn btn-default">搜索</button>
+        </form>
+    </div>
+</div>
+
+<div id="module_create_dialog" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" id="module_create_close" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 id="wechat_price_update_title">添加权限</h4>
+            </div>
+            <div class="modal-body">
+                <form id="module_create_form" class="form-horizontal" method="post" action="/admin_user/permission_manager?a=create">
+                    <div class="form-group">
+                        <label class="control-label col-sm-3">标签</label>
+                        <div class="col-sm-5">
+                            <input class="form-control" type="text" id="module_label" placeholder="菜单显示" name="module_label" value=""> 
+                        </div>
+                    </div>
+                    <!--<div>-->
+                        <!--<strong>模块名</strong>-->
+                        <!--<input type="text" id="module_name" name="module_name" value=""> <b>*</b>用于后台辨别-->
+                    <!--</div>-->
+                    <div class="form-group">
+                        <label class="control-label col-sm-3">是否含子菜单</label>
+                        <div class="col-sm-5">
+                        <select class="form-control" name="is_exsit_child" id="is_exsit_child" onchange="searchTypeFun(this)">
+                            <option value="0" selected="true">不含</option>
+                            <option value="1">含</option>
+                        </select>
+                    </div>
+                    </div>
+                    <div class="form-group" >
+                        <label class="control-label col-sm-3">菜单显示位置</label>
+                        <div class="col-sm-5">
+                        <select class="form-control" id="menu_validity" name="menu_validity">
+                            <option value="1" selected="true">左侧</option>
+                            <option value="2">上侧</option>
+                        </select>
+                    </div>
+                    <span class="label label-warning">注意：上侧菜单最多包含一个子菜单</span>
+                    </div>
+                    <!--<div id="class_active_div">-->
+                        <!--<strong>当前选项</strong>-->
+                        <!--<input type="text" id="module_class_active" name="module_class_active" value=""> <b>*</b>用于选中当前菜单-->
+                    <!--</div>-->
+                    <div id="menu_route_div" class="form-group">
+                        <label class="control-label col-sm-3">链接路径</label>
+                        <div class="col-sm-5">
+                            <input class="form-control" type="text" id="module_menu_route" placeholder="*用于后台" name="module_menu_route" value=""> 
+                    </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-success" onclick="module_new_menu()">保存</button>
+                <button class="btn btn-default" data-dismiss="modal" aria-hidden="true">取消</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+    <table class="table table-bordered table-hover vert-align">
+    <thead>
+        <tr class="res_tbl_title">
+            <td>序号</td>
+            <td>标签</td>
+            <!--<td>名称</td>-->
+            <td>权限等级</td>
+            <td>是否含子菜单</td>
+            <td>类型</td>
+            <td>操作</td>
+        </tr>
+    </thead>
+    {% for item in admin_module %}
+    <tbody>
+        <tr>
+            <td>{{ item['id'] }}</td>
+            <td>{{ item['label'] }}</td>
+            <!--<td>{{ item['name'] }}</td>-->
+            <td>等级 {{ item['access_level'] }}</td>
+            <td>{% if item['is_exsit_child'] == 0 %}否
+                {% else %}是
+                {% end %}</td>
+
+            <td>{% if item['tag'] == 0 %}权限
+                {% else %}操作
+                {% end %}</td>
+
+            <td>
+                {% if item['tag']==0 %}
+                    <a id="update_btn_{{ item['id'] }}" name="update_btn" class="btn btn btnColor btn-info" data-target="#user_module_dialog_{{ item['id'] }}" data-toggle="modal" onclick="module_editer(this)">编辑</a>
+                {% else %}
+                    <a name="update_btn" class="btn btn btnColor btn-info" data-target="#action_dialog_{{ item['id'] }}" data-toggle="modal">编辑</a>
+                {% end %}
+              <div id="action_dialog_{{ item['id'] }}" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" id="module_create_close" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                                <h4 id="action_title">权限操作</h4>
+                            </div>
+                            <div class="modal-body">
+                                <form id="action_form{{ item['id'] }}" class="form-horizontal" method="post" >
+                                    <div class="form-group">
+                                        <label class="control-label col-sm-3">标签</label>
+                                        <div class="col-sm-5">
+                                        <input class="form-control" type="text" id="label{{ item['id'] }}" name="editer_label" placeholder="*菜单显示" value="{{ item['label'] }}">
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="control-label col-sm-3">操作名</label>
+                                        <div class="col-sm-5">
+                                        <input class="form-control" type="text" id="action_name{{ item['id'] }}" name="name" value="{{ item['name'] }}">
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+
+                            <div class="modal-footer">
+                                <button class="btn btn-success" name="{{ item['id'] }}" onclick="action_update_submit(this)">保存</button>
+                                <button class="btn btn-default" data-dismiss="modal" aria-hidden="true">取消</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="user_module_dialog_{{ item['id'] }}" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" id="module_create_close" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                                <h4 id="module_editer_title">编辑权限</h4>
+                            </div>
+                            <div class="modal-body ">
+                                <form class="form-horizontal" id="editer_form{{ item['id'] }}" method="post" action="/admin_user/permission_manager?a=update">
+                                    <div class="form-group basic-edit_{{ item['id'] }}">
+                                    <input type="hidden" id="editer_id{{ item['id'] }}" name="id" value="{{ item['id'] }}">
+                                    <input type="hidden" id="access_id{{ item['id'] }}" name="access_id" value="{{ item['access_id'] }}">
+                                    <div class="form-group">
+                                        <label class="control-label col-sm-3">标签</label>
+                                        <div class="col-sm-5">
+                                            <input class="form-control" type="text" id="editer_label{{ item['id'] }}" placeholder="*菜单显示" name="editer_label" value="{{ item['label'] }}">
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="control-label col-sm-3">是否含子菜单</label>
+                                        <div class="col-sm-5">
+                                            <input class="form-control" type="hidden" id="editer_{{ item['id'] }}" name="exsit" value="{{ item['is_exsit_child'] }}">
+                                            <select class="form-control" name="editer_child" id="editer_child_{{ item['id'] }}" onchange="editerFun(this)">
+                                            <option value="0">不含</option>
+                                            <option value="1">含</option>
+                                        </select>
+                                    </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="control-label col-sm-3">菜单显示位置</label>
+                                        <div class="col-sm-5">
+                                            <input class="form-control" type="hidden" id="menu_{{ item['id'] }}" name="exsit" value="{{ item['validity'] }}">
+                                            <select class="form-control" id="menu_position{{ item['id'] }}" name="menu_position">
+                                                <option value="1">左侧</option>
+                                                <option value="2">上侧</option>
+                                        </select>
+                                    </div>
+                                    <span class="label label-warning">注意：上侧菜单最多包含一个子菜单</span>
+                                    </div>
+                                    <div class="form-group" id="menu_route{{ item['id'] }}">
+                                        <label class="control-label col-sm-3">链接路径</label>
+                                        <div class="col-sm-5">
+                                        <input class="form-control" type="text" id="editer_menu_route{{ item['id'] }}" placeholder="*用于后台" name="editer_menu_route" value="{{ item['menu_route'] }}">
+                                    </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="control-label col-sm-3">排序</label>
+                                        <div class="col-sm-5">
+                                        <input class="form-control" type="text" id="editer_sort{{ item['id'] }}" placeholder="*模块顺序" name="editer_sort" value="{{ item['sort'] }}">
+                                    </div>
+                                    </div>
+                                    </div>
+                                    <div class="form-group">
+                                    <div class="form-group toggle-vert">
+                                        <label class="control-label col-sm-3">修改父级权限</label>
+                                        <div class="col-sm-2">
+                                        <select class="form-control toggleBtn" id="toggleBtn_{{ item['id'] }}" onclick=showParentVert(this)>
+                                            <option value="0">否</option>
+                                            <option value="1">是</option>
+                                        </select>
+                                    </div>
+                                        <span class="label label-default">选择“是”进入父级权限修改页面</span>
+                                    </div>
+                                    </div>
+                                    <div class="form-group parent-edit parent-vert_{{ item['id'] }}">
+                                    <div class="form-group class-1">
+                                        <label class="control-label col-sm-3">一级权限</label>
+                                        <div class="col-sm-5">
+                                        <select class="form-control" id="itemClass1_{{ item['id'] }}" name="itemClass" onclick=showSecList(this)>
+                                            <option class="itself-first" value="">不变</option>
+                                            <option class="itself-first" value="0">设置为一级权限</option>
+                                        </select>
+                                        </div>
+                                    </div>
+                                    <div class="form-group class-2">
+                                        <label class="control-label col-sm-3">次级权限</label>
+                                        <div class="col-sm-5">
+                                        <select class="form-control" id="itemClass2_{{ item['id'] }}" name="itemClass" onclick=showThirdList(this)>
+                                            <option class="itself-sec" value="">不变</option>
+                                        </select>
+                                        <span class="label label-warning">注意：勿将该权限设置到它的子权限中，否则将会失效！</span>
+                                        </div>
+                                    </div>
+                                    <div class="form-group class-other">
+                                        <label class="control-label col-sm-3">其他权限</label>
+                                        <div class="col-sm-5">
+                                        <select class="form-control" id="itemClass3_{{ item['id'] }}" name="itemClass">
+                                            <option class="itself-other" value="">不变</option>
+                                        </select>
+                                        </div>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="modal-footer">
+                                <button class="btn btn-success" id="submit_bt_{{ item['id'] }}" onclick="update_module(this)">保存</button>
+                                <button class="btn btn-default" data-dismiss="modal" aria-hidden="true">取消</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <button class="btn-setvalid btnColor btn" onclick=setValidity(this) hasChild="{{ item['is_exsit_child'] }}" identity="{{ item['access_id'] }}" validity="{{ item['validity'] }}">
+                </button>
+
+                {% if item['tag']==0 %}
+                    <a name="update_btn" class="btn btn btnColor btn-info" data-target="#add_module_dialog{{ item['id'] }}" data-toggle="modal">添加子权限</a>
+                {% end %}
+
+                {% if item['is_exsit_child'] == 0 and item['tag']==0 %}
+                    <a name="update_btn" class="btn btn btnColor btn-info" data-target="#add_action_dialog{{ item['id'] }}" data-toggle="modal">添加操作</a>
+                {% end %}
+
+               <div id="add_module_dialog{{ item['id'] }}" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" id="module_create_close" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                                <h4 id="module_add_title">添加子权限</h4>
+                            </div>
+                            <div class="modal-body ">
+                                <form id="module_add_form{{ item['id'] }}"  class="form-horizontal" method="post" action="/admin_user/permission_manager?a=childModule">
+                                    <input type="hidden" name="access_id" value="{{ item['access_id'] }}">
+                                    <input type="hidden" name="access_level" value="{{ item['access_level'] }}">
+                                    <div class="form-group">
+                                        <label class="control-label col-sm-3">标签</label>
+                                        <div class="col-sm-5">
+                                            <input class="form-control" type="text" id="module_add_label{{ item['id'] }}" placeholder="*菜单显示" name="label" value="">
+                                    </div>
+                                    </div>
+                                    <!--<div>-->
+                                        <!--<strong>模块名</strong>-->
+                                        <!--<input type="text" id="module_add_name{{ item['id'] }}" name="name" value=""> <b>*</b>用于后台辨别-->
+                                    <!--</div>-->
+                                    <div class="form-group">
+                                        <label class="control-label col-sm-3">是否含子菜单</label>
+                                        <div class="col-sm-5">
+                                            <select class="form-control" name="editer_child" id="module_add_child{{ item['id'] }}" onchange="moduleAddFun(this)">
+                                            <option value="0" selected="true">不含</option>
+                                            <option value="1">含</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <!--<div id="module_add_class_active{{ item['id'] }}">-->
+                                        <!--<strong>当前选项</strong>-->
+                                        <!--<input type="text" id="add_class_active{{ item['id'] }}" name="class_active" value=""> <b>*</b>用于选中当前菜单-->
+                                    <!--</div>-->
+                                    <div class="form-group" id="module_add_menu_routechild{{ item['id'] }}">
+                                        <label class="control-label col-sm-3">链接路径</label>
+                                        <div class="col-sm-5">
+                                            <input class="form-control" type="text" id="add_menu_route{{ item['id'] }}" placeholder="*用于后台" name="menu_route" value="">
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+
+                            <div class="modal-footer">
+                                <button class="btn btn-success" id="module_add_submit_{{ item['id'] }}" accessId="{{ item['access_id'] }}" onclick="module_add_submit(this)">保存</button>
+                                <button class="btn btn-default" data-dismiss="modal" aria-hidden="true">取消</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+               <div id="add_action_dialog{{ item['id'] }}" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                                <h4 id="add_title">权限操作</h4>
+                            </div>
+                            <div class="modal-body ">
+                                <form id="add_form{{ item['id'] }}" method="post" class="form-horizontal">
+                                    <input type="hidden" name="access_level" id="access_level{{ item['id'] }}" value="{{ item['access_level'] }}">
+                                    <input type="hidden" name="id" id="action_id{{ item['id'] }}" value="{{ item['access_id'] }}">
+                                    <div class="form-group">
+                                        <label class="control-label col-sm-3">标签</label>
+                                        <div class="col-sm-5">
+                                            <input class="form-control" type="text" id="label_{{ item['id'] }}" placeholder="*菜单显示" name="label">
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="control-label col-sm-3">操作名</label>
+                                        <div class="col-sm-5">
+                                            <input class="form-control" type="text" id="name_{{ item['id'] }}" name="name">
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+
+                            <div class="modal-footer">
+                                <button class="btn btn-success" name="{{ item['id'] }}" onclick="action_add_submit(this)">保存</button>
+                                <button class="btn btn-default" data-dismiss="modal" aria-hidden="true">取消</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </td>
+        </tr>
+    </tbody>
+    {% end %}
+</table>
+
+<div>
+    {% raw page_html %}
+</div>
+{% end %}

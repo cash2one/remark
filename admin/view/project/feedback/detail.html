@@ -1,0 +1,278 @@
+{% extends '../../public/main.html' %}
+
+{% block body %}
+<link rel="stylesheet" type="text/css" href="{{ static_url('style/bootstrap-datetimepicker.css') }}" />
+<script type="text/javascript" src="{{ static_url('script/bootstrap-datetimepicker.js') }}"></script>
+<script type="text/javascript">
+    $(document).ready(function(){
+        uediter('description');
+        uediter('follow_remark');
+    });
+
+    function feedback_follow(obj) {
+        var id = obj.name;
+        var chk_value = [];
+        $('input[name="group"]:checked').each(function () {
+            chk_value.push($(this).val());
+        });
+        var remark = $('#follow_remark').val();
+        if (remark && remark.length > 128) {
+            alert('备注信息有误，请重新输入');
+            return false;
+        }
+        $.ajax({
+            type: "post",
+            dataType: "json",
+            url: "/project/feedback?a=follow",
+            data: {'id': "{{ detail['id'] }}", 'remark': remark, 'group': chk_value.join(',')},
+            success: function (d) {
+                if (d.status == 200) {
+                    window.location.href = "/project/feedback";
+                } else {
+                    alert('加入跟踪失败。。。')
+                    return false;
+                }
+            }
+        });
+    }
+</script>
+<div class="nav">
+    <a href="" onclick="javascript:history.back(-1);">返回上页</a>
+</div>
+<div class="colcon">
+<table class="table table-bordered table-hover vert-align">
+    <thead>
+    <tr class="res_tbl_title">
+        <td>基本信息</td>
+        <td>属性</td>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+        <td>ID</td>
+        <td>{{ detail['id'] }}</td>
+    </tr>
+    <tr>
+        <td>自媒体</td>
+        <td>{% if detail['media_id'] %}<a href="/media/wechat?a=detail&id={{ detail['media_id'] }}" style="overflow:hidden;display:inline-block;max-width:100px;white-space:nowrap;text-overflow:ellipsis;">{{ detail['media_name'] }}</a>{% else %}-{% end %}</td>
+    </tr>
+    <tr>
+        <td>业务需求</td>
+        <td>{% if detail['plan_demand_id'] %}<a href="/project/demand?a=detail&id={{ detail['plan_demand_id'] }}" style="overflow:hidden;display:inline-block;max-width:100px;white-space:nowrap;text-overflow:ellipsis;">{{ detail['plan_demand_name'] }}</a>{% else %}-{% end %}</td>
+    </tr>
+    <tr>
+        <td>平台需求</td>
+        <td>{% if detail['demand_id'] %}<a href="/demand?a=detail&id={{ detail['demand_id'] }}" style="overflow:hidden;display:inline-block;max-width:100px;white-space:nowrap;text-overflow:ellipsis;">{{ detail['web_demand_name'] }}</a>{% else %}-{% end %}</td>
+    </tr>
+    <tr>
+        <td>阅读数</td>
+        <td>{{ detail['read_num'] if detail['read_num'] else '-'}}</td>
+    </tr>
+    <tr>
+        <td>点赞数</td>
+        <td>{{ detail['like_num'] if detail['like_num'] else '-'}}</td>
+    </tr>
+    <tr>
+        <td>新增粉丝数</td>
+        <td>{{ detail['fans_num'] if detail['fans_num'] else '-'}}</td>
+    </tr>
+    <tr>
+        <td>评论数</td>
+        <td>{{ detail['comment_num'] if detail['comment_num'] else '-'}}</td>
+    </tr>
+    <tr>
+        <td>注册量</td>
+        <td>{{ detail['register_num'] if detail['register_num'] else '-' }}</td>
+    </tr>
+    <tr>
+        <td>领券数</td>
+        <td>{{ detail['ticket_num'] if detail['ticket_num'] else '-' }}</td>
+    </tr>
+    <tr>
+        <td>下单数</td>
+        <td>{{ detail['order_num'] if detail['order_num'] else '-' }}</td>
+    </tr>
+    <tr>
+        <td>成单数</td>
+        <td>{{ detail['trade_num'] if detail['trade_num'] else '-' }}</td>
+    </tr>
+    <tr>
+        <td>成交金额</td>
+        <td>{{ detail['trade_money'] if detail['trade_money'] else '-' }}</td>
+    </tr>
+    <tr>
+        <td>销售金额</td>
+        <td>{{ detail['sale_money'] if detail['sale_money'] else '-' }}</td>
+    </tr>
+    <tr>
+        <td>ROI</td>
+        <td>{{ detail['roi'] }}</td>
+    </tr>
+    <tr>
+        <td>效果等级</td>
+        <td>{{ detail['effect_level'][1] if detail['effect_level'] else '-'}}</td>
+    </tr>
+    <tr>
+        <td>详细说明</td>
+        <td>{{ detail['description'] if detail['description'] else '-'}}</td>
+    </tr>
+    </tbody>
+</table>
+</div>
+<div class="opc">
+    <button data-target="#feedback_follow" data-toggle="modal" class="btnNormal">{{ '加入跟踪' if not group else '取消跟踪' }}</button>
+    <button data-target="#feedback_dialog" data-toggle="modal" class="btnNormal">修改投放结果</button>
+</div>
+
+<div id="feedback_follow" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">X</button>
+                <h4 id="plan_follow_title">{{ '加入跟踪' if not group else '取消跟踪' }}</h4>
+            </div>
+            <div class="modal-body brickWall">
+                <form id="plan_follow_form" name="plan_form" method="post" >
+                    {% if not group %}
+                        <div>
+                            <strong>投放组</strong>
+                            {% for item in groupData %}
+                                <label><input type="checkbox" id="group{{item['id']}}" name="group" value="{{item['id']}}">{{item['name']}}</label>
+                            {% end %}
+                        </div>
+                        <div class="uediter">
+                            <strong>备注</strong>
+                            <textarea id="follow_remark" name="follow_remark" ></textarea>
+                        </div>
+                    {% end %}
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-success" name="{{ detail['id'] }}" onclick="feedback_follow(this)">保存</button>
+                <button class="btn btn-default" data-dismiss="modal" aria-hidden="true">取消</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="feedback_dialog" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">X</button>
+                <h4 id="feedback_update_title">修改投放结果</h4>
+            </div>
+            <div class="modal-body brickWall">
+                <form id="feedback_form" name="feedback_form" method="post" action="/project/feedback?a=update&id={{ detail['id'] }}">
+                    <!--<input type="hidden" name="id" value="{{detail['id']}}">-->
+                    <input type="hidden" name="plan_demand_id" value="{{detail['plan_demand_id']}}">
+                    <input type="hidden" name="media_id" value="{{detail['media_id']}}">
+                    <div>
+                        <strong>平台需求ID</strong>
+                        <input type="number" name="demand_id" value="{{detail['demand_id']}}"> <i>一道自媒体平台上发布的需求 ID</i>
+                    </div>
+                    <div>
+                        <strong>阅读数</strong>
+                        <input type="number" name="read_num" value="{{detail['read_num']}}">  <i>阅读数，只可填写整数</i>
+                    </div>
+                    <div>
+                        <strong>点赞数</strong>
+                        <input type="number" name="like_num" value="{{detail['like_num']}}">  <i>点赞数，只可填写整数</i>
+                    </div>
+                    <div>
+                        <strong>新增粉丝数</strong>
+                        <input type="number" name="fans_num" value="{{detail['fans_num']}}">  <i>新增粉丝数，只可填写整数</i>
+                    </div>
+                    <div>
+                        <strong>评论数</strong>
+                        <input type="number" name="comment_num" value="{{detail['comment_num']}}">  <i>评论数，只可填写整数</i>
+                    </div>
+                    <div>
+                        <strong>注册数</strong>
+                        <input type="number" name="register_num" value="{{detail['register_num']}}">  <i>注册数，只可填写整数</i>
+                    </div>
+                    <div>
+                        <strong>领券数</strong>
+                        <input type="number" name="ticket_num" value="{{detail['ticket_num']}}">  <i>领券数，只可填写整数</i>
+                    </div>
+                    <div>
+                        <strong>下单数</strong>
+                        <input type="number" name="order_num" value="{{detail['order_num']}}">  <i>下单数，只可填写整数</i>
+                    </div>
+                    <div>
+                        <strong>成单数</strong>
+                        <input type="number" name="trade_num" value="{{detail['trade_num']}}">  <i>成单数，只可填写整数</i>
+                    </div>
+                    <div>
+                        <strong>成交金额</strong>
+                        <input type="number" name="trade_money" value="{{detail['trade_money']}}">  <i>成交金额，只可填写整数</i>
+                    </div>
+                    <div>
+                        <strong>销售金额</strong>
+                        <input type="number" name="sale_money" value="{{detail['sale_money']}}"> <b>*</b> <i>销售金额，只可填写整数</i>
+                    </div>
+                    <div>
+                        <strong>ROI</strong>
+                        <input type="text" name="roi" value="{{detail['roi']}}"> <b>*</b> <i>投入产出比</i>
+                    </div>
+                    <!--<div>-->
+                        <!--<strong>是否评论</strong>-->
+                        <!--<select title="是否评论" name="comment">-->
+                            <!--<option name="comment" value="0">未知</option>-->
+                            <!--<option name="comment" value="1">是</option>-->
+                            <!--<option name="comment" value="2">否</option>-->
+                        <!--</select>-->
+                    <!--</div>-->
+                    <div>
+                        <strong>效果等级</strong>
+                        <select title="效果等级" name="effect_level">
+                            <option name="effect_level" value="0">未知</option>
+                            <option name="effect_level" value="1">很差</option>
+                            <option name="effect_level" value="2">差</option>
+                            <option name="effect_level" value="3">一般</option>
+                            <option name="effect_level" value="4">好</option>
+                            <option name="effect_level" value="5">很好</option>
+                        </select>
+                    </div>
+                    <div class="uediter">
+                        <strong>详细描述</strong>
+                        <textarea id="description" name="description">{{detail['description']}}</textarea> <b>*</b><i>除以上信息的投放情况描述</i>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn" name="feedback_update" id="feedback_update">保存</button>
+                <button class="btn" data-dismiss="modal" aria-hidden="true">取消</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--<br><br><br>-->
+<!--<div class="mediaCart">-->
+    <!--<div class="title">自媒体筛选工具</div>-->
+    <!--<div class="dick">-</div>-->
+    <!--<ul id="mediaList" class="mediaList">-->
+        <!--&lt;!&ndash;-->
+        <!--<li>-->
+            <!--<strong><a href="/media/wechat?a=detail&id=810531">猜火车</a></strong>-->
+            <!--<span>-->
+                <!--<button type="button" class="btnThin">选择</button>-->
+                <!--<button type="button" class="btnThin">移出</button>-->
+            <!--</span>-->
+        <!--</li>-->
+        <!--&ndash;&gt;-->
+    <!--</ul>-->
+<!--</div>-->
+<script type="text/javascript">
+$(document).ready(function() {
+    $('#feedback_update').click(function () {
+        $('#feedback_form').submit();
+    });
+    var effect_level = "{{ detail['effect_level'][0] }}";
+    if (effect_level != ""){
+        $("option[name=effect_level][value=" + effect_level + "]").attr("selected", true);
+    }
+
+})
+</script>
+{% end %}

@@ -1,0 +1,511 @@
+{% extends '../public/main.html' %}
+{% block title %}订单详情{% end %}
+{% block body %}
+<link href="{{ static_url('style/order.css') }}" type="text/css" rel="stylesheet" >
+
+<script type="text/javascript">
+    function iframeLoaded(iframe) {
+        var doc = iframe.contentWindow.window;
+        var html = doc.document.body.innerHTML;
+        var len = html.length;
+        if (len > 0) {
+            var obj = JSON.parse(html);
+            var idx = obj.data.idx;
+            var url = obj.data.url;
+            var key = obj.data.key;
+            console.log(obj.data);
+            s = '<img id="pic'+ idx +'" src="'+url+ '">' +
+                    '<input type="hidden" id="feedback_pic'+ idx +'" name="feedback_pic" value="'+ key +'" />' +
+                    '<button id="del_pic'+ idx +'" type="button">删除</button>';
+            $('#fb'+idx).removeClass('ydi yd-add');
+            $('#fb'+idx).append(s);
+            $('#del_pic'+idx).text('删除');
+        }
+    }
+</script>
+<div class="orderContainer">
+    <div class="demandInfo">
+        <span class="demandCategory">{{ demand_detail['demand_form'] }}</span>
+        <a href="/demand?a=view&id={{ demand_detail['id'] }}">{{ demand_detail['title'] }}</a>
+        <span class="demandDate">投放时间：<strong>{{ demand_detail['time_begin'] }}</strong> 至 <strong>{{ demand_detail['time_end'] }}</strong></span>
+    </div>
+    <div class="orderInfo clearfix">
+        <div class="mediaAvatar">
+            <a href="/media?a=view&id={{ media_detail['media_id'] }}" target="_blank">
+                <img src="{{ media_detail['avatar'] }}" alt="{{ media_detail['name'] }}">
+            </a>
+        </div>
+        <div class="mediaInfo">
+            <span class="mediaName"><a href="/media?a=view&id={{ media_detail['media_id'] }}" target="_blank">{{ media_detail['name'] }}</a></span>
+            <span class="mediaAdvertising">{{ media_attr_value }}</span>
+        </div>
+        <div class="orderDate">{{ order_detail['create_time'] }}</div>
+        <div class="orderPrice"><small>¥</small><strong>{{ order_detail['price'] }}</strong></div>
+        <div class="orderStatus">
+            {% if order_detail['status'] == 1 %}
+            <span class="statusCheck">等待付款</span>
+            <button class="btn btnNext" data-toggle="modal" data-target="#cancel_order_modal">取消订单</button>
+            {% elif order_detail['status'] == 2 %}
+            <span class="statusReady">等待反馈</span>
+            {% elif order_detail['status'] == 3 %}
+            <span class="statusGoing">等待验收</span>
+            {% elif order_detail['status'] == 4 %}
+            <span class="statusFinish">已完成</span>
+            {% end %}
+        </div>
+        <!-- 取消订单（Modal） -->
+        <div class="modal fade" id="cancel_order_modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+           <div class="modal-dialog">
+              <div class="modal-content">
+                 <div class="modal-header">
+                    <button type="button" class="close"
+                       data-dismiss="modal" aria-hidden="true">
+                          &times;
+                    </button>
+                    <h4 class="modal-title" id="myModalLabel">
+                       确认取消订单？
+                    </h4>
+                 </div>
+                 <!--<div class="modal-body"></div>-->
+                 <div class="modal-footer">
+                     <button type="button" class="btn btn-pr" id='cancel_order'>确认</button>
+                     <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                 </div>
+              </div><!-- /.modal-content -->
+           </div><!-- /.modal -->
+        </div>
+    </div>
+</div>
+<!--订单结束评价
+{% if order_detail['status'] == 4 %}
+<!--提交评价
+<div class="orderRate">
+    <div class="title">
+        <h3>评价</h3>
+    </div>
+    <div class="content clearfix">
+        <div class="rateStars">
+            <label>评分</label>
+            <div id="rating">
+                <em style="background-image:url({{ static_url('images/star.png') }});"></em>
+                <em style="background-image:url({{ static_url('images/star.png') }});"></em>
+                <em style="background-image:url({{ static_url('images/star.png') }});"></em>
+                <em style="background-image:url({{ static_url('images/star.png') }});"></em>
+                <em style="background-image:url({{ static_url('images/star.png') }});"></em>
+                <span class="ratingTip"></span>
+            </div>
+        </div>
+        <div class="rateRemark">
+            <label>评论</label>
+            <textarea></textarea>
+        </div>
+    </div>
+    <div class="action">
+        <button type="button" class="btnOk">提交评价</button>
+    </div>
+</div>
+<!--评价结果
+<div class="orderRate">
+    <div class="title">
+        <h3>评价</h3>
+    </div>
+    <div class="content clearfix">
+        <div class="rateStars">
+            <span>评分</span>
+            <div style="background-image:url({{ static_url('images/star.png') }});" class="rated">
+                <div style="background-image:url({{ static_url('images/star.png') }});" class="star4" title="满意"></div>
+            </div>
+        </div>
+        <div class="rateRemark">
+            <span>评论</span>
+            <p>服务态度不错，效果勉强可以。</p>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+window.onload = function(){
+    var star = $('#rating em');
+    var oDiv = $('#rating');
+    var temp = 0;
+    
+    for(var i = 0, len = star.length; i < len; i++){
+        star[i].index = i;
+        
+        star[i].onmouseover = function(){
+            clear();
+            for(var j = 0; j < this.index + 1; j++){
+                star[j].style.backgroundPosition = '0 -30px';
+            }
+        }
+        
+        star[i].onmouseout = function(){
+            for(var j = 0; j < this.index + 1; j++){
+                star[j].style.backgroundPosition = '0 0';
+            }
+            current(temp);
+        }
+        
+        star[i].onclick = function(){
+            temp = this.index + 1;
+            if(temp == 1){
+                $('.ratingTip').text('很不满意');
+            }else if(temp == 2){
+                $('.ratingTip').text('不满意');
+            }else if(temp == 3){
+                $('.ratingTip').text('一般');
+            }else if(temp == 4){
+                $('.ratingTip').text('满意');
+            }else if(temp == 5){
+                $('.ratingTip').text('很满意');
+            }
+
+            current(temp);
+        }
+    }
+    //清除所有
+    function clear(){
+        for(var i = 0, len = star.length; i < len; i++){
+            star[i].style.backgroundPosition = '0 0';
+        }
+    }
+    //显示当前第几颗星
+    function current(temp){
+        for(var i = 0; i < temp; i++){
+            star[i].style.backgroundPosition = '0 -30px';
+        }
+    }
+};
+</script>
+{% end %}
+-->
+<!--订单等待反馈阶段-->
+{% if order_detail['status'] == 2 %}
+    <!--未反馈-->
+    {% if not feedback_detail %}
+        <!--广告主等待反馈-->
+        {% if is_ad_user %}
+            <div class="orderFeedback">
+                <div class="title">
+                    <h3>等待反馈</h3>
+                    <div class="contact"><span class="ydi yd-user"></span><span class="phone">{{ order_detail['media_phone'] }}</span></div>
+                </div>
+                <div class="content clearfix">
+                    <p class="defaultTip"><span>等待自媒体反馈</span></p>
+                </div>
+                <!--未申诉-->
+                {% if not appeal_detail %}
+                    <div class="action">
+                        <button type="button" id="appeal_before_feedback" class="btnOther">申诉</button>
+                        （ 注意：如自媒体长时间未反馈 ）
+                    </div>
+                {% end %}
+            </div>
+        <!--自媒体提交反馈-->
+        {% else %}
+            <div class="orderFeedback">
+                <div class="title">
+                    <h3>投放反馈</h3>
+                </div>
+                <div class="content clearfix">
+                    <div class="feedbackLink">
+                        <label>图文链接</label>
+                        <input type="text" id="feedback_link" value="" placeholder="http://mp.weixin.qq.com/xxx">
+                    </div>
+                    <div class="feedbackScreenshotUpdate">
+                        <label>反馈截图</label>
+                        <span id='fb1' class="fb ydi yd-add">
+                        </span>
+                        <span id='fb2' class="fb ydi yd-add">
+                        </span>
+                        <span id='fb3' class="fb ydi yd-add">
+                        </span>
+                    </div>
+                </div>
+                <div class="action">
+                    <button type="button" id="submit_feedback" class="btnOk">提交反馈</button>
+                </div>
+            </div>
+        {% end %}
+    {% end %}
+<!--订单等待验收或完成阶段-->
+{% elif order_detail['status'] == 3 or order_detail['status'] == 4 %}
+    <!--已反馈-->
+    {% if feedback_detail %}
+        <div class="orderFeedback">
+            <div class="title">
+                <h3>反馈详情</h3>
+                {% if is_ad_user %}
+                    <div class="contact"><span class="ydi yd-user"></span><span class="phone">{{ order_detail['media_phone'] }}</span></div>
+                {% end %}
+            </div>
+            <div class="content clearfix">
+                <div class="feedbackTitle">
+                    <span>图文标题</span>
+                    <a href="{{ feedback_detail['url'] }}" target="_blank">{{ feedback_detail['title'] }}</a>
+                </div>
+                <!--
+                <div class="feedbackReadNumber">
+                    <span>阅读数</span>
+                    <strong>100000+</strong>
+                </div>
+                -->
+                {% if feedback_detail['idx'] %}
+                <div class="feedbackAdvertising">
+                    <span>广告位</span>
+                    <strong>
+                        {% if feedback_detail['idx'] == '1' %}
+                        单图文 / 多图文头条
+                        {% elif feedback_detail['idx'] == '2' %}
+                        多图文二条
+                        {% else %}
+                        多图文其它
+                        {% end %}
+                    </strong>
+                </div>
+                {% end %}
+                <!--
+                <div class="feedbackDate">
+                    <span>发布时间</span>
+                    <strong>{{ feedback_detail['publish_time'] }}</strong>
+                </div>
+                -->
+                {% if feedback_detail['picture_1'] or feedback_detail['picture_2'] or feedback_detail['picture_3']%}
+                <div class="feedbackScreenshot">
+                    <span>反馈截图</span>
+                    {% if feedback_detail['picture_1'] %}
+                    <a href="{{ feedback_detail['picturex_1'] }}"><img src="{{ feedback_detail['picture_1'] }}"></a>
+                    {% end %}
+                    {% if feedback_detail['picture_2'] %}
+                    <a href="{{ feedback_detail['picturex_2'] }}"><img src="{{ feedback_detail['picture_2'] }}"></a>
+                    {% end %}
+                    {% if feedback_detail['picture_3'] %}
+                    <a href="{{ feedback_detail['picturex_3'] }}"><img src="{{ feedback_detail['picture_3'] }}"></a>
+                    {% end %}
+                </div>
+                {% end %}
+            </div>
+            <!--广告主验收反馈-->
+            {% if is_ad_user and not appeal_detail and (feedback_detail['status'] == 1 or order_detail['status'] == 3) %}
+            <div class="action">
+                <!--反馈等待广告主确认且未进行申诉-->
+                {% if feedback_detail['status'] == 1%}
+                <button type="button" id="pass_feedback" class="btnOk">验收</button>
+                {% end %}
+                <!--未申诉-->
+                {% if order_detail['status'] == 3%}
+                    <button type="button" id="appeal_after_feedback" class="btnOther">申诉</button>
+                {% end %}
+            </div>
+            {% end %}
+        </div>
+    {% end %}
+{% end %}
+<!--订单等待反馈或等待验收阶段可以申诉-->
+{% if order_detail['status'] == 2 or order_detail['status'] == 3 %}
+    <!--未申诉-->
+    {% if not appeal_detail %}
+        <!--广告主提交申诉-->
+        {% if is_ad_user%}
+            <div id="appeal_area" class="orderAppeal" style="display: none">
+                <div class="title">
+                    <h3>订单申诉</h3>
+                </div>
+                <div class="content">
+                    <div class="appealField">
+                        <label for="">申诉理由</label>
+                        <textarea id="appeal_description"></textarea>
+                    </div>
+                </div>
+                <div class="action">
+                    <button type="button" id="submit_appeal" class="btnOk">提交申诉</button>
+                </div>
+            </div>
+        {% end %}
+    <!--已申诉-->
+    {% else %}
+        <!--申诉完成-->
+        {% if appeal_detail['status'] == 2 %}
+        <div class="orderAppeal">
+            <div class="title">
+                <h3>订单申诉</h3>
+            </div>
+            <div class="content">
+                <fieldset>
+                    <legend>申诉理由</legend>
+                    <p>{{ appeal_detail['description'] }}</p>
+                </fieldset>
+                <fieldset>
+                    <legend>申诉结果</legend>
+                    <p>{{ appeal_detail['result'] }}</p>
+                </fieldset>
+            </div>
+        </div>
+        <!--申诉等待处理中-->
+        {% else %}
+        <div class="orderAppeal">
+            <div class="title">
+                <h3>订单申诉</h3>
+            </div>
+            <div class="content">
+                <fieldset>
+                    <legend>申诉理由</legend>
+                    <p>{{ appeal_detail['description'] }}</p>
+                </fieldset>
+                <p class="defaultTip"><span>申诉中，请等待客服处理。</span></p>
+            </div>
+        </div>
+        {% end %}
+    {% end %}
+{% end %}
+<form id="feedback_pic_form" action="/user?a=upload_feedback" method="post" enctype="multipart/form-data" target="hidden_form">
+    <input type="hidden" id = "idx" name="idx" value="">
+    <input type="file" id="feedback_pic" name="feedback_pic" style="width:0;height:0;" onchange="document.getElementById('feedback_pic_form').submit();" />
+</form>
+<script type="text/javascript">
+$(document).ready(function(){
+    //取消订单
+    $("#cancel_order").click(function(){
+        var params = {'is_ad_user': '{{ is_ad_user }}', 'order_id':'{{ order_detail["id"] }}'};
+        $.ajax({
+            type: "POST",
+            url: "/user?a=cancel_order",
+            dataType: "JSON",
+            data: $.param(params),
+            success: function(ret){
+                if(ret.status == 200) {
+                    showTipsBox('message', '取消订单成功');
+                    location.reload(true);
+                }
+                else {
+                    showTipsBox('alert', '取消订单失败');
+                }
+            }
+        });
+    });
+
+    // 反馈阶段点击申诉按钮
+    $("#appeal_before_feedback").click(function(){
+        $('#appeal_area').show();
+    });
+    // 验收阶段点击申诉按钮
+    $("#appeal_after_feedback").click(function(){
+        $('#appeal_area').show();
+    });
+
+    $('#fb1').click(function(){
+        if ($(this).hasClass('yd-add')){
+            $('#idx').attr('value', '1');
+            $('#feedback_pic').click();
+        }
+        else{
+            $('#fb1').empty();
+            $('#fb1').addClass('ydi yd-add');
+        }
+    });
+    $('#fb2').click(function(){
+        if ($(this).hasClass('yd-add')){
+            $('#idx').attr('value', '2');
+            $('#feedback_pic').click();
+        } else{
+            $('#fb2').empty();
+            $('#fb2').addClass('ydi yd-add');
+        }
+    });
+    $('#fb3').click(function(){
+        if ($(this).hasClass('yd-add')){
+            $('#idx').attr('value', '3');
+            $('#feedback_pic').click();
+        }
+        else{
+            $('#fb3').empty();
+            $('#fb3').addClass('ydi yd-add');
+        }
+    });
+
+//    $('#feedback_link').blur(function(){
+//        var reg = /[a-zA-z]+:\/\/[^\s]*/;
+//        var link = $('#feedback_link').val();
+//        if (!reg.test(link)) {
+//            showTipsBox('alert', '图文链接错误');
+//        }
+//    });
+
+    //提交反馈后，变更订单状态，刷新页面， 新建反馈记录
+    $("#submit_feedback").click(function(){
+        var reg = /[a-zA-z]+:\/\/[^\s]*/;
+        var link = $('#feedback_link').val();
+        var pic1 = $('#feedback_pic1').val();
+        var pic2 = $('#feedback_pic2').val();
+        var pic3 = $('#feedback_pic3').val();
+        if (!reg.test(link)) {
+            showTipsBox('alert', '图文链接错误');
+            return
+        }
+        var params = {
+            'order_id': '{{ order_detail["id"] }}',
+            'demand_id': '{{ demand_detail["id"] }}',
+            'media_id': '{{ media_detail["media_id"] }}',
+            'link':link, 'pic1':pic1, 'pic2':pic2, 'pic3':pic3
+        };
+        $.ajax({
+            type: "POST",
+            url: "/user?a=feedback_submit",
+            dataType: "JSON",
+            data: $.param(params),
+            success: function(ret){
+                if(ret.status == 200) {
+                    showTipsBox('message', '反馈成功');
+                    location.reload(true);
+                }else if(ret.status == 401){
+                    showTipsBox('alert', '无效的图文链接');
+                }else {
+                    showTipsBox('alert', '反馈失败');
+                }
+            }
+        });
+    });
+
+    //验收反馈后，变更订单状态，变更反馈状态，刷新页面
+    $("#pass_feedback").click(function(){
+        $.ajax({
+            url:'/user?a=feedback_pass',
+            method:'post',
+            dataType:'json',
+            data: {'order_id': '{{ order_detail["id"] }}', 'demand_id': '{{ demand_detail["id"] }}'},
+            success:function(d){
+                if(d.status==200){
+                    showTipsBox('message', '验收成功');
+                    location.reload(true);
+                }
+            }
+        })
+    });
+    //申诉提交后，创建申诉记录，刷新页面
+    $("#submit_appeal").click(function(){
+        var appeal_desc = $('#appeal_description').val();
+        if (appeal_desc.length == 0)
+        {
+            showTipsBox('alert', '申诉理由不能为空');
+            return
+        }
+        var params = {'order_id': '{{ order_detail["id"] }}', 'description':appeal_desc};
+        $.ajax({
+            type: "POST",
+            url: "/user?a=order_appeal",
+            dataType: "JSON",
+            data: $.param(params),
+            success: function(ret){
+                if(ret.status == 200) {
+                    showTipsBox('message', '申诉成功');
+                    location.reload(true);
+                }
+                else {
+                    showTipsBox('alert', '申诉失败');
+                }
+            }
+        });
+    });
+});
+</script>
+<iframe frameborder="0" id="iframe" name='hidden_form' style="width:0;height: 0;" onload="iframeLoaded(this)"></iframe>
+{% end %}

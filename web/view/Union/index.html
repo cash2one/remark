@@ -1,0 +1,62 @@
+{% extends '../public/main.html' %}
+{% block title%}
+联盟列表
+{% end %}
+{% block body %}
+<link href="{{ static_url('style/diamond.css') }}" type="text/css" rel="stylesheet">
+
+<div class="list-container">
+    <div class="title">
+        <span>入驻联盟</span>
+        <div class="btn btn-with-blueBg-and-addBtn"><a onclick="onlink('/user?a=union_form')"><b>+</b>创建联盟</a></div>
+    </div>
+    <div class="search-box">
+        <div class="choose-line"><span style="float: left;">常见分类</span>
+            <div class="choices-box" name="cates">
+                <a href="/union" class="choices {% if not category_focus %}choices-choosen{% end %}" data="auto">不限</a>
+                {% for item in category_common %}
+                <a href="?category={{ item['id'] }}" class="choices {% if category_focus == str(item['id']) %}choices-choosen{% end %}">{{ item['name'] }}</a>
+                {% end %}
+            </div>
+        </div>
+    </div>
+    <div class="container set-head-padding">
+        {% for item in union %}
+        <div class="union-box">
+            <div class="union-logo">
+                <a href="/union?a=view&id={{ item['id'] }}">
+                    <img src="{{ item['logo'] }}" width="150" height="100" />
+                </a>
+            </div>
+            <div class="union_detail">
+                <a href="/union?a=view&id={{ item['id'] }}">{{ item['name'] }}</a>
+                <div class="constractor">创建者：{{ item['master'] }}</div>
+                <p>{{ item['desc'] }}</p>
+                <div class="interestedContainer">
+                    {% if item['id'] in category.keys() %}
+                    {% for value in category[item['id']] %}
+                    <div class="interestedBox">{{ value['name'] }}</div>
+                    {% end %}
+                    {% end %}
+                </div>
+            </div>
+            <div class="member-list">
+                <h5>联盟成员　</h5><span>共有{{ item['member_count'] }}名</span>
+                <div class="ball-list">
+                    {% for value in item['member'] %}
+                    <div class="ball">
+                        <a href="/u?id={{ value['user_id'] }}" target="_blank">
+                            <img src="{{ value['avatar'] }}" alt="{{ value['nickname'] }}" style="width:40px;height:40px;" />
+                        </a>
+                    </div>
+                    {% end %}
+                </div>
+            </div>
+        </div>
+        {% end %}
+    </div>
+</div>
+<div class="w950">
+    <div>{% raw page %}</div>
+</div>
+{% end %}

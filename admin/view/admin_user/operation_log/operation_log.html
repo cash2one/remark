@@ -1,0 +1,39 @@
+{% extends '../../public/main.html' %}
+
+{% block body %}
+<div class="funnel" >
+    <div class="searchBox">
+        <form class="form-inline" action='/admin_user/operation_log' method="get">
+            <input class="form-control" type="text" name="search_txt"  id="search_txt" class="typeText" value="{{listSearch['search_txt']}}"/>
+            <button class="form-control btn btn-default" type="submit">搜索</button>
+        </form>
+    </div>
+</div>
+<br/>
+<div style="margin-top: 30px;">
+    <table class="table table-bordered table-hover vert-align">
+        <thead>
+        <tr class="res_tbl_title">
+            <td>ID</td>
+            <td>用户</td>
+            <td>请求链接</td>
+            <td>请求时间</td>
+        </tr>
+        </thead>
+        <tbody>
+        {% for item in logData %}
+        <tr>
+            <td width="3%">{{item['id']}}</td>
+            <td>{{ item['name'] if item['name'] else '-' }}</td>
+            <td><a title="{{item['name']}}" href="{{item['url']}}">{{ item['url'] if item['url'] else '' }}</a></td>
+            <td>{{ item['create_time'] }}</td>
+        </tr>
+        {% end %}
+        </tbody>
+    </table>
+</div>
+
+<div>
+    {% raw page_html %}
+</div>
+{% end %}

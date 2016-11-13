@@ -1,0 +1,54 @@
+@charset "utf-8";
+*{margin:0;padding:0;list-style:none}
+.clearfix {overflow:hidden;zoom:1}
+body{min-width:800px;border-left:150px solid #000;font:16px/1 Helvetica,sans-serif}
+button{-webkit-transition:background-color .2s,color .2s;-moz-transition:background-color .2s,color .2s;transition:background-color .2s,color .2s}
+.header{position:fixed;z-index:10;top:0;left:0;width:40px;height:40px;padding:5px 55px;background-color:#000}
+.header h1{color:#fff;font-size:20px;line-height:40px}
+.menu{position:fixed;top:50px;bottom:0;left:0;width:150px;background-color:#000}
+.menu ul{line-height:40px}
+.menu ul li{text-align:center}
+.menu ul a{display:block;-webkit-transition:background-color .2s,color .2s;-moz-transition:background-color .2s,color .2s;transition:background-color .2s,color .2s}
+.menu ul a,.menu ul a:visited{color:#666;text-decoration:none}
+.menu ul a:hover,.menu ul a:active{background-color:#333;color:#ccc;text-decoration:none}
+.menu ul .current a:link,.menu ul .current a:visited,.menu ul .current a:hover,.menu ul .current a:active{background-color:#666;color:#fff;cursor:default}
+.content{padding:40px;border-top:50px solid #999}
+.tab{position:fixed;top:0;left:0;width:100%;height:40px;line-height:40px;padding-top:10px;background-color:#999}
+.tab a {color:#fff;text-decoration:none;}
+.tab li{float:left;width:100px;margin-right:-170px;margin-left:190px;background-color:#666;color:#fff;text-align:center;cursor:pointer;-webkit-transition:background-color .2s;-moz-transition:background-color .2s;transition:background-color .2s}
+.tab li:hover{background-color:#333}
+.tab .current,.tab .current:hover, .tab .current a{background-color:#fff;color:#000;cursor:default}
+.act button,.remark button{width:60px;height:30px;line-height:30px;border:none;background-color:#ccc;color:#666;font-size:14px;text-align:center;cursor:pointer}
+.act button:hover,.remark button:hover{background-color:#666;color:#fff}
+.add .act button{background-color:#666;color:#fff}
+.add .act button:hover{background-color:#03c}
+.act .yes:hover{background-color:#090}
+.act .no:hover{background-color:#c00}
+.save{position:fixed;right:40px;top:10px}
+.save button{width:60px;height:40px;margin-left:1%;line-height:40px;border:none;background-color:#03c;color:#fff;font-size:16px;text-align:center;cursor:pointer}
+.save button:hover{background-color:#06c}
+.input{width:160px;height:28px;line-height:28px;border:1px solid #ccc;background-color:#eee;font-size:16px}
+.table{width:100%;line-height:30px}
+.table thead tr{background-color:#ccc}
+.table th{text-align:left;padding:0 10px;border:1px solid #999;}
+.table td{padding:0 10px;border:1px solid #999}
+.table .act{width:60px;padding:0}
+.popup{position:absolute;z-index:99;top:50%;left:50%;width:800px;margin:-250px 0 0 -400px;background-color:#fff;border:1px solid #666;line-height:30px}
+.popup h3{padding-left:20px;background-color:#666;color:#fff;line-height:40px;font-weight:700px}
+.popup h3 a{color:#fff}
+.popup .close{position:absolute;top:0;right:0}
+.popup .close button{width:40px;height:40px;line-height:40px;border:none;background-color:#666;color:#fff;font-size:24px;text-align:center;cursor:pointer}
+.popup .close button:hover{background-color:#333}
+.popup ul{float:left;width:600px;margin-top:20px}
+.popup li{float:left;width:260px;margin-right:40px;margin-bottom:10px;white-space:nowrap}
+.popup li label{float:left;width:80px;color:#666}
+.popup li label:after{content:"："}
+.popup .head{float:left;margin-top:20px;margin-right:40px;margin-left:20px}
+.popup .head img{width:120px;border-radius:24px;}
+.popup .act{float:left;margin-bottom:20px}
+.popup .act button{width:100px;margin-right:20px}
+.popup .remark{float:left;width:300px;margin-bottom:20px}
+.remark textarea{width:550px;height:72px;padding:5px;background-color:#eee;border:1px solid #999;font-size:16px;line-height:24px}
+.remark label{color:#999;width:inherit;}
+.popup .status{float:left;width:550px;margin-bottom:20px;padding:15px;background-color:#eee}
+.popup .status strong{display:block;font-size:20px;line-height:30px;text-align:center}

@@ -1,0 +1,927 @@
+{% extends '../../public/main.html' %}
+
+{% block body %}
+<script type="text/javascript">
+
+</script>
+<div class="nav">
+    <a class="btnAdd" name="wechat_create" data-target="#wechat_create_dialog" data-toggle="modal">增加自媒体</a>
+    <div id="wechat_create_dialog" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog" style="width: 850px">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" id="wechat_create_close" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 id="wechat_create_title">增加自媒体</h4>
+                </div>
+                <div class="modal-body form-group">
+                    <input class="form-control" id="mp_url" > 
+                    <i class="comment">自媒体的图文链接：http://mp.weixin.qq.com/s?__biz=...</i>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-success" name="wechat_create" id="wechat_create">保存</button>
+                    <button class="btn" data-dismiss="modal" aria-hidden="true">取消</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="result_filter funnel">
+    <form method="get" class="form-inline" action="/media/wechat" id="search_form">
+        <div class="searchBox form-group">
+            <select class="form-control" title="搜索项" id="field" name="field">
+                <option id="field_1" name="field" value="1">自媒体名称</option>
+                <option id="field_2" name="field" value="2">微信号</option>
+                <option id="field_3" name="field" value="3">BIZ</option>
+                <option id="field_4" name="field" value="4">简介</option>
+                <!--<option id="field_5" name="field" value="5">联系手机</option>-->
+                <!--<option id="field_6" name="field" value="6">联系QQ</option>-->
+                <!--<option id="field_7" name="field" value="7">联系微信</option>-->
+                <option id="field_8" name="field" value="8">备注</option>
+                <option id="field_9" name="field" value="9">综合信息</option>
+            </select>
+            <input class="form-control" title="搜索内容" type="text" id="query" name="query" value="{{condition['query']}}" class="typeText">
+            <button type="button" id="search" class="form-control btn btn-default">搜索</button>
+            <button type="button" id="more" class="form-control btn btn-default">高级搜索</button>
+        </div>
+        <div id="more_condition">
+            <div class="colleft">
+                <div class="valueInfo1">
+                    <div>
+                        <strong>行业</strong>
+                        <div id="category_condition">
+                            <a id="all_category">不限</a>
+                        </div>
+                    </div>
+                    <div>
+                        <strong>标签</strong>
+                        <div id="tag_condition">
+                            <a id="all_tag">不限</a>
+                        </div>
+                    </div>
+                </div>
+                <hr>
+                <div class="valueInfo2">
+                    <div>
+                        <strong>性质</strong>
+                        <div id="role_condition">
+                            <select title="性质" name="role">
+                                <option name="role_op" value="-1">不限</option>
+                                <option name="role_op" value="1">企业</option>
+                                <option name="role_op" value="2">个人</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div>
+                        <strong>帐号状态</strong>
+                        <div id="status_condition">
+                            <select title="帐号状态" name="status">
+                                <option name="status_op" value="-1">正常号</option>
+                                <option name="status_op" value="1">活跃号</option>
+                                <option name="status_op" value="2">一般号</option>
+                                <option name="status_op" value="3">僵尸号</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div>
+                        <strong>原创</strong>
+                        <div id="original_condition">
+                            <select title="原创" name="original">
+                                <option name="original_op" value="-1">不限</option>
+                                <option name="original_op" value="1">原创</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div>
+                        <strong>是否接黑稿</strong>
+                        <div id="black_pr_condition">
+                            <select title="是否接黑稿" name="black_pr">
+                                <option name="black_pr_op" value="-1">不限</option>
+                                <option name="black_pr_op" value="1">是</option>
+                                <option name="black_pr_op" value="2">否</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div>
+                        <strong>可以文案</strong>
+                        <div id="can_afford_article_condition">
+                            <select title="可以文案" name="can_afford_article">
+                                <option name="can_afford_article_op" value="-1">不限</option>
+                                <option name="can_afford_article_op" value="1">是</option>
+                                <option name="can_afford_article_op" value="2">否</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="valueInfo3">
+                    <div>
+                        <strong>评论</strong>
+                        <div id="comment_condition">
+                            <select title="评论" name="comment">
+                                <option name="comment_op" value="-1">不限</option>
+                                <option name="comment_op" value="1">是</option>
+                                <option name="comment_op" value="2">否</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div>
+                        <strong>赞赏</strong>
+                        <div id="award_condition">
+                            <select title="赞赏" name="award">
+                                <option name="award_op" value="-1">不限</option>
+                                <option name="award_op" value="1">是</option>
+                                <option name="award_op" value="2">否</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div>
+                        <strong>KOL</strong>
+                        <div id="kol_condition">
+                            <select title="KOL" name="kol">
+                                <option name="kol_op" value="-1">不限</option>
+                                <option name="kol_op" value="1">是</option>
+                                <option name="kol_op" value="2">否</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div>
+                        <strong>接广告</strong>
+                        <div id="ad_condition">
+                            <select title="接广告" name="ad">
+                                <option name="ad_op" value="-1">不限</option>
+                                <option name="ad_op" value="1">是</option>
+                                <option name="ad_op" value="2">否</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div>
+                        <strong>广告类型</strong>
+                        <div id="ad_type_condition">
+                            <select title="广告类型" name="ad_type">
+                                <option name="ad_type_op" value="-1">不限</option>
+                                <option name="ad_type_op" value="1">软广</option>
+                                <option name="ad_type_op" value="2">硬广</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="valueInfo3">
+                    <div>
+                        <strong>入驻意愿</strong>
+                        <div id="station_condition">
+                            <select title="入驻意愿" name="station">
+                                <option name="station_op" value="-1">不限</option>
+                                <option name="station_op" value="1">是</option>
+                                <option name="station_op" value="2">否</option>
+                            </select>
+                        </div>
+                    </div>
+                     <div>
+                        <strong>刷单程度</strong>
+                        <div id="farm_level_condition">
+                            <select title="刷单程度" name="farm_level">
+                                <option name="farm_level_op" value="-1">不限</option>
+                                <option name="farm_level_op" value="1">无</option>
+                                <option name="farm_level_op" value="2">轻度</option>
+                                <option name="farm_level_op" value="3">严重</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div>
+                        <strong>投放价值</strong>
+                        <div id="worth_condition">
+                            <select title="投放价值" name="worth">
+                                <option name="worth_op" value="-1">不限</option>
+                                <option name="worth_op" value="1">是</option>
+                                <option name="worth_op" value="2">否</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div>
+                        <strong>是否认证</strong>
+                        <div id="identify_condition">
+                            <select title="是否认证" name="identify">
+                                <option name="identify_op" value="-1">不限</option>
+                                <option name="identify_op" value="1">是</option>
+                                <option name="identify_op" value="2">否</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div>
+                        <strong>投放历史</strong>
+                        <div id="feedback_condition">
+                            <select title="投放历史" name="feedback">
+                                <option name="feedback_op" value="-1">不限</option>
+                                <option name="feedback_op" value="1">已投放</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="colright">
+                <div class="valueInfo4">
+                    <div>
+                        <strong>平均阅读数</strong>
+                        <div id="top_three_avg_read_num_condition">
+                            <input title="下限" type="text" name="top_three_avg_read_num" value="{{ condition['top_three_avg_read_num'].split(',')[0] if 'top_three_avg_read_num' in condition and condition['top_three_avg_read_num'] else ''}}"> -
+                            <input title="上限" type="text" name="top_three_avg_read_num" value="{{ condition['top_three_avg_read_num'].split(',')[1] if 'top_three_avg_read_num' in condition and condition['top_three_avg_read_num'] else ''}}">
+                        </div>
+                    </div>
+                    <div>
+                        <strong>头条阅读数</strong>
+                        <div id="top_avg_read_num_condition">
+                            <input title="下限" type="text" name="top_avg_read_num" value="{{ condition['top_avg_read_num'].split(',')[0] if 'top_avg_read_num' in condition and condition['top_avg_read_num'] else '' }}"> -
+                            <input title="上限" type="text" name="top_avg_read_num" value="{{ condition['top_avg_read_num'].split(',')[1] if 'top_avg_read_num' in condition and condition['top_avg_read_num'] else '' }}">
+                        </div>
+                    </div>
+                    <div>
+                        <strong>平均点赞数</strong>
+                        <div id="like_num_condition">
+                            <input title="下限" type="text" name="like_num" value="{{ condition['like_num'].split(',')[0] if 'like_num' in condition and condition['like_num'] else '' }}"> -
+                            <input title="上限" type="text" name="like_num" value="{{ condition['like_num'].split(',')[1] if 'like_num' in condition and condition['like_num'] else '' }}">
+                        </div>
+                    </div>
+                    <div>
+                        <strong>粉丝数</strong>
+                        <div id="fans_num_condition">
+                            <input title="下限" type="text" name="fans_num" value="{{ condition['fans_num'].split(',')[0] if 'fans_num' in condition and condition['fans_num'] else '' }}"> -
+                            <input title="上限" type="text" name="fans_num" value="{{ condition['fans_num'].split(',')[1] if 'fans_num' in condition and condition['fans_num'] else '' }}">
+                        </div>
+                    </div>
+                </div>
+                <hr>
+                <div class="audienceInfo">
+                    <div>
+                        <strong>地域</strong>
+                        <div id="audience_area_condition">
+                            <select id="audience_province_id" name="audience_province_id">
+                                <option value="-1">--不限--</option>
+                            </select>
+                            <select  id="audience_city_id" name="audience_city_id">
+                                <option value="-1">--不限--</option>
+                            </select>
+                            <select id="audience_county_id" name="audience_county_id">
+                                <option value="-1">--不限--</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div>
+                        <strong>性别</strong>
+                        <div id="audience_gender_condition">
+                            <select title="性别" name="audience_gender">
+                                <option name="audience_gender_op" value="-1">不限</option>
+                                <option name="audience_gender_op" value="1">偏女性</option>
+                                <option name="audience_gender_op" value="2">偏男性</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div>
+                        <strong>年龄</strong>
+                        <div id="audience_age_condition">
+                            <label><input type="checkbox" name="audience_age" value="1">70后</label>
+                            <label><input type="checkbox" name="audience_age" value="2">80后</label>
+                            <label><input type="checkbox" name="audience_age" value="3">85后</label>
+                            <label><input type="checkbox" name="audience_age" value="4">90后</label>
+                            <label><input type="checkbox" name="audience_age" value="5">95后</label>
+                            <label><input type="checkbox" name="audience_age" value="6">其它</label>
+                        </div>
+                    </div>
+                    <div>
+                        <strong>职业</strong>
+                        <div id="career_condition">
+                            <label><input type="checkbox" name="audience_career" value="1">工薪阶层</label>
+                            <label><input type="checkbox" name="audience_career" value="2">白领</label>
+                            <label><input type="checkbox" name="audience_career" value="3">高管</label>
+                            <label><input type="checkbox" name="audience_career" value="4">创业者</label>
+                            <label><input type="checkbox" name="audience_career" value="5">企事业单位</label>
+                            <label><input type="checkbox" name="audience_career" value="6">国企</label>
+                            <label><input type="checkbox" name="audience_career" value="7">公职人员</label>
+                            <label><input type="checkbox" name="audience_career" value="8">自由职业者</label>
+                        </div>
+                    </div>
+                </div>
+                <hr>
+                <div class="advertisingInfo">
+                    <div>
+                        <strong>头条报价</strong>
+                        <div id="first_price_condition">
+                            <input title="下限" type="text" name="first_price" value="{{ condition['first_price'].split(',')[0] if 'first_price' in condition and condition['first_price'] else '' }}"> -
+                            <input title="上限" type="text" name="first_price" value="{{ condition['first_price'].split(',')[1] if 'first_price' in condition and condition['first_price'] else '' }}">
+                        </div>
+                    </div>
+                    <div>
+                        <strong>二条报价</strong>
+                        <div id="second_price_condition">
+                            <input title="下限" type="text" name="second_price" value="{{ condition['second_price'].split(',')[0] if 'second_price' in condition and condition['second_price'] else '' }}"> -
+                            <input title="上限" type="text" name="second_price" value="{{ condition['second_price'].split(',')[1] if 'second_price' in condition and condition['second_price'] else '' }}">
+                        </div>
+                    </div>
+                    <div>
+                        <strong>其他报价</strong>
+                        <div id="other_price_condition">
+                            <input title="下限" type="text" name="other_price" value="{{ condition['other_price'].split(',')[0] if 'other_price' in condition and condition['other_price'] else '' }}"> -
+                            <input title="上限" type="text" name="other_price" value="{{ condition['other_price'].split(',')[1] if 'other_price' in condition and condition['other_price'] else '' }}">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <input id="sort" name="sort" type="text" value="last_update_time_desc" hidden>
+    </form>
+</div>
+<div id="wechat_table">
+    <table class="table table-bordered table-hover vert-align">
+        <thead>
+            <tr class="res_tbl_title">
+                <th data-sort="id" >
+                    <span>ID</span>
+                    <div>
+                        <i class="up"></i>
+                        <i class="down"></i>
+                    </div>
+                </th>
+                <th data-sort="name" >
+                    <span>自媒体名称</span>
+                    <div>
+                        <i class="up"></i>
+                        <i class="down"></i>
+                    </div>
+                </th>
+                <th data-sort="wechat_id" >
+                    <span>微信号</span>
+                    <div>
+                        <i class="up"></i>
+                        <i class="down"></i>
+                    </div>
+                </th>
+
+                <th>简介</th>
+                <th data-sort="original">
+                    <span>原创</span>
+                    <div>
+                        <i class="up"></i>
+                        <i class="down"></i>
+                    </div>
+                </th>
+                <th data-sort="like_num" >
+                    <span>点赞数</span>
+                    <div>
+                        <i class="up"></i>
+                        <i class="down"></i>
+                    </div>
+                </th>
+                <th data-sort="top_avg_read_num" >
+                    <span>头条平均</span>
+                    <div>
+                        <i class="up"></i>
+                        <i class="down"></i>
+                    </div>
+                </th>
+                <th data-sort="top_three_avg_read_num" >
+                    <span>平均阅读</span>
+                    <div>
+                        <i class="up"></i>
+                        <i class="down"></i>
+                    </div>
+                </th>
+                <th data-sort="first_price" >
+                    <span>头条报价</span>
+                    <div>
+                        <i class="up"></i>
+                        <i class="down"></i>
+                    </div>
+                </th>
+                <th>备注</th>
+                <th data-sort="last_update_time" >
+                    <span>更新时间</span>
+                    <div>
+                        <i class="up"></i>
+                        <i class="down"></i>
+                    </div>
+                </th>
+                <th>操作</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in wechat %}
+            <tr>
+                <td>{{ item['id'] }}</td>
+                <td>
+                    <a href="/media/wechat?a=detail&id={{item['id']}}" title="认证：{{ item['identify'] if item['identify'] else '-' }}">
+                        {{ item['name'] if item['name'] else '-' }}
+                    </a>
+                </td>
+                <td><a target="_blank" href="http://weixin.sogou.com/weixin?type=1&query={{ item['wechat_id'] }}">
+                        {{ item['wechat_id'] }}
+                    </a>
+                </td>
+                <td width="20%">{{ item['brief'] if item['brief'] else '-' }}</td>
+                <td>{{ '原创' if item['original'] == 1 else '-'}}</td>
+                <td>{{ str(item['like_num']) if item['like_num'] else '-'}}</td>
+                <td>{{ str(item['top_avg_read_num']) if item['top_avg_read_num'] else '-'}}</td>
+                <td>{{ str(item['top_three_avg_read_num']) if item['top_three_avg_read_num'] else '-'}}</td>
+                <td>{{ item['first_price'] if item['first_price'] else '-'}}</td>
+                <td width="20%"><div class="tabDisplay">{% raw item['remark'] if item['remark'] else '-' %}</div></td> 
+                <td>{{ item['last_update_time'] }}</td>
+                <td>
+                    <button class="btn btnColor btn-info add_follow_btn" data-target="#media_follow_dialog_{{ item['id'] }}" data-toggle="modal" isfollow="{{'n' if item['follow']==0 else 'y'}}" itsid="{{ item['id'] }}">{{'加入跟踪' if item['follow']==0 else '取消跟踪'}}</button>
+                    <button op="add" mid="{{ item['id'] }}" name="{{ item['name'] }}" type="button" class="btnOption btn btnColor btn-default" style="min-width: 70px">加入待选</button>
+                    <div id="media_follow_dialog_{{ item['id'] }}" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" id="media_follow_close" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                                    <h4 id="media_follow_title">跟踪自媒体</h4>
+                                </div>
+                                <div class="modal-body brickWall">
+                                    <div id="group_checkbox">
+                                        <strong>跟踪分组</strong>
+                                        {% for g_item in group %}
+                                        <label><input type="checkbox" name="group" value="{{g_item['id']}}">{{g_item['name']}}</label>
+                                        {% end %}
+                                    </div>
+                                    <div class="uediter">
+                                        <strong>备注信息</strong>
+                                        <textarea id="follow_remark_{{ item['id'] }}" name="follow_remark"></textarea>
+                                        <i>备注信息，可为空</i>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button class="btn btn-success" name="follow_btn" id="follow_btn">确定</button>
+                                    <button class="btn btn-default" data-dismiss="modal" aria-hidden="true">取消</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                </td>
+            </tr>
+            <!-- +'+' -->
+            {% end %}
+        </tbody>
+    </table>
+</div>
+<div>
+    {% raw page_html %}
+</div>
+<div class="mediaCart mediaCartMin">
+    <div class="title">自媒体筛选工具</div>
+    <div class="dick">+</div>
+    <ul id="mediaList" class="mediaList" style="display: none">
+    </ul>
+</div>
+<script type="text/javascript">
+$(document).ready(function(){
+    $('[name="follow_remark"]').each(function(){
+        var raw_id = this.id;
+        var id = raw_id.split('_').pop();
+        uediter('follow_remark_'+id);
+    })
+    uediter('follow_remark');
+    // 加入跟踪//为跟踪模态框添加类
+    $(".add_follow_btn").click(function(event) {
+        var id = $(this).attr('itsid');
+        var isfollow = $(this).attr('isfollow');
+        if (isfollow == "y") {
+            $('#media_follow_dialog_'+id).find('#media_follow_title').text('取消跟踪自媒体');
+            $('#media_follow_dialog_'+id).find('.modal-body').remove();
+        }else{
+            $('#media_follow_dialog_'+id).find('#media_follow_title').text('跟踪自媒体');
+        }
+        $("#media_follow_dialog_"+id).find('.modal-dialog .modal-content').children('.modal-footer').find('#follow_btn').attr({itsid:id,isfollow:isfollow});
+    });
+    //保存加入跟踪
+    $('[name="follow_btn"]').click(function(){
+        var chk_value =[];
+        var id = $(this).attr('itsid');
+        var isfollow = $(this).attr('isfollow');
+        $('input[name="group"]:checked').each(function(){
+            chk_value.push($(this).val());
+        });
+        $.ajax({
+            type: "post",
+            dataType: "json",
+            url: "/media/wechat?a=follow",
+            data: {'media_id': id, 'remark': $('#follow_remark').val(), 'group_id': chk_value.join(',')},
+            success: function (d) {
+                if(d.status==200){
+                    if (d.data.follow == 1){
+                        $('#media_follow').text("取消跟踪");
+                    } else {
+                        $('#media_follow').text("加入跟踪");
+                    }
+                }else if(d.status == 401){
+                   alert('['+d.data.join(',')+'] 组已经满员，请重新选择跟踪组');
+                }
+                else {
+                    alert('加入跟踪失败!')
+                }
+                $('#media_follow_close').click();
+                location.reload();
+            }
+        })
+    });
+
+    $("body").keyup(function () {
+        if (event.which == 13){
+            $("#search").trigger("click");
+        }
+    });
+    //省份
+    $.ajax({
+        type: "get",
+        contentType: "application/json",
+        url: "/media/common?a=get_area&parent_id=0",
+        //data: "{}",
+        success: function (result) {
+            var obj = JSON.parse(result);
+            var province_op = "";
+            for (var i = 0; i < obj.data.length; i++) {
+                province_op += '<option value=' + obj.data[i].id + '>';
+                province_op += obj.data[i].name;
+                province_op += '</option>';
+            }
+            $("#audience_province_id").append(province_op);
+            $("#audience_province_id").val("{{condition['audience_province_id'] if condition['audience_province_id'] else -1 }}");
+        }
+    });
+    $.ajax({
+        type: "get",
+        contentType: "application/json",
+        url: "/media/common?a=get_area&parent_id=" + "{{condition['audience_province_id'] if condition['audience_province_id'] else -1}}",
+        //data: "{}",
+        success: function (result) {
+            var obj = JSON.parse(result);
+            var city_op = '';
+            for (var i = 0; i < obj.data.length; i++) {
+                city_op += '<option value=' + obj.data[i].id + '>';
+                city_op += obj.data[i].name;
+                city_op += '</option>';
+            }
+            $('#audience_city_id').append(city_op);
+            $("#audience_city_id").val("{{condition['audience_city_id'] if condition['audience_city_id'] else -1}}");
+        }
+    });
+    $.ajax({
+        type: "get",
+        contentType: "application/json",
+        url: "/media/common?a=get_area&parent_id=" + "{{condition['audience_city_id'] if condition['audience_city_id'] else -1}}",
+        //data: "{}",
+        success: function (result) {
+            var obj = JSON.parse(result);
+            var county_op = '';
+            for (var i = 0; i < obj.data.length; i++) {
+                county_op += '<option value=' + obj.data[i].id + '>';
+                county_op += obj.data[i].name;
+                county_op += '</option>';
+            }
+            $('#audience_county_id').append(county_op);
+            $("#audience_county_id").val("{{condition['audience_county_id'] if condition['audience_county_id'] else -1}}");
+        }
+    });
+    //当省份发生改变时，城市改变
+    $('#audience_province_id').change(function () {
+        $('#audience_city_id option:gt(0)').remove();
+        $('#audience_county_id option:gt(0)').remove();
+        $.ajax({
+            type: "get",
+            contentType: "application/json",
+            url: "/media/common?a=get_area&parent_id=" + $(this).val(),
+            //data: "{}",
+            success: function (result) {
+                var obj = JSON.parse(result);
+                var city_op = '';
+                for (var i = 0; i < obj.data.length; i++) {
+                    city_op += '<option value=' + obj.data[i].id + '>';
+                    city_op += obj.data[i].name;
+                    city_op += '</option>';
+                }
+                $('#audience_city_id').append(city_op);
+            }
+        })
+    });
+
+    //当城市改变时，县改变
+    $('#audience_city_id').change(function () {
+    $('#audience_county_id option:gt(0)').remove();
+        $.ajax({
+            type: "get",
+            contentType: "application/json",
+            url: "/media/common?a=get_area&parent_id=" + $(this).val(),
+            //data: "{}",
+            success: function (result) {
+                var obj = JSON.parse(result);
+                var county_op = '';
+                for (var i = 0; i < obj.data.length; i++) {
+                    county_op += '<option value=' + obj.data[i].id + '>';
+                    county_op += obj.data[i].name;
+                    county_op += '</option>';
+                }
+                $('#audience_county_id').append(county_op);
+            }
+        })
+    });
+    $("button[name='save_potential']").click(function(obj){
+        //alert(111);
+        var id ;
+        id = obj.target.value;
+        did = "#demand_id"+id;
+        mid = "#media_id"+id;
+        desc = "#potential_desc"+id;
+        //alert(did);
+        param = {
+            'demand_id': $("#demand_id"+id).val(),
+            'media_id':$("#media_id"+id).val(),
+            'description': $( "#potential_desc"+id).val()
+        };
+        //alert(param['media_id']);
+        $.ajax({
+            url:'/media/wechat?a=create_potential',
+            method:'post',
+            dataType:'json',
+            data: param,
+            success:function(d){
+                if(d.status==200){
+                    location.reload(true);
+                }
+                else{
+                    alert("添加失败")
+                }
+            }
+        });
+    });
+    // 分类
+    $.ajax({
+        type: "get",
+        contentType: "application/json",
+        url: "/media/common?a=get_category_media",
+        success: function (result) {
+            var obj = JSON.parse(result);
+            var cb = "";
+            for (var i = 0; i < obj.data.length; i++) {
+                cb += '<label>';
+                cb += '<input type="checkbox" name="category" value=' + obj.data[i].id + '>';
+                cb += obj.data[i].name;
+                cb += '</label>';
+                }
+            $("#category_condition").append(cb);
+            // 行业不限
+            $('#all_category').click(function(){
+                $("input[name=category]").each(function(){
+                    $(this).attr("checked", false);
+                })
+            });
+            // 回显
+            $("input[name=category]").each(function(){
+                if ($.inArray($(this).val(), '{{ condition["category"] }}'.split(',')) != -1) {
+                    $(this).attr("checked", true);
+                }
+            });
+        }
+    });
+    // 标签
+    $.ajax({
+        type: "get",
+        contentType: "application/json",
+        url: "/media/common?a=get_tag",
+        success: function (result) {
+            var obj = JSON.parse(result);
+            var cb = "";
+            for (var i = 0; i < obj.data.length; i++) {
+                cb += '<label>';
+                cb += '<input type="checkbox" name="tag" value=' + obj.data[i].id + '>';
+                cb += obj.data[i].name;
+                cb += '</label>';
+            }
+            $("#tag_condition").append(cb);
+            // 标签不限
+            $('#all_tag').click(function(){
+                $("input[name=tag]").each(function(){
+                    $(this).attr("checked", false);
+                })
+            });
+            // 回显
+            $("input[name=tag]").each(function(){
+                if ($.inArray($(this).val(), '{{ condition["tag"] }}'.split(',')) != -1) {
+                    $(this).attr("checked", true);
+                }
+            });
+        }
+    });
+    $('#more').click(function(){
+        $("#more_condition").toggle();
+        if ($("#more_condition").is(":visible")){
+            $(".searchBox").addClass("searchBoxMore");
+        }else{
+            $(".searchBox").removeClass("searchBoxMore");
+        };
+    });
+    // 提交搜索
+    $('#search').click(function(){
+        $('#search_form').submit();
+    });
+    var field = "{{ condition['field']}}";
+    var role = "{{ condition['role'] }}";
+    var status = "{{ condition['status'] }}";
+    var original = "{{ condition['original'] }}";
+    var black_pr = "{{ condition['black_pr'] }}";
+    var can_afford_article = "{{ condition['can_afford_article'] }}";
+    var comment = "{{ condition['comment'] }}";
+    var award = "{{ condition['award'] }}";
+    var kol = "{{ condition['kol'] }}";
+    var ad = "{{ condition['ad'] }}";
+    var ad_type = "{{ condition['ad_type'] }}";
+    var station = "{{ condition['station'] }}";
+    var worth = "{{ condition['worth'] }}";
+    var identify = "{{ condition['identify'] }}";
+    var feedback = "{{ condition['feedback'] }}";
+    var gender = "{{ condition['audience_gender'] }}";
+    var farm_level = "{{ condition['farm_level'] }}";
+    if (field != ""){
+        $("option[name=field][value=" + field + "]").attr("selected", true);
+    }
+    if (role != "") {
+        $("option[name=role_op][value=" + role + "]").attr("selected", true);
+    }
+    if (status != "") {
+        $("option[name=status_op][value=" + status + "]").attr("selected", true);
+    }
+    if (original != "") {
+        $("option[name=original_op][value=" + original + "]").attr("selected", true);
+    }
+    if (black_pr != "") {
+        $("option[name=black_pr_op][value=" + black_pr + "]").attr("selected", true);
+    }
+    if (can_afford_article != "") {
+        $("option[name=can_afford_article_op][value=" + can_afford_article + "]").attr("selected", true);
+    }
+    if (comment != "") {
+        $("option[name=comment_op][value=" + comment + "]").attr("selected", true);
+    }
+    if (award != "") {
+        $("option[name=award_op][value=" + award + "]").attr("selected", true);
+    }
+    if (kol != "") {
+        $("option[name=kol_op][value=" + kol + "]").attr("selected", true);
+    }
+    if (ad != "") {
+        $("option[name=ad_op][value=" + ad + "]").attr("selected", true);
+    }
+    if (ad_type != "") {
+        $("option[name=ad_type_op][value=" + ad_type + "]").attr("selected", true);
+    }
+    if (station != "") {
+        $("option[name=station_op][value=" + station + "]").attr("selected", true);
+    }
+    if (worth != "") {
+        $("option[name=worth_op][value=" + worth + "]").attr("selected", true);
+    }
+    if (identify != ""){
+        $("option[name=identify_op][value=" + identify + "]").attr("selected", true);
+    }
+    if (feedback != "") {
+        $("option[name=feedback_op][value=" + feedback + "]").attr("selected", true);
+    }
+    if (gender != "") {
+        $("option[name=audience_gender_op][value=" + gender + "]").attr("selected", true);
+    }
+    if (farm_level != "") {
+        $("option[name=farm_level_op][value=" + farm_level + "]").attr("selected", true);
+    }
+
+    $("input[name=audience_age]").each(function(){
+        if ($.inArray($(this).val(), '{{ condition["audience_age"] }}'.split(',')) != -1) {
+            $(this).attr("checked", true);
+        }
+    });
+    $("input[name=audience_career]").each(function(){
+        if ($.inArray($(this).val(), '{{ condition["audience_career"] }}'.split(',')) != -1) {
+            $(this).attr("checked", true);
+        }
+    });
+    $('#wechat_create').click(function(){
+        var url = $("#mp_url").val();
+        if (url == ''){
+            alert('地址不能为空');
+            return;
+        }
+        // 使保存按钮失效
+        $('#wechat_create').attr("disabled", true);
+        $.ajax({
+            type: "post",
+            dataType: "json",
+            url: "/media/wechat?a=create",
+            data: {'url': url},
+            success: function (d) {
+                // 使保存按钮失效
+                $('#wechat_create').attr("disabled", false);
+                if(d.status==200){
+                    $("#wechat_create_close").click();
+                    alert('添加成功');
+                    location.reload();
+                } else if (d.status==601) {
+                    alert('该公众号已存在')
+                } else if (d.status==401) {
+                    alert('无效的图文链接')
+                } else {
+                    alert('出错啦!')
+                }
+            }
+        })
+    });
+
+    // 自媒体筛选工具
+    $.ajax({
+        type: "get",
+        contentType: "application/json",
+        url: "/media/common?a=get_media_cart",
+        success: function (result) {
+            var obj = JSON.parse(result);
+            var media_list_html = '';
+            for (var i = 0; i < obj.data.length; i++) {
+                var m_id = obj.data[i].media_id;
+                var m_name = obj.data[i].name;
+                var p_name = obj.data[i].platform_name;
+                media_list_html += " <li>" +
+                        "<strong><a href='/media/" + p_name + "?a=detail&id=" + m_id + "'>" + m_name + "</a></strong>" +
+                        "<span>" + "<button op='del' mid='" + m_id + "' class=' btnOption btn btnColor btn-defalut '>移出</button></span></li>";
+            }
+            $('#mediaList').html(media_list_html);
+            // 点击事件
+            $("button.btnOption").click(function(){
+                var op = $(this).attr('op');
+                var mid = $(this).attr('mid');
+                if(op == 'add') {
+                    add_media(mid);
+                } else if(op == 'del') {
+                    del_media(mid);
+                }
+            });
+        }
+    });
+
+    // 微信公众号表格按条件排序
+    $("#wechat_table th").each(function(index, el) {
+        var data_sort = $(this).attr("data-sort");
+        if("{{ condition['sort'] }}".indexOf(data_sort) != -1){
+            if ("{{ condition['sort'] }}".indexOf("desc") != -1) {
+                $(this).addClass('sort sortDown')
+            }else{
+                $(this).addClass('sort sortUp')
+            }
+        }else{
+            $(this).addClass('sort')
+        }
+    });
+    $("#wechat_table th").click(function(event){
+        if ( $(this).attr('data-sort') != null) {
+            var data_sort = $(this).attr("data-sort")
+            if ($(this).hasClass('sortDown')) {
+                $("#sort").val(data_sort);
+                $('#search_form').submit();
+            }else{
+               data_sort += "_desc";
+               $("#sort").val(data_sort);
+               $('#search_form').submit();
+            };
+        }
+    });
+
+    
+});
+
+function add_media(mid){
+    $.ajax({
+        type: "post",
+        dataType: "json",
+        url: "/media/common?a=add_media_cart",
+        data: {'media_id': mid},
+        success: function (d) {
+            if(d.status==200){
+                location.reload();
+            } else if (d.status==601) {
+                alert('已加入预选')
+            } else {
+                alert('出错啦!')
+            }
+        }
+    })
+}
+
+function del_media(mid){
+    $.ajax({
+        type: "post",
+        dataType: "json",
+        url: "/media/common?a=del_media_cart",
+        data: {'media_id': mid},
+        success: function (d) {
+            if(d.status==200){
+                location.reload();
+            } else {
+                alert('出错啦!')
+            }
+        }
+    })
+}
+
+</script>
+{% end %}

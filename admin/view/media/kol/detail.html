@@ -1,0 +1,399 @@
+{% extends '../../public/main.html' %}
+
+{% block body %}
+<script type="text/javascript" src="{{ static_url('script/media/contact.js')}}"></script>
+
+<script type="text/javascript">
+    function only_num(obj){
+        if (isNaN(obj.value) || isNaN(obj.value.charAt(obj.value.length - 1))) {
+            alert("只能为数字！");
+            obj.value="";
+        }
+    }
+    function update_detail(){
+        var a = document.getElementById('kol_name').value;
+        if (a == "") {
+            alert("名称不能为空");
+            return false;
+        }
+        document.getElementById('kol_form').submit();
+    }
+    $(document).ready(function(){
+        uediter('kol_description');
+        uediter('kol_remark');
+    })
+</script>
+
+<div id="media_id" name="{{ detail_info['id'] }}" style="display: none" relation-type="3"></div>
+
+<div class="nav">
+    <a href="/media/kol">返回上页</a>
+</div>
+<div class="colcon">
+    <div class="col1in3">
+        <table class="table table-bordered table-hover vert-align">
+            <thead>
+                <tr class="res_tbl_title">
+                    <td>基本信息</td>
+                    <td>属性</td>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>ID</td>
+                    <td>{{ detail_info['id'] }}</td>
+                </tr>
+                <tr>
+                    <td>名称</td>
+                    <td>{{ detail_info['name'] }}</td>
+                </tr>
+                <tr>
+                    <td>身份</td>
+                    <td>{{ detail_info['role'] if detail_info['role'] else '-'}}</td>
+                </tr>
+                <tr>
+                    <td>所在地</td>
+                    <td>{{ detail_info['area'] if detail_info['area'] else '-'}}</td>
+                </tr>
+                <tr>
+                    <td>单位</td>
+                    <td>{{ detail_info['company'] if detail_info['company'] else '-'}}</td>
+                </tr>
+                <tr>
+                    <td>行业</td>
+                    <td>
+                        {% for c_item in category %}
+                            {{ c_item[0] + '(' + str(c_item[1]) + ')' + ' ' }}
+                        {% end %}
+                    </td>
+                </tr>
+                <tr>
+                    <td>标签</td>
+                    <td>
+                        {% for t_item in tag %}
+                            {{ t_item[0] + '(' + str(t_item[1]) + ')' + ' ' }}
+                        {% end %}
+                    </td>
+                </tr>
+                <tr>
+                    <td>写稿报价</td>
+                    <td>{{ detail_info['write_price'] if detail_info['other_price'] else '-'}}</td>
+                </tr>
+                <tr>
+                    <td>其它报价</td>
+                    <td>{{ detail_info['other_price'] if detail_info['other_price'] else '-'}}</td>
+                </tr>
+                <tr>
+                    <td>描述</td>
+                    <td>{% raw detail_info['description'] if detail_info['description'] else '-' %}</td>
+                </tr>
+                <tr>
+                    <td>备注</td>
+                    <td>{% raw detail_info['remark'] if detail_info['remark'] else '-' %}</td>
+                </tr>
+                <tr>
+                    <td>更新时间</td>
+                    <td>{{ detail_info['last_update_time'] }}</td>
+                </tr>
+            </tbody>
+        </table>
+        <div class="opc">
+            <button class="btnNormal" name="kol_update" data-target="#kol_update_dialog" data-toggle="modal">更新资料</button>
+        </div>
+    </div>
+    <div class="col2in3">
+        <div id="kol_update_dialog" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" id="kol_update_close" class="close" data-dismiss="modal" aria-hidden="true">X</button>
+                        <h4 id="kol_update_title">更新媒体资料</h4>
+                    </div>
+                    <div class="modal-body brickWall">
+                        <form id="kol_form" name="kol_form" method="post" action="/media/kol?a=update&id={{ detail_info['id']}}">
+                            <div>
+                                <strong>名称</strong>
+                                <input type="text" id="kol_name" name="kol_name" value="{{detail_info['name']}}">
+                            </div>
+                            <div>
+                                <strong>身份</strong>
+                                <input type="text" id="kol_role" name="kol_role" value="{{detail_info['role'] if detail_info['role'] else ''}}">
+                            </div>
+                            <div>
+                                <strong>所在地</strong>
+                                <input type="text" id="kol_area" name="kol_area" value="{{detail_info['area'] if detail_info['area'] else ''}}">
+                            </div>
+                            <div>
+                                <strong>单位</strong>
+                                <input type="text" id="kol_company" name="kol_company" value="{{detail_info['area'] if detail_info['area'] else ''}}">
+                            </div>
+                            <div>
+                                <strong>写稿报价</strong>
+                                <input type="text" id="kol_write_price" name="kol_write_price" value="{{detail_info['write_price'] if detail_info['write_price'] else '0'}}">
+                            </div>
+                            <div>
+                                <strong>其它报价</strong>
+                                <input type="text" id="kol_other_price" name="kol_other_price" value="{{detail_info['other_price'] if detail_info['other_price'] else '0'}}">
+                            </div>
+                            <div class="uediter" style="height: 200px">
+                                <strong>描述</strong>
+                                <textarea id="kol_description" name="kol_description" style="height: 200px">{% raw detail_info['description'] if detail_info['description'] else '' %}</textarea>
+                            </div>
+                            <div class="uediter" style="height: 200px">
+                                <strong>备注</strong>
+                                <textarea id="kol_remark" name="kol_remark">{% raw detail_info['remark'] if detail_info['remark'] else ''%}</textarea>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn" onclick="update_detail()">更新</button>
+                        <button class="btn" data-dismiss="modal" aria-hidden="true">取消</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+         <!-- 联系方式 -->
+        <table id="contact-list" class="table table-bordered table-hover vert-align contact-list">
+            <thead class="th-title">
+                <tr>
+                    <td colspan="9">联系方式</td>
+                </tr>
+            </thead>
+            <tbody>
+                
+            </tbody>
+        </table>
+        <div class="opc">
+            <button class="btnNormal" id="" data-target="#add_contact" data-toggle="modal">添加联系人</button>
+        </div>
+        <!-- 添加联系人 -->
+        <div id="add_contact" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button"  class="close" data-dismiss="modal" aria-hidden="true">X</button>
+                        <h4 id="">添加联系人</h4>
+                    </div>
+                    <div class="modal-body brickWall">
+                        <div>
+                            <div>
+                                <strong>联系人</strong>
+                                <input type="text" id="add_contact_person" name="add_contact_person" value="" width="30px"> <i>公司负责人<em> * </em></i>
+                            </div>
+                            <div>
+                                <strong>职位</strong>
+                                <input type="text" id="add_contact_position" name="add_contact_position" value=""> <i>公司职位</i>
+                            </div>
+                            <div>
+                                <strong>手机</strong>
+                                <input type="text" id="add_contact_phone" name="add_contact_phone" value=""> <i>手机号<em> * </em></i>
+                            </div>
+                            <div>
+                                <strong>座机</strong>
+                                <input type="text" id="add_contact_tel" name="add_contact_tel" value=""> <i>如021-1000000</i>
+                            </div>
+                            <div>
+                                <strong>微信</strong>
+                                <input type="text" id="add_contact_wechat" name="add_contact_wechat" value=""><em> * </em>
+                            </div>
+                            <div>
+                                <strong>QQ</strong>
+                                <input type="text" id="add_contact_qq" name="add_contact_qq" value=""><em> * </em>
+                            </div>
+                            <div>
+                                <strong>邮件</strong>
+                                <input type="text" id="add_contact_email" name="add_contact_email" value=""> <i>电子邮箱</i>
+                            </div>
+                            <div>
+                                <strong>其它</strong>
+                                <input type="text" id="add_contact_other" name="add_contact_other" value=""> <i>除以上信息外的其它重要信息</i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button id="add_contact_btn" class="btn btn-success" name="follow_btn"  onclick="">确定</button>
+                        <button class="btn" data-dismiss="modal" aria-hidden="true">取消</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- 修改联系人表格 -->
+        <div id="contact_update_dialog" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" id="" class="close" data-dismiss="modal" aria-hidden="true">X</button>
+                        <h4 id="">修改联系方式</h4>
+                    </div>
+                    <div class="modal-body brickWall">
+                        <div id="update_contact_form">
+                            <div>
+                                <strong>联系人</strong>
+                                <input id="contact_person" name="contact_person" value=""> <i>填写联系人<em> * </em></i>
+                            </div>
+                            <div>
+                                <strong>职位</strong>
+                                <input id="contact_position" name="contact_position" value=""> <i>填写职位</i>
+                            </div>
+                            <div>
+                                <strong>手机</strong>
+                                <input id="contact_phone" name="contact_phone" value=""> <i>11 位数字<em> * </em></i>
+                            </div>
+                            <div>
+                                <strong>座机</strong>
+                                <input type="text" id="contact_tel" name="contact_tel" value="">
+                            </div>
+                            <div>
+                                <strong>QQ</strong>
+                                <input id="contact_qq" name="contact_qq" value=""> <i>只可填写数字</i><em> * </em>
+                            </div>
+                            <div>
+                                <strong>微信</strong>
+                                <input id="contact_wechat" name="contact_wechat" value=""> <i>填写微信号</i><em> * </em>
+                            </div>
+                            <div>
+                                <strong>邮箱</strong>
+                                <input id="contact_email" name="contact_email" value=""> <i>填写邮箱</i>
+                            </div>
+                            <div>
+                                <strong>其它</strong>
+                                <input type="text" id="contact_other" name="contact_other" value=""> <i>除以上信息外的其它重要信息</i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-success" name="media_contact_update" id="media_contact_update">确定</button>
+                        <button class="btn btn-default" data-dismiss="modal" aria-hidden="true">取消</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <br>
+        
+    </div>
+</div>
+<h3>关联媒体</h3>
+<table class="table table-bordered table-hover vert-align">
+    <thead>
+        <tr class="res_tbl_title">
+            <td>ID</td>
+            <td>名称</td>
+            <td>平台</td>
+            <td>更新时间</td>
+            <td>操作</td>
+        </tr>
+    </thead>
+    <tbody>
+        {% for item in media %}
+        <tr>
+            <td>{{ item['media_id'] }}</td>
+            <td>
+                {% if item['platform_id'] == 2 %}
+                <a href="/media/wechat?a=detail&id={{item['media_id']}}">{{ item['name'] }}</a>
+                {% else %}
+                {{ item['name'] }}
+                {% end %}
+            </td>
+            <td>{{ item['platform'] }}</td>
+            <td>{{ item['last_update_time'] }}</td>
+            <td><a class="btn btnThin" href="/media/kol?a=remove_media&id={{detail_info['id']}}&media_id={{ item['media_id'] }}" onclick="return confirm('确认将自媒体移出KOL?');">移出</a></td>
+        </tr>
+        {% end %}
+    </tbody>
+</table>
+<br><br><br>
+<div class="mediaCart">
+    <div class="title">自媒体筛选工具</div>
+    <div class="dick">-</div>
+    <ul id="mediaList" class="mediaList">
+        <!--
+        <li>
+            <strong><a href="/media/wechat?a=detail&id=810531">猜火车</a></strong>
+            <span>
+                <button type="button" class="btnThin">选择</button>
+                <button type="button" class="btnThin">移出</button>
+            </span>
+        </li>
+        -->
+    </ul>
+</div>
+<script type="text/javascript">
+$(document).ready(function() {
+    $('#kol_contact_update').click(function(){
+        $('#update_contact_form').submit();
+    });
+
+    // 自媒体筛选工具
+    $.ajax({
+        type: "get",
+        contentType: "application/json",
+        url: "/media/common?a=get_media_cart",
+        success: function (result) {
+            var obj = JSON.parse(result);
+            var media_list_html = '';
+            for (var i = 0; i < obj.data.length; i++) {
+                var m_id = obj.data[i].media_id;
+                var m_name = obj.data[i].name;
+                var p_name = obj.data[i].platform_name;
+                media_list_html += " <li>" +
+                        "<strong><a href='/media/" + p_name + "?a=detail&id=" + m_id + "'>" + m_name + "</a></strong>" +
+                        "<span>" + "<button op='select' mid='" + m_id + "' class='btnThin'>选择</button></span></li>";
+            }
+            $('#mediaList').html(media_list_html);
+            // 点击事件
+            $("button[class=btnThin]").click(function(){
+                var op = $(this).attr('op');
+                var mid = $(this).attr('mid');
+                var lid = "{{ detail_info['id'] }}";
+                if(op == 'select') {
+                    select_media(mid, lid);
+                    del_media(mid)
+                }
+            });
+        }
+    });
+});
+
+function select_media(mid, lid)
+{
+    param = {
+        'media_id': mid,
+        'kol_id': lid
+    };
+    $.ajax({
+        url:'/media/kol?a=add_media',
+        method:'post',
+        dataType:'json',
+        data: param,
+        success:function(d){
+            if(d.status==200){
+//                alert("添加成功");
+            } else if (d.status==601) {
+                alert("已加入KOL");
+            } else {
+                alert("添加失败");
+            }
+        }
+    });
+}
+
+function del_media(mid)
+{
+    $.ajax({
+        type: "post",
+        dataType: "json",
+        url: "/media/common?a=del_media_cart",
+        data: {'media_id': mid},
+        success: function (d) {
+            if(d.status==200){
+                location.reload();
+            } else {
+                alert('出错啦。。。')
+            }
+        }
+    })
+}
+</script>
+{% end %}

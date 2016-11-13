@@ -1,0 +1,181 @@
+{% extends '../public/main.html' %}
+{% block title %}微信互推{% end %}
+{% block body %}
+<link href="{{ static_url('style/winwin.css') }}" type="text/css" rel="stylesheet">
+<link href="{{ static_url('style/fonts.css') }}" rel="stylesheet" rel="stylesheet">
+
+<dl class="copyModel" style="display:none;">
+    <dt>date<a href="/winwin/">申请中<span class="icon-next"></span></a></dt>
+    <dd>
+        <p>desc</p>
+        <ul>
+
+        </ul>
+    </dd>
+</dl>
+{% include 'menu.html' %}
+<div class="ht-container clearfix" style="margin-bottom: 30px;">
+    {% for item in winwin %}
+    <dl class="copyModel {% if item['start'] %}stepthree{% end %}" style="display:block;">
+        <dt>
+            {{ item['start_date'] }}
+            <a href="/winwin?a=view&id={{ item['uuid'] }}">
+                {{ item['status_text'] }}
+                <span class="icon-next">
+                </span>
+            </a>
+        </dt>
+        <dd>
+            <p>{{ item['description'] }}</p>
+            {% if 'data' in item['official'].keys() %}
+            <ul>
+                {% for value in item['official']['data'] %}
+                <li>
+                    <img src="{{ value['pic'] }}" alt="" title="周小末" />
+                </li>
+                {% end %}
+                <li class="count">{% if 'count' in item['official'].keys() %}{{ item['official']['count'] }}{% end %}</li>
+            </ul>
+            {% end %}
+        </dd>
+    </dl>
+    {% end %}
+</div>
+<div class="w1180">{% raw page %}</div>
+<div class="winwin-more-ht" style="display: none;">加载更多互推</div>
+
+<script src="{{ static_url('script/jquery.nanoscroller.min.js') }}"></script>
+<script>
+    /*$('.nano').nanoScroller();
+    var href = location.href;
+    if(href.match(/\/history$/)){
+        $("#win-nav").find("li").eq(1).addClass("now").siblings().removeClass("now");
+    }*/
+    var page = 1;
+    var page_size = 20;
+    var type = 'all';
+    var status = 'r';
+    var totalPages = 1;
+    var isSending = false;
+    $('.qr-code').hide();
+    
+    $(function(){
+        $('.foot').hide();
+        $('select').change(function(){
+            status = $(this).val();
+            page = 1;
+            setList();
+        });
+        $('.ht-btn').click(function(){
+            var obj = $(this);
+            if(!obj.hasClass('ht-btn-click')){
+                type = obj.attr('id');
+                if(type=='mine' && '{g.user}'=='None'){
+                    lightbox('lb1');
+                    targetLink = '/winwin';
+                    return;
+                }
+                $('.ht-btn-click').removeClass('ht-btn-click');
+                obj.addClass('ht-btn-click');
+                page = 1;
+                if(type=='mine'){
+                    $('select').hide();
+                }else{
+                    $('select').show();
+                }
+                setList();
+            }
+        });
+        $('.winwin-more-ht').click(function(){
+            if(page<totalPages){
+                page++;
+                setList();
+            }
+
+        });
+        setList();
+    });
+
+    function setList(){
+        if(isSending)return;
+        isSending = true;
+        var object = {page:page,page_size:page_size,type:type};
+        object.status = type=='mine'?'r':status;
+        $.ajax({
+            url:'/api/winwin/list',
+            method:'get',
+            dataType:'json',
+            data:object,
+            success:showList
+        })
+    }
+
+    function showList(data){
+        isSending = false;
+        var list;
+        if(type=='all'){
+            list = data.winwin;
+        }else{
+            list = data.winwins;
+            //var list22 = data.winwin2;
+            //list.concat(list22);
+            //Array.prototype.push.apply(list, list22);
+        }
+        if(page==1){
+            $('.ht-container').empty();
+        }
+        totalPages = data.max_page;
+        if(page>=totalPages){
+            $('.winwin-more-ht').hide();
+        }else{
+            $('.winwin-more-ht').show();
+        }
+        var source = $('.copyModel:first');
+        
+        for(var i=0;i<list.length;i++){
+            var obj = list[i];
+            var dat = source.clone();
+            var typeText = '';
+            if(type=='mine'){
+                switch(obj.new_status){
+                    case 0:
+                        dat.addClass('stepone');
+                        typeText = '组织中';
+                        break;
+                    case 1:
+                        dat.addClass('steptwo');
+                        typeText = '申请中';
+                        break;
+                    case 2:
+                        dat.addClass('stepthree');
+                        typeText = '互推中';
+                        break;
+                    case 3:
+                        typeText = '已过期';
+                        break;
+                    case 4:
+                        typeText = '已拒绝';
+                        break;
+                    case 5:
+                        typeText = '已完成';
+                        break;
+                }
+            }
+            dat.children('dt').html(obj.start_date.substr(5) + '<a href="/winwin/' + obj.uuid + '">' + typeText + '<span class="icon-next"></span></a>');
+            dat.children('dd').children('p').text(decodeURIComponent(obj.description));
+            var list2 = obj.oas;
+            count = (list2.length>4 ? 4:list2.length);
+            for(var t=0;t<count;t++){
+                var head = list2[t].avatar||'/static/images/weixinavatar.png';
+                dat.children('dd').children('ul').append('<li><img src="' + head + '" title="' + decodeURIComponent(list2[t].name) + '"></li>');
+            }  
+            dat.children('dd').children('ul').find('li.count').remove();
+            //dat.children('dd').children('ul').children('<li>').val() + obj.members_accepted + '</li>');
+            dat.children('dd').children('ul').append('<li class="count">' + obj.members_accepted + '</li>');
+            dat.css('display','block');
+            $('.ht-container').append(dat);
+        }
+        checkFootLocation();
+    }
+</script>
+{% end %}

@@ -1,0 +1,1304 @@
+{% extends '../public/main.html' %}
+{% block title%}编辑自媒体{% end %}
+{% block body %}
+<script src="{{ static_url('script/uDialog.js') }}" type="text/javascript"></script>
+<link href="{{ static_url('style/common_v3.css') }}" type="text/css" rel="stylesheet">
+<link href="{{ static_url('style/self_media.css') }}" type="text/css" rel="stylesheet">
+
+<div class="mediaEditBox">
+    <div class="thisMedia">
+        <a href="/media?a=view&id={{ media['id'] }}" title="{{ media['name'] }}">
+            <img src="{{ media['avatar'] }}" alt="{{ media['name'] }}">{{ media['name'] }}
+        </a>
+    </div>
+    <div class="editMediaInfo">
+        <div class="title" onclick="change_current(this)" id="media_info">资料信息</div>
+        <div class="content">
+            <p class="infoTip">如您的资料信息已更改，请点击申请更新资料，一道会在 24 小时内为您更新。</p>
+            <div class="itemBox mediaAvatar clearfix">
+                <label>头像</label>
+                <div class="itemContent">
+                    <img src="http://7sbnkf.com2.z0.glb.qiniucdn.com/Fhl3j0VESMJDVC0v66RyB6nwl7ZS-avatar" alt="今日电商头条">
+                </div>
+            </div>
+            <div class="itemBox mediaName clearfix">
+                <label>微信名</label>
+                <div class="itemContent">
+                    今日电商头条
+                </div>
+            </div>
+            <div class="itemBox mediaDescription clearfix">
+                <label>简介</label>
+                <div class="itemContent">
+                    最值得关注的电商研究机构媒体，电子商务行业影响力位列前三，我们与阿里、京东、国美、亚马逊、苏宁、唯品会、聚美、当当、1号店、中粮我买、顺丰优选、美丽说，等电商企业保持战略合作，致力于电商行业多元化的健康发展，帮助传统企业实现互联网电商化！
+                </div>
+            </div>
+            <div class="itemBox mediaVerify clearfix">
+                <label>微信认证</label>
+                <div class="itemContent">
+                    <span class="wechatVerify ydi yd-checked"></span>北京小胖儿网络科技有限公司
+                <!--
+                    未认证
+                -->
+                </div>
+            </div>
+        </div>
+        <div class="action">
+            <button type="button" class="btnOk">更新资料</button>
+        <!--点击更新资料后的按钮状态
+            <button type="button" class="btnWaiting" disabled>更新中…</button>
+        -->
+            <div class="updateTime">最后更新时间：2015-10-20</div>
+        </div>
+    </div>
+    <div class="editMediaValue">
+        <div class="title" onclick="change_current(this)" id="media_value">价值信息</div>
+        <div class="content clearfix">
+            <p class="infoTip">请填写真实的信息，以保证你的自媒体被推荐给合适的广告需求。</p>
+            <div class="itemBox mediaCategory">
+                <label>行业<b style="color: #E14779;font-size: 18px;vertical-align: middle"> *</b></label>
+                <div class="itemContent">
+                    {% if media['category'] %}
+                    <span id="cate" data_id="{{ media['category']['id'] }}">{{ media['category']['name'] }}</span>
+                    {% end %}
+                </div>
+                <div class="itemOP">
+                    <button type="button" id="mediaCategoryBtn" class="btnNormal">修改行业</button>
+                </div>
+            </div>
+            <div class="itemBox mediaTag">
+                <label>标签<b style="color: #E14779;font-size: 18px;vertical-align: middle"> *</b></label>
+                <div class="itemContent" id="tag_box_all" >
+                    {% for item in media_tag %}
+                    <span id="{{ item['id'] }}" data-id="{{ item['tag_id'] }}">{{ item['name'] }}</span>
+                    {% end %}
+                </div>
+                <div class="itemOP">
+                    <button type="button" id="mediaTagBtn" class="btnNormal">修改标签</button>
+                </div>
+            </div>
+            <div class="itemBox mediaAudienceGender">
+                <label>针对性别</label>
+                <div class="itemContent">
+                    {{ media["audience_gender_name"] }}
+                </div>
+                <div class="itemOP">
+                    <button type="button" id="mediaAudienceGenderBtn" class="btnNormal">修改性别</button>
+                </div>
+            </div>
+            <div class="itemBox mediaAudienceArea">
+                <label>针对地域</label>
+                <div class="itemContent">
+                        {{ media["area"] }}
+                </div>
+                <div class="itemOP">
+                    <button type="button" id="mediaAudienceAreaBtn" class="btnNormal">修改地域</button>
+                </div>
+            </div>
+            <div class="itemBox mediaOriginal">
+                <label>原创号</label>
+                <div class="itemContent">
+                    {% if media['original']==1 %}
+                    <span class="yd-original"></span>已验证原创号
+                    {% end %}
+                    {% if media['original']==0 %}
+                        未验证
+                    {% end %}
+                </div>
+                {% if media['original']==0 %}
+                <div class="itemOP">
+                    <button type="button" id="mediaOriginalBtn" class="btnNormal">验证原创</button>
+                </div>
+                {% end %}
+            </div>
+        </div>
+    </div>
+    <div class="editMediaAdvertising current">
+        <div class="title" onclick="change_current(this)" id="media_advertising">刊例报价</div>
+        <div class="content">
+            <p class="infoTip">请完善您的刊例报价信息，以便广告主查看并邀请您接单。</p>
+            <ul class="mediaAdvertisingList clearfix">
+                <li class="addMediaAdvertising">
+                    <span class="ydi yd-add"></span>
+                    <strong>添加刊例报价</strong>
+                </li>
+                {% for item in media_price %}
+                    <li>
+                        <div class="advertisingName">{{ item['attr_value_info']}}</div>
+                        <div class="price"><small>¥</small><strong>{{ int(item['price']) }}</strong></div>
+                        <button type="button" class="mediaAdvertisingEditBtn btnNext" data-id="{{ item['id'] }}" data-attr="{{ item['attr_value_info']}}">修改</button>
+                        <button type="button" class="mediaAdvertisingDeleteBtn btnNext" data-id="{{ item['id'] }}">删除</button>
+                    </li>
+                {% end %}
+            </ul>
+        </div>
+    </div>
+</div>
+
+<!--
+<div class="mediaEditBox v3_media_edit">
+    <div class="thisMedia">
+        <a href="/media?a=view&id={{ media["id"] }}" title="{{ media['name'] }}">
+            <img src="{{ media['avatar'] }}" alt="{{ media['name'] }}">{{ media['name'] }}
+        </a>
+    </div>
+    <div class="editMediaValue current v3_media_edit_box" >
+        <div class="title" onclick="change_current(this)">价值信息</div>
+        <div class="content v3_media_edit_box_inner clearfix">
+            <div class="itemBox v3_demand_step_content_line">
+                <label>行业</label>
+                <div class="v3_demand_step_content_item">
+                    <div id="v3_demand_category" class="v3_demand_category">
+                        {% if media['category'] %}
+                        <span class="v3_category_selected_item" data-id="{{ media['category']['id'] }}" id="v3_category_selected_item_2">{{ media['category']['name'] }}</span>
+                        {% end %}
+                    </div>
+                    <button class="v3_button_select" id="v3_category_select" data-type="category">选择行业</button>
+                </div>
+                <input type="hidden" id="category" />
+            </div>
+            <div class="itemBox v3_demand_step_content_line">
+                <label>标签</label>
+                <div class="v3_demand_step_content_item" style="width:500px;">
+                    <div id="v3_demand_tag" class="v3_demand_category">
+                    {% for item in media_tag %}
+                    <span class="v3_tag_selected_item" data-id="{{ item['tag_id'] }}" id="v3_tag_selected_item_3">{{ item['name'] }}</span>
+                    {% end %}
+                    </div>
+                    <button class="v3_button_select" id="v3_tag_select" data-type="tag">选择标签</button>
+                </div>
+                <input type="hidden" id="tag" />
+            </div>
+            <div class="itemBox v3_demand_step_content_line v3_h35">
+                <label>针对性别</label>
+                <div class="v3_demand_step_content_item v3_h35">
+                    <label class="v3_demand_step_content_checkbox">
+                    <input type="radio" id="ag0" name="audience_gender" class="audience_gender" value="0" checked="checked" />不限
+                    </label>
+                    <label class="v3_demand_step_content_checkbox">
+                    <input type="radio" id="ag1" name="audience_gender" class="audience_gender" value="1" />偏女性
+                    </label>
+                    <label class="v3_demand_step_content_checkbox">
+                    <input type="radio" id="ag2" name="audience_gender" class="audience_gender" value="2" />偏男性
+                    </label>
+                </div>
+            </div>
+            <div class="itemBox v3_demand_step_content_line">
+                <label>针对地域</label>
+                <div class="v3_demand_step_content_item">
+                    <label class="v3_demand_step_content_checkbox">
+                    <input type="radio" name="audience_province_id" class="audience_province_id" value="0" checked="checked" />全国性
+                    </label>
+                    <label class="v3_demand_step_content_checkbox">
+                    <input type="radio" name="audience_province_id" class="audience_province_id" id="audience_province_id" value="1" />地方性
+                    </label>
+                    <div class="mediaAreaSelector v3_demand_step_content_area" id="v3_demand_audience_area">
+                        <select class="v3_demand_step_content_input v3_demand_step_content_select_short v3_area" name="province" id="province">
+                            <option value="">省份</option>
+                        </select>
+                        <select class="v3_demand_step_content_input v3_demand_step_content_select_short v3_area" name="city" id="city">
+                            <option value="">城市</option>
+                        </select>
+                        <select class="v3_demand_step_content_input v3_demand_step_content_select_short v3_area" name="county" id="county">
+                            <option value="">区县</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="action v3_demand_step_content_line">
+            <button class="btnOk v3_button v3_step_next" id="save">保存</button>
+        </div>
+    </div>
+    <div class="editMediaAdvertising v3_media_edit_box" >
+        <div class="title" onclick="change_current(this)">刊例价格</div>
+        <div class="content v3_media_edit_box_inner clearfix">
+            <div class="mediaAdvertisingList v3_price_list">
+                <table>
+                    <thead>
+                        <tr>
+                            <td>刊例类型</td>
+                            <td>价格</td>
+                            <td>操作</td>
+                        </tr>
+                    </thead>
+                    <tbody id="v3_price_list">
+                        {% for item in media_price %}
+                        <tr id="v3_price_list_{{ item['id'] }}">
+                            <td>{{ item['attr_value_info'] }}</td>
+                            <td>{{ item['price'] }}</td>
+                            <td>
+                                <a href="javascript:;" class="v3_media_price_del" data-id="{{ item['id'] }}">删除</a>
+                            </td>
+                        </tr>
+                        {% end %}
+                    </tbody>
+                </table>
+            </div>
+            <div class="mediaAdvertisingAdd">
+                {% for key in attribute %}
+                <div class="itemBox v3_demand_step_content_line v3_h35">
+                    <label>{{ attribute[key]['name'] }}</label>
+                    <div class="v3_demand_step_content_item v3_h35">
+                        <select data-id="{{ key }}" class="v3_attribute">
+                            <option value="">请选择</option>
+                            {% for item in attribute[key]['value'] %}
+                            <option value="{{ item['value_id'] }}">{{ item['value_name'] }}</option>
+                            {% end %}
+                        </select>
+                    </div>
+                </div>
+                {% end %}
+                <div class="itemBox v3_demand_step_content_line v3_h35">
+                    <label>价格</label>
+                    <div class="v3_demand_step_content_item v3_h35">
+                        <input type="text" onkeyup="value=value.replace(/[^\d]/g,'')" onafterpaste="this.value=this.value.replace(/\D/g,'')" id="price" class="mediaAdvertisingPrice v3_demand_step_content_input v3_demand_step_content_text_long" />
+                    </div>
+                </div>
+                <div class="action v3_demand_step_content_line">
+                    <button class="v3_button v3_step_next btnOk" id="price_add">添加</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+-->
+<script type="text/javascript">
+function change_current(obj){
+    //console.log($(obj).parent())
+    $(obj).parent().parent().children().removeClass("current")
+    $(obj).parent().addClass("current")
+}
+
+$(function(){
+    var media_id = '{{media["id"]}}';
+    var basic_url = '/area?a=get_list';
+    var cityList = [-1,-1,-1];
+    var change_parent;
+    var isAuto = false;
+
+    function getSelectList(id, idfrom){
+        change_parent = idfrom;
+        var obj = {};
+        obj.method='get';
+        obj.url = basic_url + '&parent_id='+id;
+        obj.dataType = 'json';
+        obj.success = function(data){
+            var target;
+            var tarWord;
+            var tarId;
+            var tar2 = '';
+            switch (change_parent){
+                case 'province':
+                    target = 'city';
+                    tarWord = '城市';
+                    tarId = cityList[1];
+                    tar2 = 'county';
+                    break;
+                case 'city':
+                    target = 'county';
+                    tarWord = '区县';
+                    tarId = cityList[2];
+                    break;
+                case 'main':
+                    target = 'province';
+                    tarWord = '省份';
+                    tarId = cityList[0];
+                    break;
+            }
+            var main = $('#' + target);
+            main.empty();
+            main.append('<option value="">' + tarWord + '</option>');
+            if(!isAuto && target=='city')cityList[1]=-1;
+            if(tar2!=''){
+                $('#' + tar2).empty().append('<option value="">区县</option>');
+                if(isAuto){
+                    isAuto = !isAuto;
+                }else{
+                    cityList[2] = -1;
+                }
+            }
+
+            var list = data.data;
+            for(var i=0;i<list.length;i++){
+                main.append('<option value="' + list[i].id + '">' + decodeURIComponent(list[i].name) + '</option>');
+            }
+            if(tarId!=-1){
+                main.val(tarId);
+            }
+            if(change_parent!='city' && main.val()!=''){
+                getSelectList(main.val(),target);
+            }
+
+        };
+        $.ajax(obj)
+    }
+
+    $('#mediaCategoryBtn').click(function(){
+        $.ajax({
+                url: '/user?a=get_category',
+                type: 'post',
+                dataType: 'json'
+            }).then(function(d) {
+                if (d.status == 200) {
+                    var cate_id = $('#cate').attr('data_id');
+                    var box_conent = '<p>选择自媒体所属的行业，可选 1 个行业。</p>' +
+                            '<ul id="cate_all" class="checkbox clearfix">';
+                    var media_cate = d.data;
+                    for (i in media_cate) {
+                        if(cate_id == media_cate[i]['id'])
+                            box_conent += '<li id="cate" data-id="' + media_cate[i]['id'] + '" class="selected"><span class="ydi yd-checked"></span>' + media_cate[i]['name'] + '</li>';
+                        else
+                            box_conent += '<li id="cate" data-id="' + media_cate[i]['id'] + '"><span class="ydi yd-checked"></span>' + media_cate[i]['name'] + '</li>';
+                    }
+                    box_conent += '</ul>';
+
+                    showAcceptBox(
+                            '修改自媒体行业',
+                            box_conent,
+                            '修改',
+                            '取消',
+                            function() {
+                                $('#cate_all').children().each(function(){
+//                                    alert($(this).attr('class'));
+                                    if($(this).attr('class') === "selected")
+                                    {
+                                        var new_cate_id = $(this).attr('data-id');
+                                        if(cate_id != new_cate_id) {
+                                            var postData = {
+                                                'category': new_cate_id
+                                            };
+                                            $.ajax({
+                                                url: '/user?a=media_edit&id=' + media_id,
+                                                type: 'post',
+                                                dataType: 'json',
+                                                data: postData
+                                            }).then(function (d) {
+                                                if (d.status == 200) {
+                                                    showTipsBox('message','更新成功' );
+                                                    location.href = window.location;
+                                                } else {
+                                                    showTipsBox('alert','更新失败' );
+                                                }
+                                            });
+                                        }
+                                    }
+                                });
+                            }
+                    );
+
+                    $('#cate_all').children().click(function(){
+                        // 删除其他的
+                        $('#cate_all').children().each(function(){
+                            $(this).removeClass('selected');
+                        });
+
+                        var cate_id = $(this).attr('data-id');
+                        $(this).addClass('selected');
+                    });
+                }
+            });
+    });
+
+    $('#mediaTagBtn').click(function(){
+        $.ajax({
+            url: '/user?a=get_tag',
+            type: 'post',
+            dataType: 'json'
+        }).then(function(d){
+            if (d.status == 200){
+                var tag_id = $('#tag').attr('data-id');
+                var tag = d.data;
+                console.log(tag);
+                var tag_array=[];
+                var tag_num = 0;
+                $('#tag_box_all').children().each(function(){
+                    //alert($(this).attr('data-id'));
+                    tag_array.push(Number($(this).attr('data-id')));
+                    //alert(tag_array)
+                });
+                var _html = '<p>选择自媒体属性标签，可选 3 个标签。</p><ul id="tag_window_all" class="checkbox clearfix">';
+                for (i=0;i<tag.length;i++){
+                    if (tag_array.indexOf(tag[i]['id'])>=0) {
+                        _html += '<li class="selected" data-id = ' + tag[i]['id'] + '><span class="ydi yd-checked"></span>' + tag[i]['name'] + '</li>';
+                        tag_num+=1;
+
+                    }
+                    else{
+                        _html += '<li data-id = ' + tag[i]['id'] + '><span class="ydi yd-checked"></span>' + tag[i]['name'] + '</li>';
+                    }
+                }
+                _html += '</ul>';
+
+                showAcceptBox(
+                '修改自媒体标签',
+                _html,
+                '修改',
+                '取消',
+                function(){
+                    var post_tag = [];
+                    $('#tag_window_all').children().each(function(){
+                        if ($(this).hasClass("selected") ){
+                            post_tag.push($(this).attr('data-id'))
+                        }
+                    });
+                    console.log($.trim(post_tag));
+                    var postData = {
+                        'tag' : $.trim(post_tag)
+                    };
+
+                    $.ajax({
+                        url: '/user?a=media_edit&id='+media_id,
+                        type: 'post',
+                        dataType: 'json',
+                        data: postData
+                    }).then(function(d){
+                        if(d.status == 200){
+                            showTipsBox('message','更新成功' );
+                            location.href = window.location ;
+                        } else {
+                            showTipsBox('alert','更新失败' );
+                        }
+                    });
+                }
+                );
+                $('#tag_window_all').children().click(function(){
+                   if ($(this).hasClass("selected") ){
+                       $(this).removeClass('selected');
+                       tag_num-=1;
+                   } else{
+                       if (tag_num<3){
+                           $(this).addClass('selected');
+                           tag_num+=1;
+                       }
+                   }
+                });
+            }
+        });
+
+    });
+
+    $('#mediaAudienceGenderBtn').click(function(){
+        var audience_gender = '{{ media["audience_gender"] }}';
+
+
+        var obj = this;
+        //console.log($('#media_value')[0]);
+        mediaAudienceGenderSave = function(){
+            //alert(1);
+            var media_id = '{{media["id"]}}';
+            var sel_gender = $.trim($('input:radio:checked').val());
+            //console.log($('input:radio:checked').val());
+            if(!media_id){
+                return false;
+            }
+            var postData = {
+                'audience_gender' : sel_gender
+            };
+            //console.log($('#media_value'));
+            //loadingButton.show(obj);
+            $.ajax({
+                url: '/user?a=media_edit&id='+media_id,
+                type: 'post',
+                dataType: 'json',
+                data: postData
+            }).then(function(d){
+                if(d.status == 200){
+                            showTipsBox('message','更新成功' );
+                            location.href = window.location ;
+                        } else {
+                            showTipsBox('alert','更新失败' );
+                        }
+            });
+        };
+        showAcceptBox(
+            '修改自媒体针对性别',
+            '<p>选择自媒体受众的性别偏向，请参考微信公众平台统计数据。</p><div class="typeRadio" id="gender_box"><label><input id="audi_gender0"  name="audience_gender" class="audience_gender_new" type="radio" value="0" >不限</label><label><input id="audi_gender1"  name="audience_gender" type="radio" value="1">偏女性</label><label><input id="audi_gender2"  name="audience_gender" type="radio" value="2">偏男性</label></div>',
+            '修改',
+            '取消',
+            mediaAudienceGenderSave
+        );
+        if (audience_gender == 1) {
+            //alert(1);
+            $('#audi_gender1').attr('checked','checked');
+        } else if (audience_gender == 2){
+            //alert(2);
+            $('#audi_gender2').attr('checked','checked');
+        } else {
+            //alert(0);
+            $('#audi_gender0').attr('checked','checked');
+        }
+    });
+
+    $('#mediaAudienceAreaBtn').click(function(){
+        var all_flag = 1;
+        var audience_province_id = '{{ media["audience_province_id"] }}';
+        var audience_city_id = '{{ media["audience_city_id"] }}';
+        var audience_county_id = '{{ media["audience_county_id"] }}';
+        if(audience_province_id > 0){
+            $('#audience_province_id').click();
+            cityList = [audience_province_id, audience_city_id, audience_county_id];
+            isAuto = true;
+            _html = '<p>选择自媒体受众的地域偏向，请参考微信公众平台统计数据。</p><div class="typeRadio"><label><input id="all_country" type="radio" value="0" class="audience_province_id" name="area_range">全国性</label><label><input type="radio" class="audience_province_id" name="area_range" value="1" checked="checked">地方性</label></div><div class="selector" id="area_choosing" ><select name="province" id="province"><option value="">省份</option></select><select name="city" id="city"><option value="">城市</option></select><select name="county" id="county"><option value="">区县</option></select></div>';
+
+        }
+        else{
+            _html = '<p>选择自媒体受众的地域偏向，请参考微信公众平台统计数据。</p><div class="typeRadio"><label><input id="all_country" type="radio" value="0" class="audience_province_id" name="area_range" checked="checked">全国性</label><label><input type="radio" class="audience_province_id" name="area_range" value="1" >地方性</label></div><div class="selector" id="area_choosing" hidden><select name="province" id="province"><option value="">省份</option></select><select name="city" id="city"><option value="">城市</option></select><select name="county" id="county"><option value="">区县</option></select></div>';
+        }
+
+
+        $('.audience_province_id').click(function(){
+            //alert(1)
+            var value = $(this).value;
+            if(value == 0){
+                //alert(2)
+                $('#area_choosing').hide();
+
+            }else{
+
+                //alert(1);
+                $('#area_choosing').show();
+            }
+        });
+        if(audience_province_id > 0){
+            $('#audience_province_id').click();
+            cityList = [audience_province_id, audience_city_id, audience_county_id];
+            isAuto = true;
+        }
+        else{
+            cityList = [0,0,0];
+            $('#all_country').attr('checked','checked');
+        }
+        mediaAudienceAreaSave = function(){
+            //alert(cityList);
+
+            var postData = {
+                'audience_province_id' : cityList[0],
+                'audience_city_id' : cityList[1],
+                'audience_county_id' : cityList[2]
+            };
+            //alert(all_flag);
+            //alert(cityList[0]);
+            if ((Number(cityList[0])==0)&&(all_flag==0)){
+                showTipsBox('alert','请输入地域');
+                return false
+            }
+            //console.log($('#media_value'));
+            //loadingButton.show(obj);
+            $.ajax({
+                url: '/user?a=media_edit&id='+media_id,
+                type: 'post',
+                dataType: 'json',
+                data: postData
+            }).then(function(d){
+                if(d.status == 200){
+                            showTipsBox('message','更新成功' );
+                            location.href = window.location ;
+                        } else {
+                            showTipsBox('alert','更新失败' );
+                        }
+            });
+        };
+        getSelectList(0, 'main');
+        showAcceptBox(
+            '修改自媒体针对地域',
+            _html,
+            '修改',
+            '取消',
+            mediaAudienceAreaSave
+        );
+        $('.typeRadio').children().click(function(){
+            var value = $(this).children().val();
+            //alert(value)
+            if(value == 0){
+                //alert(2)
+                $('#area_choosing').hide();
+                cityList = [0,0,0];
+            }else{
+                all_flag =0;
+                $('#area_choosing').show();
+            }
+        });
+        $('select').change(function(){
+            var target = $(this).attr('name');
+            //alert(target);
+            var id = $(this).val();
+            if(id==''){
+                if(target=='province'){
+                    $('#city').empty().append('<option value="">城市</option>');
+                    $('#county').empty().append('<option value="">区县</option>');
+                    cityList = [-1,-1,-1];
+                }else if(target=='city'){
+                    $('#county').empty().append('<option value="">区县</option>');
+                    cityList[1] = cityList[2] = -1;
+                }else{
+                    cityList[2] = -1;
+                }
+                return;
+            }
+            if(target!='county'){
+                getSelectList(id,target);
+                if(target=='province'){
+                    cityList[0] = id;
+                }else{
+                    cityList[1] = id;
+                }
+            }else{
+                cityList[2] = id;
+            }
+        });
+    });
+
+    $('#mediaOriginalBtn').click(function(){
+        mediaOriginalSave = function(){
+            var strUrl = $('#original_url').val();
+            //alert(strUrl)
+            var postData = {
+                'id': media_id,
+                'url': strUrl
+            };
+
+            // 发送数据
+            //loadingButton.show(_this);
+            $.ajax({
+                url: '/user?a=check_origin',
+                type: 'post',
+                dataType: 'json',
+                data: postData
+            }).then(function(d){
+                //console.log(d);
+                if(d.status == 200){
+                    showTipsBox('message','验证成功' );
+                    location.href = window.location;
+                } else {
+                    showTipsBox('alert','验证失败' );
+                }
+            });
+        };
+        showAcceptBox(
+            '验证自媒体原创号',
+            '<p>请粘贴拥有原创标识的图文消息地址到下方输入框。</p><div class="typeText"><input type="text" id="original_url" placeholder="在此粘贴图文消息地址：http://mp.weixin.qq.com/s?__biz=..."></div>',
+            '验证',
+            '取消',
+            mediaOriginalSave
+        );
+    });
+
+    $('.addMediaAdvertising').click(function(){
+        var media_id = '{{media["id"]}}';
+        op_html = '<p>请选择广告位并输入相应的报价。</p><div class="selector"><select name="advertisingA" id="advertisingA"><option class="sel_option" value="" selected>选择广告位</option>';
+        var temp='{{attr_value}}';
+        var c = document.createElement('div');
+        c.innerHTML = temp;
+        temp = c.innerText || c.textContent;
+        c = null;
+        var attr = eval(temp)
+        //console.log(attr);
+        for (i=0;i<attr.length;i++){
+            op_html += '<option class="sel_option" data-id = '+attr[i]['attr_id']+' value='+attr[i]['value_id']+'>'+attr[i]['value_name']+'</option>'
+        }
+        op_html += '</select></div>';
+        op_html += '<div class="typeText"><input id="create_price" type="text" value="" onkeyup="value=value.replace(/[^\\d]\/g,\'\')" onafterpaste="this.value=this.value.replace(/\\D/g,\'\')"  maxlength="8" placeholder="在此输入报价" style="width:180px;"></div>';
+        var _this = $(this);
+        mediaAdvertisingAdd = function(){
+            var attributeValue = [];
+            var obj = document.getElementById('advertisingA');
+            //console.log(obj.selectedIndex);
+            var value_sel = obj.options[obj.selectedIndex].value;
+            var returnStatus = true;
+            $('.sel_option').each(function(){
+                var attr_id = $(this).attr('data-id');
+                var value = $(this).val();
+                if((value == value_sel)&&(value!="")){
+                    attributeValue.push({
+                        'attr_id': attr_id,
+                        'value': value
+                    });
+                }
+               // console.log(attributeValue);
+            });
+            if(attributeValue.length == 0){
+                showTipsBox('alert','刊例类型不能为空' );
+                returnStatus = false;
+            }
+
+            var price = $.trim($('#create_price').val());
+            if(!price){
+                showTipsBox('alert','价格不能为空' );
+                returnStatus = false;
+            }
+            else if(price==0){
+                showTipsBox('alert','价格不能为0' );
+                returnStatus = false;
+            }
+            if(!returnStatus){
+                return false;
+            }
+            var postData = {
+                'id': media_id,
+                'attribute': JSON.stringify(attributeValue),
+                'price': price
+            };
+
+            // 发送数据
+            $.ajax({
+                url: '/user?a=media_price_create',
+                type: 'post',
+                dataType: 'json',
+                data: postData
+            }).then(function(d){
+                //uPop.show(_this, 20002, dicStatusMsg['media_edit'][d['status']], 'error');
+                if(d.status == 200){
+                    location.href = window.location + "&price_create=1";
+                } else if(d.status == 601){
+                    showTipsBox('alert','已存在的刊例类型' );
+                    //alert("已存在的刊例类型");
+                }
+            });
+
+        };
+        showAcceptBox(
+            '添加刊例报价',
+            op_html,
+            '添加',
+            '取消',
+            mediaAdvertisingAdd
+        );
+    });
+
+    $('.mediaAdvertisingEditBtn').click(function(){
+        var obj = this;
+        var media_id = '{{media["id"]}}';
+        var attr_value_info = $(obj).attr('data-attr')
+        mediaAdvertisingEdit = function(){
+            var returnStatus = true;
+            //console.log(this)
+            var media_price_id = $(obj).attr('data-id');
+            var price = $.trim($('#price_edit').val());
+            //alert(price);
+            //alert(media_price_id);
+            if(!price){
+                showTipsBox('alert','价格不能为空' );
+                //uPop.show($('#price_edit'), 10004, '价格不能为空', 'error');
+                returnStatus = false;
+            }
+            else if(price==0){
+                showTipsBox('alert','价格不能为0' );
+                //uPop.show($('#price_edit'), 10004, '价格不能为0', 'error');
+                returnStatus = false;
+            }
+            if(!returnStatus){
+                return false;
+            }
+
+            var postData = {
+                'id': media_id,
+                'price': price,
+                'media_price_id':media_price_id
+            };
+
+
+            // 发送数据
+            loadingButton.show($(obj));
+            $.ajax({
+                url: '/user?a=media_price_edit',
+                type: 'post',
+                dataType: 'json',
+                data: postData
+            }).then(function(d){
+                loadingButton.hide($(obj));
+                if(d.status == 200){
+                    //alert(dicStatusMsg['media_edit'][d['status']]);
+                    location.href = window.location + "&price_create=1";
+                } else if(d.status == 601){
+                    showTipsBox('alert','已存在的刊例类型' );
+                }
+            });
+
+        };
+        showAcceptBox(
+            '编辑刊例报价',
+            '<p>在下方输入<strong>'+attr_value_info+'</strong>的新报价。</p><div class="typeText"><input type="text" id="price_edit" onkeyup="value=value.replace(/[^\\d]\/g,\'\')" onafterpaste="this.value=this.value.replace(/\\D/g,\'\')"  maxlength="8" placeholder="在此输入报价" style="width:180px;"></div>',
+            '编辑',
+            '取消',
+            mediaAdvertisingEdit
+        );
+    });
+
+    $('.mediaAdvertisingDeleteBtn').click(function(){
+        var obj = this;
+        var id = $(obj).attr('data-id')
+        mediaAdvertisingDelete = function(){
+            //alert(id)
+            if(!id){
+                return false;
+            }
+            $.ajax({
+                url: '/user?a=media_price_del',
+                type: 'post',
+                dataType: 'json',
+                data: {
+                    'id': id
+                }
+            }).then(function(d){
+                if(d.status == 200){
+                    location.href = window.location
+                }else{
+                    //alert(dicStatusMsg['media_edit'][d['status']]);
+                }
+            });
+
+        };
+        showAcceptBox(
+            '删除刊例报价',
+            '<p>删除此刊例报价不会影响您以前的接单报价。</p>',
+            '删除',
+            '取消',
+            mediaAdvertisingDelete
+        );
+    });
+});
+//
+//$(function(){
+//    var basic_url = '/area?a=get_list';
+//    var cityList = [-1,-1,-1];
+//    var change_parent;
+//    var isAuto = false;
+//
+//    var media = function(){
+//        var self = this;
+//
+//        // 记录选择行业
+//        var categorys = [];
+//        // 记录选择标签
+//        var tags = [];
+//        // media id
+//        var media_id = '{{ media["id"] }}';
+//        var audience_gender = '{{ media["audience_gender"] }}';
+//        var audience_province_id = '{{ media["audience_province_id"] }}';
+//        var audience_city_id = '{{ media["audience_city_id"] }}';
+//        var audience_county_id = '{{ media["audience_county_id"] }}';
+//
+//        // 监听地域选择
+//        $('.audience_province_id').click(function(){
+//            var value = $(this).val();
+//            if(value == 0){
+//                $('#v3_demand_audience_area').hide();
+//            }else{
+//                $('#v3_demand_audience_area').show();
+//            }
+//        });
+//
+//        // 监听行业和标签点击
+//        $('.v3_button_select').click(function(){
+//            var type = $(this).attr('data-type');
+//            if(!type){
+//                return false;
+//            }
+//            if(type == 'category'){
+//                self.category();
+//            }
+//            if(type == 'tag'){
+//                self.tag();
+//            }
+//        });
+//
+//        // 监听保存
+//        $('#save').click(function(){
+//            if(!media_id){
+//                return false;
+//            }
+//            var returnStatus = true;
+//            var _this = $(this);
+//            // 验证
+//
+//            var category = $.trim($('#category').val());
+//            if(!category){
+//                uPop.show($('#v3_category_select'), 10001, '请选择', 'error');
+//                returnStatus = false;
+//            }
+//            var tag = $.trim($('#tag').val());
+//            if(!tag){
+//                uPop.show($('#v3_tag_select'), 10002, '请选择', 'error');
+//                returnStatus = false;
+//            }
+//            var postData = {
+//                'id': media_id,
+//                'category': category,
+//                'tag': tag,
+//                'audience_gender': $.trim($('.audience_gender:checked').val()),
+//                'audience_province_id': $.trim($('.audience_province_id:checked').val()),
+//                'audience_city_id': '',
+//                'audience_county_id': '',
+//            };
+//            if(postData['audience_province_id'] == 1){
+//                postData['audience_province_id'] = $('#province').val();
+//                postData['audience_city_id'] = $('#city').val();
+//                postData['audience_county_id'] = $('#county').val();
+//            }
+//
+//            if(!returnStatus){
+//                return false;
+//            }
+//
+//            // 发送数据
+//            loadingButton.show(_this);
+//            $.ajax({
+//                url: '/user?a=media_edit',
+//                type: 'post',
+//                dataType: 'json',
+//                data: postData
+//            }).then(function(d){
+//                uPop.show(_this, 20001, dicStatusMsg['media_edit'][d['status']], 'error');
+//                loadingButton.hide(_this);
+//            });
+//        });
+//
+//        // 监听添加刊例价格
+//        $('#price_add').click(function(){
+//            var _this = $(this);
+//            var returnStatus = true;
+//            var attributeValue = [];
+//
+//            $('.v3_attribute').each(function(){
+//                var attr_id = $(this).attr('data-id');
+//                var value = $(this).val();
+//                if(value){
+//                    attributeValue.push({
+//                        'attr_id': attr_id,
+//                        'value': value
+//                    });
+//                }
+//            });
+//            if(attributeValue.length == 0){
+//                uPop.show($('.v3_attribute').eq(0), 10003, '类型/位置/方式，最少选择一项', 'error');
+//                returnStatus = false;
+//            }
+//
+//            var price = $.trim($('#price').val());
+//            if(!price){
+//                uPop.show($('#price'), 10004, '价格不能为空', 'error');
+//                returnStatus = false;
+//            }
+//            if(price==0){
+//                uPop.show($('#price'), 10004, '价格不能为0', 'error');
+//                returnStatus = false;
+//            }
+//            if(!returnStatus){
+//                return false;
+//            }
+//
+//            var postData = {
+//                'id': media_id,
+//                'attribute': JSON.stringify(attributeValue),
+//                'price': price
+//            };
+//
+//            // 发送数据
+//            loadingButton.show(_this);
+//            $.ajax({
+//                url: '/user?a=media_price_create',
+//                type: 'post',
+//                dataType: 'json',
+//                data: postData
+//            }).then(function(d){
+//                loadingButton.hide(_this);
+//                if(d.status == 200){
+//                    alert(dicStatusMsg['media_edit'][d['status']]);
+//                    location.href = window.location + "&price_create=1";
+//                } else if(d.status == 601){
+//                    alert("已存在的刊例类型");
+//                }
+//            });
+//        });
+//
+//        // 监听删除刊例报价
+//        $('.v3_media_price_del').click(function(){
+//            var id = $(this).attr('data-id');
+//            if(!id){
+//                return false;
+//            }
+//
+//            if(confirm('确定要删除吗？')){
+//                $.ajax({
+//                    url: '/user?a=media_price_del',
+//                    type: 'post',
+//                    dataType: 'json',
+//                    data: {
+//                        'id': id
+//                    }
+//                }).then(function(d){
+//                    if(d.status == 200){
+//                        $('#v3_price_list_' + id).remove();
+//                    }else{
+//                        alert(dicStatusMsg['media_edit'][d['status']]);
+//                    }
+//                });
+//            }
+//        });
+//
+//        // 加载已有行业
+//        $('.v3_category_selected_item').each(function(){
+//            var id = $(this).attr('data-id');
+//            if(!id){
+//                return false;
+//            }
+//            categorys.push(id);
+//            $('#category').val(categorys.join(','));
+//        });
+//
+//        // 加载已有标签
+//        $('.v3_tag_selected_item').each(function(){
+//            var id = $(this).attr('data-id');
+//            if(!id){
+//                return false;
+//            }
+//            tags.push(id);
+//            $('#tag').val(tags.join(','));
+//        });
+//        // 加载性别选择
+//        if (audience_gender == 1) {
+//            $('#ag1').click();
+//        } else if (audience_gender == 2){
+//            $('#ag2').click();
+//        } else {
+//            $('#ag0').click();
+//        }
+//        // 加载地域选择
+//        if(audience_province_id > 0){
+//            $('#audience_province_id').click();
+//            cityList = [audience_province_id, audience_city_id, audience_county_id];
+//            isAuto = true;
+//        }
+//        getSelectList(0,'main');
+//
+//        /**
+//         * 执行标签选择
+//         */
+//        self.tag = function(){
+//            uDialog.show({
+//                'title': '选择标签',
+//                'content': '正在加载中...',
+//                'onload': function(obj){
+//                    $.ajax({
+//                        url: '/user?a=get_tag',
+//                        type: 'post',
+//                        dataType: 'json',
+//                    }).then(function(d){
+//                        if(d.status == 200){
+//                            // 输出到界面
+//                            var _html = '<p>最多选择3个标签</p>';
+//                            for(var k in d.data){
+//                                var className = tags.indexOf(''+ d['data'][k]['id'] +'') != -1 ? "v3_tag_item v3_tag_item_selected" : "v3_tag_item";
+//                                _html += '<button class="'+ className +'" data-id="'+ d['data'][k]['id'] +'">'+ d['data'][k]['name'] +'</button>';
+//                            }
+//                            obj.html(_html);
+//                            // 监听点击
+//                            $('.v3_tag_item').click(function(){
+//                                uPop.hide(10002);
+//                                var _this = $(this);
+//                                var id = $(this).attr('data-id');
+//                                var name = $(this).text();
+//                                // 检查数据是否有值
+//                                var hasSelected = false;
+//                                for(var i in tags){
+//                                    if(id == tags[i]){
+//                                        tags.splice(i, 1);
+//                                        hasSelected = true;
+//                                    }
+//                                }
+//                                if(hasSelected){
+//                                    $('#v3_tag_selected_item_' + id).remove();
+//                                    $(this).removeClass('v3_tag_item_selected');
+//                                }else{
+//                                    // 检查是否超过要求数量
+//                                    if(tags.length >= 3){
+//                                        return false;
+//                                    }
+//                                    tags.push(id);
+//                                    $(this).addClass('v3_tag_item_selected');
+//                                    $('#v3_demand_tag').append('<span class="v3_tag_selected_item" data-id="'+ id +'" id="v3_tag_selected_item_'+ id +'">'+ name +'</span>');
+//                                    // 监听移除
+//                                    $('.v3_tag_selected_item').unbind('click').click(function(){
+//                                        var id = $(this).attr('data-id');
+//                                        $(this).fadeOut(function(){
+//                                            $(this).remove();
+//                                            for(var i in tags){
+//                                                if(id == tags[i]){
+//                                                    tags.splice(i, 1);
+//                                                }
+//                                            }
+//                                            $('#tag').val(tags.join(','));
+//                                        });
+//                                    });
+//                                }
+//                                $('#tag').val(tags.join(','));
+//                            });
+//                        }
+//                    });
+//                }
+//            });
+//        }
+//
+//        /**
+//         * 执行行业选择
+//         */
+//        self.category = function(){
+//            uDialog.show({
+//                'title': '选择行业类型',
+//                'content': '正在加载中...',
+//                'onload': function(obj){
+//                    $.ajax({
+//                        url: '/user?a=get_category',
+//                        type: 'post',
+//                        dataType: 'json',
+//                    }).then(function(d){
+//                        if(d.status == 200){
+//                            // 输出到界面
+//                            var _html = '<p>最多选择1个行业</p>';
+//                            for(var k in d.data){
+//                                var className = categorys.indexOf(''+ d['data'][k]['id'] +'') != -1 ? "v3_category_item v3_category_item_selected" : "v3_category_item";
+//                                _html += '<button class="'+ className +'" data-id="'+ d['data'][k]['id'] +'">'+ d['data'][k]['name'] +'</button>';
+//                            }
+//                            obj.html(_html);
+//                            // 监听点击
+//                            $('.v3_category_item').click(function(){
+//                                uPop.hide(10001);
+//                                var id = $(this).attr('data-id');
+//                                var name = $(this).text();
+//                                // 检查数据是否有值
+//                                var hasSelected = false;
+//                                for(var i in categorys){
+//                                    if(id == categorys[i]){
+//                                        categorys.splice(i, 1);
+//                                        hasSelected = true;
+//                                    }
+//                                }
+//                                if(hasSelected){
+//                                    //去除选择标签
+//                                    $('#v3_category_selected_item_' + id).remove();
+//                                    // 标签显示未选择
+//                                    $(this).removeClass('v3_category_item_selected');
+//                                }else{
+//                                    //if(categorys.length >= 1){
+//                                    //    return false;
+//                                    //}
+//                                    categorys.pop();
+//                                    categorys.push(id);
+//
+//                                    //去除所有选择
+//                                    $('button.v3_category_item').removeClass('v3_category_item_selected');
+//                                    $(this).addClass('v3_category_item_selected');
+//                                    $('#v3_demand_category').html('<span class="v3_category_selected_item" data-id="'+ id +'" id="v3_category_selected_item_'+ id +'">'+ name +'</span>');
+//
+//
+//                                    // 监听移除
+//                                    $('.v3_category_selected_item').unbind('click').click(function(){
+//                                        var id = $(this).attr('data-id');
+//                                        $(this).fadeOut(function(){
+//                                            $(this).remove();
+//                                            for(var i in categorys){
+//                                                if(id == categorys[i]){
+//                                                    categorys.splice(i, 1);
+//                                                }
+//                                            }
+//                                            $('#category').val(categorys.join(','));
+//                                        });
+//                                    });
+//                                }
+//                                $('#category').val(categorys.join(','));
+//                            });
+//                        }
+//                    });
+//                }
+//            });
+//        }
+//    }();
+//
+//    $('.v3_area').change(function(){
+//        var target = $(this).attr('name');
+//        var id = $(this).val();
+//        if(id==''){
+//            if(target=='province'){
+//                $('#city').empty().append('<option value="">城市</option>');
+//                $('#county').empty().append('<option value="">区县</option>');
+//                cityList = [-1,-1,-1];
+//            }else if(target=='city'){
+//                $('#county').empty().append('<option value="">区县</option>');
+//                cityList[1] = cityList[2] = -1;
+//            }else{
+//                cityList[2] = -1;
+//            }
+//            return;
+//        }
+//        if(target!='county'){
+//            getSelectList(id,target);
+//            if(target=='province'){
+//                cityList[0] = id;
+//            }else{
+//                cityList[1] = id;
+//            }
+//        }else{
+//            cityList[2] = id;
+//        }
+//    });
+//
+//    function getSelectList(id,idfrom){
+//        change_parent = idfrom;
+//        var obj = {};
+//        obj.method='get';
+//        obj.url = basic_url + '&parent_id='+id;
+//        obj.dataType = 'json';
+//        obj.success = function(data){
+//            var target;
+//            var tarWord;
+//            var tarId;
+//            var tar2 = '';
+//            switch (change_parent){
+//                case 'province':
+//                    target = 'city';
+//                    tarWord = '城市';
+//                    tarId = cityList[1];
+//                    tar2 = 'county';
+//                    break;
+//                case 'city':
+//                    target = 'county';
+//                    tarWord = '区县';
+//                    tarId = cityList[2];
+//                    break;
+//                case 'main':
+//                    target = 'province';
+//                    tarWord = '省份';
+//                    tarId = cityList[0];
+//                    break;
+//            }
+//            var main = $('#' + target);
+//            main.empty();
+//            main.append('<option value="">' + tarWord + '</option>');
+//            if(!isAuto && target=='city')cityList[1]=-1;
+//            if(tar2!=''){
+//                $('#' + tar2).empty().append('<option value="">区县</option>');
+//                if(isAuto){
+//                    isAuto = !isAuto;
+//                }else{
+//                    cityList[2] = -1;
+//                }
+//            }
+//
+//            var list = data.data;
+//            for(var i=0;i<list.length;i++){
+//                main.append('<option value="' + list[i].id + '">' + decodeURIComponent(list[i].name) + '</option>');
+//            }
+//            if(tarId!=-1){
+//                main.val(tarId);
+//            }
+//            if(change_parent!='city' && main.val()!=''){
+//                getSelectList(main.val(),target);
+//            }
+//
+//        };
+//        $.ajax(obj)
+//    }
+//});
+</script>
+{% end %}

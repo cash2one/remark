@@ -1,0 +1,405 @@
+{% extends '../../public/main.html' %}
+
+{% block body %}
+<script type="text/javascript" src="{{ static_url('script/bootstrap-datetimepicker.js') }}"></script>
+<script type="text/javascript">
+    function del_confirm() {
+        var i = window.confirm("确定删除？");
+        if (i == true){
+            window.location.href = "/project/plan?a=plan_finish&id={{detail['id']}}";
+        }
+    }
+    function on_demand_commit() {
+        var a = document.getElementById('plan_id').value;
+        var b = document.getElementById('name').value;
+        var c = document.getElementById('money').value;
+        var d = document.getElementById("start_time").value;
+        var e = document.getElementById("end_time").value;
+        if (a == "" || b == "" || c == "" || d == "" || e == "") {
+            alert("输入不能为空");
+            return false;
+        }
+        if (parseInt(c)!=c){
+            alert("预算请输入整数");
+            return false;
+        }
+        if (time_compare(d, e) == false){
+            return false;
+        }
+        document.getElementById('demand_form').submit();
+    }
+    function create_potential(){
+        var a = document.getElementById('potential_plan_id').value;
+        var b = document.getElementById('potential_media_id').value;
+        var c = document.getElementById('potential_desc').value;
+        if (a == "" || b == "" || c == "") {
+            alert("输入不能为空");
+            return false;
+        }
+        document.getElementById('potential_create').submit();
+    }
+    function update_plan(obj){
+        var id = obj.name;
+        var form_id = 'plan_form' + id;
+        var a = document.getElementById('plan_advertiser_id'+id).value;
+        var b = document.getElementById('plan_title'+id).value;
+        var c = document.getElementById('plan_money'+id).value;
+        var d = document.getElementById('plan_time_begin'+id).value;
+        var e = document.getElementById('plan_time_end'+id).value;
+        if (a == "" || b == "" || c == "" || d == "" || e == "") {
+            alert("输入不能为空");
+            return false;
+        }
+        if (time_compare(d, e) == false){
+            return false;
+        }
+        document.getElementById(form_id).submit();
+    }
+    function start_end_add_compare(){
+        //a , b 格式為 yyyy-MM-dd
+        var a=document.getElementById("start_time").value;
+        var b=document.getElementById("end_time").value;
+        time_compare(a, b)
+    }
+    function start_end_modify_compare(id){
+        //a , b 格式為 yyyy-MM-dd
+        var a = document.getElementById('plan_time_begin'+id).value;
+        var b = document.getElementById('plan_time_end'+id).value;
+        time_compare(a, b)
+    }
+    $(document).ready(function(){
+        uediter('plan_brief');
+        uediter('plan_target');
+        uediter('plan_strategy');
+        uediter('plan_summary');
+        uediter('plan_progress');
+        uediter('description');
+        uediter('follow_remark');
+    })
+    function plan_follow(obj){
+        var id=obj.name;
+        var chk_value =[];
+        $('input[name="group"]:checked').each(function(){
+            chk_value.push($(this).val());
+        });
+        var remark = $('#follow_remark').val();
+        if (remark && remark.length>128){
+            alert('备注信息有误，请重新输入');
+            return false;
+        }
+        $.ajax({
+            type: "post",
+            dataType: "json",
+            url: "/project/plan?a=follow",
+            data: {'id': "{{ detail['id'] }}", 'remark': remark, 'group': chk_value.join(',')},
+            success: function (d) {
+                if(d.status==200){
+                    window.location.href="/project/plan";
+                } else {
+                    alert('加入跟踪失败。。。')
+                    return false;
+                }
+            }
+        });
+
+    }
+</script>
+<div class="nav">
+    <a href="/project/plan">返回上页</a>
+</div>
+<div class="colcon">
+<table class="table table-bordered table-hover vert-align">
+    <thead>
+        <tr class="res_tbl_title">
+            <td>基本信息</td>
+            <td>属性</td>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>ID</td>
+            <td>{{ detail['id'] }}</td>
+        </tr>
+        <tr>
+            <td>投放计划</td>
+            <td>{{ detail['title'] }}</td>
+        </tr><tr>
+            <td>公司</td>
+            <td><a href="/project/advertiser?a=detail&id={{ detail['advertiser_id'] }}">{{ detail['company'] }}</a></td>
+        </tr>
+        <tr>
+            <td>计划描述</td>
+            <td>{% raw detail['brief'] if detail['brief'] else '-' %}</td>
+        </tr>
+        <tr>
+            <td>投放时间</td>
+            <td>{{ detail['time_begin'] }} 至 {{ detail['time_end'] }}</td>
+        </tr>
+        <tr>
+            <td>预算总额</td>
+            <td>{{ detail['money'] }}</td>
+        </tr>
+        <tr>
+            <td>总投放额</td>
+            <td>{{ fd_info.get('total_money', 0) }}</td>
+        </tr>
+        <tr>
+            <td>项目跟踪</td>
+            <td>{% raw detail['progress'] if detail['progress'] else '' %}</td>
+        </tr>
+        <!--<tr>-->
+            <!--<td>跟踪人</td>-->
+            <!--<td>{% raw  detail['follower'] if detail['follower'] else '-' %}</td>-->
+        <!--</tr>-->
+        <tr>
+            <td>投放目标</td>
+            <td>{% raw detail['target'] if detail['target'] else '' %}</td>
+        </tr>
+        <tr>
+            <td>投放策略</td>
+            <td>{% raw detail['strategy'] if detail['strategy'] else '' %}</td>
+        </tr>
+        <tr>
+            <td>总结</td>
+            <td>{% raw detail['summary'] if detail['summary'] else '' %}</td>
+        </tr>
+        <tr>
+            <td>投放状态</td>
+            <td>{{ detail['status'] }}</td>
+        </tr>
+        <tr>
+            <td>效果统计</td>
+            <td>
+                {% if fd_info %}
+                <table class="table table-bordered table-hover vert-align">
+                    <thead>
+                        <tr class="res_tbl_title">
+                            <td>阅读数</td>
+                            <td>点赞数</td>
+                            <td>注册数</td>
+                            <td>领券数</td>
+                            <td>下单数</td>
+                            <td>成单数</td>
+                            <td>成交金额</td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>{{ fd_info['read_num'] }}</td>
+                            <td>{{ fd_info['like_num'] }}</td>
+                            <td>{{ fd_info['reg_num'] }}</td>
+                            <td>{{ fd_info['ticket_num'] }}</td>
+                            <td>{{ fd_info['order_num'] }}</td>
+                            <td>{{ fd_info['trade_num'] }}</td>
+                            <td>{{ fd_info['trade_money'] }}</td>
+                        </tr>
+                    </tbody>
+                    <thead>
+                        <tr class="res_tbl_title">
+                            <td>投放金额</td>
+                            <td>销售金额</td>
+                            <td>ROI</td>
+                            <td>CPM</td>
+                            <td>UCP</td>
+                            <td>BUCP</td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>{{ fd_info['sale'] }}</td>
+                            <td>{{ fd_info['sale_money'] }}</td>
+                            <td>{{ fd_info['roi'] }}</td>
+                            <td>{{ fd_info['cpm'] }}</td>
+                            <td>{{ fd_info['ucp'] }}</td>
+                            <td>{{ fd_info['bucp' ]}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+                {% end %}
+            </td>
+        </tr>
+        <tr>
+            <td>更新时间</td>
+            <td>{{ detail['last_update_time'] }}</td>
+        </tr>
+    </tbody>
+</table>
+</div>
+{% if detail['status'] != '已结束' %}
+<div class="opc">
+    <button data-target="#plan_follow{{ detail['id'] }}" data-toggle="modal" class="btnNormal">{{ '加入跟踪' if not group else '取消跟踪' }}</button>
+    <button data-target="#plan_dialog{{ detail['id'] }}" data-toggle="modal" class="btnNormal">修改投放计划</button>
+    <a class="btnFinish"  onclick="del_confirm()">结束投放计划</a>
+</div>
+
+<div id="plan_follow{{ detail['id'] }}" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">X</button>
+                <h4 id="plan_follow_title{{ detail['id'] }}">{{ '加入跟踪' if not group else '取消跟踪' }}</h4>
+            </div>
+            <div class="modal-body brickWall">
+                <form id="plan_follow_form{{ detail['id'] }}" name="plan_form" method="post" >
+                    {% if not group %}
+                        <div>
+                            <strong>投放组</strong>
+                            {% for item in groupData %}
+                                <label><input type="checkbox" id="group{{item['id']}}" name="group" value="{{item['id']}}">{{item['name']}}</label>
+                            {% end %}
+                        </div>
+                        <div class="uediter">
+                            <strong>备注</strong>
+                            <textarea id="follow_remark" name="follow_remark" ></textarea>
+                        </div>
+                    {% end %}
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-success" name="{{ detail['id'] }}" onclick="plan_follow(this)">保存</button>
+                <button class="btn btn-default" data-dismiss="modal" aria-hidden="true">取消</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div id="plan_dialog{{ detail['id'] }}" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">X</button>
+                <h4 id="plan_update_title{{ detail['id'] }}">修改投放计划</h4>
+            </div>
+            <div class="modal-body brickWall">
+                <form id="plan_form{{ detail['id'] }}" name="plan_form" method="post" action="/project/plan?a=update">
+                    <input type="hidden" id="plan_id{{ detail['id'] }}" name="plan_id" value="{{ detail['id'] }}">
+                    <input type="hidden" id="plan_advertiser_id{{ detail['id'] }}" name="plan_advertiser_id" value="{{ detail['advertiser_id'] }}">
+                    <div>
+                        <strong>计划标题</strong>
+                        <input type="text" id="plan_title{{ detail['id'] }}" name="plan_title" value="{{ detail['title'] }}"> <b>*</b> <i>投放计划标题</i>
+                    </div>
+                    <div class="uediter">
+                        <strong>计划描述</strong>
+                        <textarea id="plan_brief" name="plan_brief" >{% raw detail['brief'] if detail['brief'] else '' %}</textarea>
+                    </div>
+                    <div>
+                            <strong>投放时间</strong>
+                            <input size="16" type="text" readonly class="form_datetime" id="plan_time_begin{{ detail['id'] }}" name="plan_time_begin" value="{{ detail['time_begin'] }}" onChange="start_end_modify_compare({{ detail['id'] }})">
+                            <span>&nbsp;至&nbsp;</span>
+                            <input size="16" type="text" readonly class="form_datetime" id="plan_time_end{{ detail['id'] }}" name="plan_time_end" value="{{ detail['time_end'] }}" onChange="start_end_modify_compare({{ detail['id'] }})"> <b>*</b> <i>投放时间区间</i>
+                    </div>
+                    <!--<div>-->
+                        <!--<strong>负责人</strong>-->
+                        <!--<input type="text" id="plan_follower{{ detail['id'] }}" name="plan_follower" value="{{ detail['follower'] if detail['follower'] else ''}}">  <i>负责人</i>-->
+                    <!--</div>-->
+                    <div class="uediter">
+                        <strong>投放目标</strong>
+                        <textarea id="plan_target" name="plan_target" > {% raw detail['target'] if detail['target'] else '' %} </textarea> <i>投放目标</i>
+                    </div>
+                    <div class="uediter">
+                        <strong>投放策略</strong>
+                        <textarea id="plan_strategy" name="plan_strategy" > {% raw detail['strategy'] if detail['strategy'] else '' %} </textarea> <i>投放策略</i>
+                    </div>
+                    <div class="uediter">
+                        <strong>总结</strong>
+                        <textarea id="plan_summary" name="plan_summary" > {% raw detail['summary'] if detail['summary'] else ''%} </textarea> <i>总结</i>
+                    </div>
+                    <div >
+                        <strong>预算总额</strong>
+                        <input type="text" id="plan_money{{ detail['id'] }}" name="plan_money" value="{{ detail['money'] }}"> <b>*</b> <i>计划总预算金额，只可填写整数</i>
+                    </div>
+                    <div class="uediter">
+                        <strong>项目跟踪</strong>
+                        <textarea id="plan_progress" name="plan_progress" > {% raw detail['progress'] if detail['progress'] else ''%} </textarea> <i>项目跟踪</i>
+                    </div>
+                </form>
+                <script type="text/javascript">
+                        $(".form_datetime").datetimepicker({
+                            format: 'yyyy-mm-dd',
+                            minView: 'month',
+                            autoclose: true
+                        });
+                </script>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-success" name="{{ detail['id'] }}" onclick="update_plan(this)">保存</button>
+                <button class="btn btn-default" data-dismiss="modal" aria-hidden="true">取消</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% end %}
+<hr>
+{% if detail['status'] != '已结束' %}
+<div class="opa">
+    <button data-target="#demand_dialog" data-toggle="modal" class="btnAdd">增加广告需求</button>
+</div>
+{% end %}
+<div id="demand_dialog" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">X</button>
+                <h4 id="plan_create_title">增加广告需求</h4>
+            </div>
+            <div class="modal-body brickWall">
+                <form id="demand_form" name="demand_form" method="post" action="/project/demand?a=create">
+                    <input type="hidden" id="plan_id" name="plan_id" value="{{ detail['id'] }}">
+                    <div>
+                        <strong>需求名称</strong>
+                        <input type="text" id="name" name="name" value="" class="form-control dateInput"> <b>*</b> <i>需求主题或者简要描述</i>
+                    </div>
+                    <div>
+                        <strong>预算金额</strong>
+                        <input type="text" id="money" name="money" value="" class="form-control dateInput"> <b>*</b> <i>需求投放预算，只可填写整数</i>
+                    </div>
+                    <div>
+                        <strong>起始时间</strong>
+                        <input size="16" type="text" readonly class="form_datetime1 form-control dateInput" id="start_time" name="start_time" value="" onChange="start_end_add_compare()">
+                        <span>&nbsp;至&nbsp;</span>
+                        <input size="16" type="text" readonly class="form_datetime1 form-control dateInput" id="end_time" name="end_time" value="" onChange="start_end_add_compare()"> <b>*</b> <i>起始时间区间</i>
+                    </div>
+                    <div class="uediter">
+                        <strong>详细说明</strong>
+                        <textarea id="description" name="description"></textarea> <b>*</b><i>需求详细要求，包括受众要求、自媒体要求、效果要求等</i>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-success" onclick="on_demand_commit()">保存</button>
+                <button class="btn btn-default" data-dismiss="modal" aria-hidden="true">取消</button>
+            </div>
+        </div>
+    </div>
+</div>
+<table class="table table-bordered table-hover vert-align">
+    <thead>
+    <tr class="res_tbl_title">
+        <td>ID</td>
+        <td>广告需求</td>
+        <td>开始时间</td>
+        <td>结束时间</td>
+        <td>更新时间</td>
+    </tr>
+    </thead>
+    <tbody>
+    {% for item in demand %}
+    <tr>
+        <td>{{ item['id'] }}</td>
+        <td><a href="/project/demand?a=detail&id={{item['id']}}" >{{ item['name'] }}</a></td>
+        <td>{{ item['start_time'] }}</td>
+        <td>{{ item['end_time'] }}</td>
+        <td>{{ item['last_update_time'] }}</td>
+    </tr>
+    {% end %}
+    </tbody>
+</table>
+<script type="text/javascript">
+        $(".form_datetime1").datetimepicker({
+            format: 'yyyy-mm-dd',
+            minView: 'month',
+            autoclose: true
+        });
+</script>
+{% end %}

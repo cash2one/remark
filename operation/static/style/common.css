@@ -1,0 +1,106 @@
+body{font:14px/1.5 'Helvetica Neue', Helvetica, Arial, 'Hiragino Sans GB', STHeiti, 'WenQuanYi Micro Hei', 'Microsoft YaHei', sans-serif;margin:0;padding:0;background-color:#fff;height:100%;background-color:#fff;}
+
+ul{padding:0;margin:0;list-style:none;}
+
+.left{float:left;}
+.right{float:right;}
+
+.header{width:100%;height:40px;background-color:#003054;}
+.header_logo{float:left;padding-left:20px;color:#e9f4fd;font-size:20px;line-height:40px;}
+.header_user{float:right;color:#e9f4fd;line-height:40px;padding-right:20px;font-size:14px;}
+.header_user span{float:left;}
+.header_user a{float:left;margin-left:20px;color:#fff;}
+
+.main{width:100%;height:100%;}
+.table{margin:0;}
+.table_container>tbody>tr>td{border:none;}
+.content{height:100%;width:auto;background-color:#fff; margin-left:35px; margin-right:35px;}
+.in_content{position:relative;width:100%;}
+
+.menu{width:179px;padding:0!important;border-right:1px solid #ddd;background-color:#f6f6f6;}
+.menu li{border-bottom:1px solid #ddd;font-size:14px;line-height:40px;}
+.menu li ul{margin-bottom:10px;}
+.menu li li{border-bottom:none;line-height:32px;}
+.menu .current{}
+.menu a,.menu span{display:block;padding-left:18px;color:#666;transition:all 0.2s;}
+.menu span{color:#999;}
+.menu a:hover{border-color:#999;color:#333;text-decoration:none;}
+.menu .current a{background-color:#2891EB;color:#fff;}
+.menu li li a{padding-left:32px;}
+
+.nav{margin:20px 0;}
+.nav p{margin:0;color:#666;line-height:16px;}
+.nav p:before{float:left;width:16px;height:16px;margin-right:5px;border-radius:50%;border:1px solid #f70;color:#f70;font-weight:400;content:'!';text-align:center;}
+
+div.funnel{position:absolute;top:0;left:0;z-index:99;float:none;width:100%;height:auto;}
+.funnel .searchBox{position:absolute;top:0;right:0;z-index:99;}
+.funnel .searchBoxMore{margin:-10px;padding:9px;border:1px solid #ddd;background-color:#e9f4fd;}
+.funnel .searchBox select{width:120px;height:34px;border:solid 1px #ddd;background-color:#f6f6f6;margin:0;padding-left:6px;font-weight:400;}
+.funnel .searchBox input{width:200px;height:34px;}
+
+#more_condition{position:absolute;top:45px;right:0;z-index:98;display:none;width:1040px;margin-right:-10px;box-shadow:0 0 40px rgba(0,0,0,.2);border:1px solid #ddd;background-color:#fff;}
+#more_condition hr{margin:10px 0;}
+#more_condition > div > div > div{clear:both;padding-bottom:5px;line-height:24px;}
+#more_condition strong{display:block;line-height:26px;}
+#more_condition div a{cursor:pointer;display:inline-block;margin-right:5px;padding:0 5px;border:1px solid #ddd;background-color:#f6f6f6;}
+#more_condition div label{cursor:pointer;margin-right:5px;padding:0 5px;border:1px solid #ddd;background-color:#f6f6f6;font-weight:400;}
+#more_condition div input[type="radio"],#more_condition div input[type="checkbox"]{cursor:pointer;margin-right:3px;}
+#more_condition div a:hover,#more_condition div label:hover{border-color:#999;}
+#more_condition div select{width:80px;height:26px;border:solid 1px #ddd;background-color:#f6f6f6;margin:0;padding-left:6px;font-weight:400;}
+#more_condition .colleft{display:table-cell;width:590px;padding:10px;}
+#more_condition .colright{display:table-cell;padding:10px;border-left:1px solid #eee;}
+#more_condition .valueInfo2 > div,#more_condition .valueInfo3 > div{display:table-cell;padding-right:20px;}
+#more_condition .valueInfo4 strong,#more_condition .audienceInfo strong,#more_condition .advertisingInfo strong{float:left;width:70px;text-align:right;}
+#more_condition .valueInfo4 div div,#more_condition .audienceInfo div div,#more_condition .advertisingInfo div div{margin-left:80px;}
+#more_condition .valueInfo4 input[type="text"],#more_condition .advertisingInfo input[type="text"]{width:160px;border:1px solid #ddd;background-color:#f6f6f6;}
+
+.brickWall div{clear:both;padding:5px 0px 5px 90px;line-height:24px;}
+.brickWall strong{float:left;width:80px;margin-left:-90px;line-height:26px;text-align:right;}
+.brickWall div label{cursor:pointer;margin-right:5px;padding:0 5px;border:1px solid #ddd;background-color:#f6f6f6;font-weight:400;}
+.brickWall div label input{cursor:pointer;margin-right:3px;}
+.brickWall div label:hover{border-color:#999;}
+.brickWall div select{width:100px;height:24px;border:solid 1px #ddd;background-color:#f6f6f6;margin:0;padding-left:6px;font-weight:400;}
+.brickWall div textarea{width:400px;}
+.brickWall b{color:#e14779;font-weight:700;font-size:20px;vertical-align:middle;}
+.brickWall i{color:#999;font-style:normal;vertical-align:middle;}
+.brickWall .uediter .edui-container{padding:0;}
+.brickWall .uediter .edui-container .edui-toolbar{padding:0;}
+.brickWall .uediter .edui-container .edui-editor-body{padding:0;}
+.brickWall .uediter .edui-container .edui-editor-body .edui-body-container{padding:0;}
+.brickWall .uediter .edui-container .edui-toolbar  div{padding:1px;line-height:24px;clear:none;}
+/*.brickWall .uediter .edui-container .edui-toolbar .edui-dialog-container .edui-modal .edui-dialog-image {padding:5px}*/
+
+.colcon{display:table;width:100%;clear:both;}
+.col1in3{display:table-cell;width:32%;}
+.col2in3{display:table-cell;width:36%;padding:0 2%;}
+.col3in3{display:table-cell;width:32%;}
+.col1in2{display:table-cell;width:49%;}
+.col2in2{display:table-cell;width:51%;padding-left:2%;}
+.colcon tr td:first-child{width:100px;background-color:#eee;}
+
+.mediaCart{overflow:hidden;position:fixed;right:20px;bottom:20px;width:300px;box-shadow:0 0 20px rgba(0,0,0,.2);border-radius:4px;border:1px solid #ddd;background-color:#fff;}
+.mediaCart .title{padding:0 10px;background-color:#e9f4fd;font-size:16px;line-height:40px;}
+.mediaCart .dick{cursor:pointer;position:absolute;top:10px;right:10px;width:20px;height:20px;border:1px solid #ddd;background-color:#fff;font-size:30px;line-height:20px;text-align:center;}
+.mediaCart .mediaList li{height:36px;border-top:1px solid #ddd;}
+.mediaCart .mediaList strong{overflow:hidden;float:left;width:180px;padding-left:10px;font-weight:400;line-height:36px;white-space:nowrap;text-overflow:ellipsis;}
+.mediaCart .mediaList span{float:right;padding:5px 10px 5px 0;}
+
+.opa{margin:20px 0;}
+.opc{margin:20px 0;text-align:center;}
+.typeText{margin:0;padding:0 5px;border-radius:4px;border:1px solid #ccc;}
+.btnNormal{cursor:pointer;display:inline-block;margin:0;padding:0 10px;border-radius:4px;border:1px solid #333;background-color:#666;color:#fff;font-size:16px;line-height:32px;outline:none;}
+.btnNormal:hover,.btnNormal:active{background-color:#333;color:#fff;text-decoration:none;}
+.btnAdd{cursor:pointer;display:inline-block;margin:0;padding:0 10px;border-radius:4px;border:1px solid #2891EB;background-color:#e9f4fd;color:#2891EB;font-size:16px;line-height:32px;outline:none;}
+.btnAdd:hover,.btnAdd:active{background-color:#2891EB;color:#fff;text-decoration:none;}
+.btnFinish{cursor:pointer;display:inline-block;margin:0;padding:0 10px;border-radius:4px;border:1px solid #0db;background-color:#fff;color:#0db;font-size:16px;line-height:32px;outline:none;}
+.btnFinish:hover,.btnFinish:active{background-color:#0db;color:#fff;text-decoration:none;}
+.btnOk{cursor:pointer;display:inline-block;margin:0;padding:0 10px;border-radius:4px;border:1px solid #2891EB;background-color:#2891EB;color:#fff;font-size:16px;line-height:32px;outline:none;}
+.btnOk:hover,.btnOk:active{border-color:#0066c2;background-color:#0066c2;color:#fff;text-decoration:none;}
+.btnMore{cursor:pointer;display:inline-block;margin:0;padding:0 10px;border-radius:4px;border:1px solid #ccc;background-color:#f6f6f6;color:#999;font-size:14px;line-height:32px;outline:none;}
+.btnMore:hover,.btnMore:active{background-color:#eee;color:#333;text-decoration:none;}
+.btnThin{cursor:pointer;display:inline-block;margin:0;padding:0 5px;border-radius:2px;border:1px solid #ddd;background-color:#f6f6f6;color:#666;font-size:14px;line-height:24px;outline:none;}
+.btnThin:hover,.btnThin:active{border-color:#ccc;background-color:#e9f4fd;color:#333;text-decoration:none;}
+.tabDisplay{height:50px;overflow:hidden;text-overflow:ellipsis;}
+.contentDisplay{max-width:350px;height:50px;overflow:hidden;text-overflow:ellipsis; }
+.checkTable tr td:first-child {width:0px; background-color:#fff;}
+.brickWall div .advertiser_follower {margin:100px;}

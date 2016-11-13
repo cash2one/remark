@@ -1,0 +1,45 @@
+{% extends '../../public/main.html' %}
+
+{% block body %}
+
+<script type="text/javascript">
+    function on_documents_commit(){
+        var value = document.getElementById('myEditorsUp').value;
+        var title = document.getElementById('documents_titleUp').value;
+        if (title == "") {
+            alert("标题信息不允许为空！");
+            return false;
+        }
+        if (value == "") {
+            alert("文案信息为空！");
+            return false;
+        }
+        document.getElementById('documents_update_form').submit();
+    }
+
+    $(function(){
+        window.UMEDITOR_HOME_URL = "../../../static/ueditor/"
+	    window.um = UM.getEditor('myEditorsUp');
+    });
+</script>
+
+<div class="nav">
+    <a href="/project/documents?a=details&id={{ detail_info['media_content_id'] }}">返回上页</a>
+</div>
+
+<div>
+    <form id="documents_update_form" name="documents_update_form" action='/project/documents?a=update&id={{detail_info["media_content_id"] }}' method="post">
+        <strong><h4 id="advertiser_create_title">文案修改</h4></strong>
+        <strong>标题：</strong>
+        <input id="documents_titleUp" name="documents_titleUp" value="{{detail_info['media_title'] }}"> <b>*</b> <i>文案标题</i><br><br>
+
+        <div>
+            <textarea id="myEditorsUp" name="myEditorsUp" >{{detail_info['content_info'] }}</textarea>
+        </div><br>
+    </form>
+
+    <button class="btn btn-success" onclick="on_documents_commit()" >保存</button>
+    <a href="/project/documents?a=details&id={{ detail_info['media_content_id'] }}"><button class="btn btn-default" data-dismiss="modal" aria-hidden="true">取消</button></a>
+</div>
+
+{% end %}

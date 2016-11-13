@@ -1,0 +1,216 @@
+{% extends '../../public/main.html' %}
+
+{% block body %}
+<script type="text/javascript">
+    function updateContact(){
+        document.getElementById('contact_form').submit();
+    }
+    function updatestatus(){
+        document.getElementById('status_form').submit();
+    }
+    function updatevip(){
+        document.getElementById('vip_form').submit();
+    }
+</script>
+<div class="status_title">
+    <div>
+        <a href="javascript:history.go(-1);">返回</a>
+    </div>
+</div>
+<table class="table table-bordered table-hover vert-align">
+    <thead>
+        <tr class="res_tbl_title">
+            <td>基本信息</td>
+            <td>属性</td>
+            <td>操作</td>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>id</td>
+            <td>{{ detail_info['id'] }}</td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>用户名称</td>
+            <td>{{ detail_info['nickname'] }}</td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>身份</td>
+            <td>{{ detail_info['vip_label'] }}</td>
+            <td>
+                <button data-target="#vip_dialog" class="btn btnThin" data-toggle="modal">修改</button>
+                <div id="vip_dialog" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">X</button>
+                                <h4 id="vip_title">修改</h4>
+                            </div>
+                            <div class="modal-body">
+                                <form id="vip_form" name="vip_form" method="post" action="/user?a=detail&id={{ detail_info['id'] }}">
+                                    修改身份
+                                    <select id="vip_update" name="vip_update">
+                                        <option name="vip_update" value="0">普通会员</option>
+                                        <option name="vip_update" value="1">高级会员</option>
+                                    </select>
+                                </form>
+                            </div>
+                            <div class="modal-footer">
+                                <button class="btn" onclick="updatevip()">修改</button>
+                                <button class="btn" data-dismiss="modal" aria-hidden="true">取消</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>头像</td>
+            <td><img src="{{ detail_info['avatar'] }}" /></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>位置</td>
+            <td>{{ detail_info['area'] }}</td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>注册时间时间</td>
+            <td>{{ detail_info['create_time'] }}</td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>状态</td>
+            <td>{{ detail_info['status_name'] }}</td>
+            <td>
+                <button data-target="#status_dialog" class="btn btnThin" data-toggle="modal">修改</button>
+                <div id="status_dialog" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">X</button>
+                                <h4 id="status_title">修改</h4>
+                            </div>
+                            <div class="modal-body">
+                                <form id="status_form" name="status_form" method="post" action="/user?a=detail&id={{ detail_info['id'] }}">
+                                    修改状态
+                                    <select id="status_update" name="status_update"><option name="status_update" value="0">正常</option><option name="status_update" value="3">禁用</option></select>
+                                </form>
+                            </div>
+                            <div class="modal-footer">
+                                <button class="btn" onclick="updatestatus()">修改</button>
+                                <button class="btn" data-dismiss="modal" aria-hidden="true">取消</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </td>
+
+        </tr>
+        </tbody>
+    </table>
+<table class="table table-bordered table-hover vert-align">
+    <thead>
+        <tr class="res_tbl_title">
+            <td>联系方式</td>
+            <td>属性</td>
+            <td>操作</td>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>QQ</td>
+            <td>{{ detail_info['qq'] if detail_info['qq'] else '未填写' }}</td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>手机号码</td>
+            <td>{{ detail_info['phone'] if detail_info['phone'] else '未填写' }}</td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>邮箱地址</td>
+            <td>{{ detail_info['email'] if detail_info['email'] else '未填写'}}</td>
+            <td></td>
+        </tr>
+    </tbody>
+</table>
+            <!--<td>-->
+                <!--<button data-target="#contact_dialog" class="btn btnThin" data-toggle="modal">修改</button>-->
+                <!--<div id="contact_dialog" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">-->
+                    <!--<div class="modal-dialog">-->
+                        <!--<div class="modal-content">-->
+                            <!--<div class="modal-header">-->
+                                <!--<button type="button" class="close" data-dismiss="modal" aria-hidden="true">X</button>-->
+                                <!--<h4 id="contact_title">修改联系方式</h4>-->
+                            <!--</div>-->
+                            <!--<div class="modal-body">-->
+                                <!--<form id="contact_form" name="contact_form" method="post" action="/user?a=detail&id={{ detail_info['id'] }}">-->
+                                    <!--QQ&#8194;&#12288;&#12288;-->
+                                    <!--<input type="text" id="contact_qq" name="contact_qq" value="{{ detail_info['qq'] if detail_info['qq'] else ''}}">-->
+                                    <!--<br />-->
+                                    <!--手机号码-->
+                                    <!--<input type="text" id="contact_phone" name="contact_phone" value="{{ detail_info['phone'] if detail_info['phone'] else ''}}">-->
+                                    <!--<br />-->
+                                    <!--邮箱地址-->
+                                    <!--<input type="text" id="contact_email" name="contact_email" value="{{ detail_info['email'] if detail_info['email'] else ''}}">-->
+                                <!--</form>-->
+                            <!--</div>-->
+                            <!--<div class="modal-footer">-->
+                                <!--<button class="btn" onclick="updateContact()">修改</button>-->
+                                <!--<button class="btn" data-dismiss="modal" aria-hidden="true">取消</button>-->
+                            <!--</div>-->
+                        <!--</div>-->
+                    <!--</div>-->
+                <!--</div>-->
+            <!--</td>-->
+        <!--</tr>-->
+<table class="table table-bordered table-hover vert-align">
+    <thead>
+        <tr class="res_tbl_title">
+            <td>自媒体</td>
+            <td>属性</td>
+            <td>操作</td>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>数量</td>
+            <td>{{ len(detail_info['media']) }}</td>
+            <td></td>
+        </tr>
+        {% if len(detail_info['media']) > 0 %}
+        <tr>
+            <td>名称</td>
+
+                    {% for media_detail in detail_info['media'] %}
+                    <tr>
+                        <td></td>
+                        <td>
+                            <a href="/yidao/media?a=detail&id={{ media_detail['id'] }}">{{ media_detail['name'] }}</a>
+                        </td>
+                    <td></td>
+                    </tr>
+                    {% end %}
+        </tr>
+        {% else %}
+        {% end %}
+    </tbody>
+</table>
+<table class="table table-bordered table-hover vert-align">
+    <thead>
+        <tr class="res_tbl_title">
+            <td>其他</td>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+                <a href="/user?a=detail&id={{ detail_info['id'] }}">查看前台用户</a>
+            </td>
+        </tr>
+    </tbody>
+</table>
+{% end %}

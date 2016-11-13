@@ -1,0 +1,508 @@
+{% extends '../../public/main.html' %}
+
+{% block body %}
+<script type="text/javascript">
+    function updateName(){
+        var name = document.getElementById('media_name').value;
+        if (name == "") {
+            alert("自媒体名称不能为空");
+            return false;
+        }
+        document.getElementById('media_name_form').submit();
+    }
+    function updateCategory(){
+        document.getElementById('media_category_form').submit();
+    }
+    function updateTag(){
+        var cks = document.getElementsByName('media_tag');
+        var ck_num = 0;
+        for (var i=0;i<cks.length;i++) {
+            if (cks[i].checked) {
+                ck_num += 1;
+            }
+        }
+        if (ck_num > 3) {
+            alert("至多选择3个标签！");
+            return false;
+        }
+        document.getElementById('media_tag_form').submit();
+    }
+    function updateAudienceGender(){
+        document.getElementById('media_audience_gender_form').submit();
+    }
+    function updateAudienceArea(){
+        document.getElementById('media_audience_area_form').submit();
+    }
+    function updateOriginal(){
+        document.getElementById('media_original_form').submit();
+    }
+    function updateValue(){
+        document.getElementById('media_value_form').submit();
+    }
+</script>
+<div class="status_title">
+    <div>
+        <a href="/yidao/media">返回</a>
+    </div>
+</div>
+<table class="table table-bordered table-hover vert-align">
+    <thead>
+        <tr class="res_tbl_title">
+            <td>基本信息</td>
+            <td></td>
+            <td>操作</td>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>ID</td>
+            <td>{{ detail_info['id'] }}</td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>名称</td>
+            <td>{{ detail_info['name'] }}</td>
+            <td>
+                <button data-target="#media_name_dialog" class="btn btnThin" data-toggle="modal">更新资料</button>
+                <div id="media_name_dialog" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">X</button>
+                                <h4 id="media_name_title">修改自媒体名称</h4>
+                            </div>
+                            <div class="modal-body">
+                                <form id="media_name_form" name="media_name_form" method="post" action="/yidao/media?a=updateName&id={{ detail_info['id'] }}">
+                                    <input type="text" id="media_name" name="media_name" value="{{ detail_info['name'] }}">
+                                </form>
+                            </div>
+                            <div class="modal-footer">
+                                <button class="btn" onclick="updateName()">修改</button>
+                                <button class="btn" data-dismiss="modal" aria-hidden="true">取消</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>综合级别</td>
+            <td>{{ detail_info['value_level_label'] }}</td>
+            <td>
+                <button data-target="#media_value_dialog" class="btn btnThin" data-toggle="modal">修改</button>
+                <div id="media_value_dialog" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">X</button>
+                                <h4 id="media_value_title">修改自媒体价值信息</h4>
+                            </div>
+                            <div class="modal-body">
+                                <form id="media_value_form" name="media_value_form" method="post" action="/yidao/media?a=updateValue&id={{ detail_info['id'] }}">
+                                    修改认证信息：
+                                    <select id="media_value" name="media_value">
+                                        <option name="media_value" value="1">A</option>
+                                        <option name="media_value" value="2">B</option>
+                                        <option name="media_value" value="3">C</option>
+                                        <option name="media_value" value="4">D</option>
+                                        <option name="media_value" value="5">E</option>
+                                    </select>
+                                </form>
+                            </div>
+                            <div class="modal-footer">
+                                <button class="btn" onclick="updateValue()">修改</button>
+                                <button class="btn" data-dismiss="modal" aria-hidden="true">取消</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>用户</td>
+            <td>
+                <a href="/user?a=detail&id={{ detail_info['user_id'] }}">{{ detail_info['nickname'] }}</a>
+            </td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>入驻时间</td>
+            <td>{{ detail_info['create_time'] }}</td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>状态</td>
+            <td>{{ detail_info['status_label'] }}</td>
+            <td>
+                {% if detail_info['status'] == 2 %}
+                <a class="btn btnThin" href="/yidao/media?a=unban&id={{ detail_info['id'] }}" onclick="return confirm('确认解禁?');">解禁</a>
+                {% elif detail_info['status'] == 0 %}
+                <a class="btn btnThin" href="/yidao/media?a=ban&id={{ detail_info['id'] }}" onclick="return confirm('确认禁用?');">禁用</a>
+                {% else %}
+                {% end %}
+            </td>
+        </tr>
+    </tbody>
+    <thead>
+        <tr class="res_tbl_title">
+            <td>资料信息</td>
+            <td>属性</td>
+            <td>操作</td>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>头像</td>
+            <td><img src="{{ detail_info['avatar'] }}" /></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>微信号</td>
+            <td>{{ detail_info['wechat_id'] }}</td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>二维码</td>
+            <td><img src="{{ detail_info['qrcode'] }}" /></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>微信认证</td>
+            <td>{{ detail_info['identify'] }}</td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>简介</td>
+            <td>{{ detail_info['breif'] }}</td>
+            <td></td>
+        </tr>
+    </tbody>
+    <thead>
+        <tr class="res_tbl_title">
+            <td>价值信息</td>
+            <td></td>
+            <td></td>
+        </tr>
+    </thead>
+    <tbody>
+
+        <tr>
+            <td>分类</td>
+            <td>{{ detail_info['category'] }}</td>
+            <td>
+                <button data-target="#media_category_dialog" class="btn btnThin" data-toggle="modal">修改</button>
+                <div id="media_category_dialog" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">X</button>
+                                <h4 id="media_category_title">修改自媒体行业分类</h4>
+                            </div>
+                            <div class="modal-body">
+                                <form id="media_category_form" name="media_category_form" method="post" action="/yidao/media?a=updateCategory&id={{ detail_info['id'] }}">
+                                    请选择行业分类：
+                                    <select id="media_category" name="media_category">
+                                    </select>
+                                </form>
+                            </div>
+                            <div class="modal-footer">
+                                <button class="btn" onclick="updateCategory()">修改</button>
+                                <button class="btn" data-dismiss="modal" aria-hidden="true">取消</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>标签</td>
+            <td>
+            {% for tag_item in detail_info['tag'] %}
+                {{ tag_item['name'] }}
+            {% end %}
+            </td>
+            <td>
+                <button data-target="#media_tag_dialog" class="btn btnThin" data-toggle="modal">修改</button>
+                <div id="media_tag_dialog" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">X</button>
+                                <h4 id="media_tag_title">修改自媒体标签</h4>
+                            </div>
+                            <div class="modal-body">
+                                <form id="media_tag_form" name="media_tag_form" method="post" action="/yidao/media?a=updateTag&id={{ detail_info['id'] }}">
+                                    请选择标签
+                                    <div id="media_tag">
+                                        <input id="media_id" type="hidden" value="{{ detail_info['id'] }}">
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="modal-footer">
+                                <button class="btn" onclick="updateTag()">修改</button>
+                                <button class="btn" data-dismiss="modal" aria-hidden="true">取消</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>针对性别</td>
+            <td>
+                {% if detail_info['audience_gender'] == 0 %}
+                不限
+                {% elif detail_info['audience_gender'] == 1 %}
+                偏女性
+                {% elif detail_info['audience_gender'] == 2 %}
+                偏男性
+                {% else %}
+                {% end %}
+            </td>
+            <td>
+                <button data-target="#media_audience_gender_dialog" class="btn btnThin" data-toggle="modal">修改</button>
+                <div id="media_audience_gender_dialog" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">X</button>
+                                <h4 id="media_audience_gender_title">修改自媒体受众性别</h4>
+                            </div>
+                            <div class="modal-body">
+                                <form id="media_audience_gender_form" name="media_audience_gender_form" method="post" action="/yidao/media?a=updateAudienceGender&id={{ detail_info['id'] }}">
+                                    请选择受众性别
+                                    <select id="media_audience_gender" name="media_audience_gender">
+                                        <option value="0">不限</option>
+                                        <option value="1">偏女性</option>
+                                        <option value="2">偏男性</option>
+                                    </select>
+                                </form>
+                            </div>
+                            <div class="modal-footer">
+                                <button class="btn" onclick="updateAudienceGender()">修改</button>
+                                <button class="btn" data-dismiss="modal" aria-hidden="true">取消</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>针对地域</td>
+            <td>{{ detail_info['province'] }} {{ detail_info['city'] }} {{ detail_info['county'] }}</td>
+            <td>
+                <button data-target="#media_audience_area_dialog" class="btn btnThin" data-toggle="modal">修改</button>
+                <div id="media_audience_area_dialog" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">X</button>
+                                <h4 id="media_audience_area_title">修改自媒体受众地域</h4>
+                            </div>
+                            <div class="modal-body">
+                                <form id="media_audience_area_form" name="media_audience_area_form" method="post" action="/yidao/media?a=updateAudienceArea&id={{ detail_info['id'] }}">
+                                    请选择地域（默认全国性）：
+                                    <select id="media_audience_province" name="media_audience_province">
+                                        <option value="-1">--不限--</option>
+                                    </select>
+                                    <select  id="media_audience_city" name="media_audience_city">
+                                        <option value="-1">--不限--</option>
+                                    </select>
+                                    <select id="media_audience_county" name="media_audience_county">
+                                        <option value="-1">--不限--</option>
+                                    </select>
+                                </form>
+                            </div>
+                            <div class="modal-footer">
+                                <button class="btn" onclick="updateAudienceArea()">修改</button>
+                                <button class="btn" data-dismiss="modal" aria-hidden="true">取消</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </td>
+        </tr>
+
+        <tr>
+            <td>原创号</td>
+            <td>{{ detail_info['original'] }}</td>
+            <td>
+                <button data-target="#media_original_dialog" class="btn btnThin" data-toggle="modal">修改</button>
+                <div id="media_original_dialog" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">X</button>
+                                <h4 id="media_original_title">修改自媒体认证信息</h4>
+                            </div>
+                            <div class="modal-body">
+                                <form id="media_original_form" name="media_original_form" method="post" action="/yidao/media?a=updateOriginal&id={{ detail_info['id'] }}">
+                                    修改认证信息：
+                                    <select id="media_original" name="media_original">
+                                        <option name="media_original" value="0">未认证</option>
+                                        <option name="media_original" value="1">已认证</option>
+                                    </select>
+                                </form>
+                            </div>
+                            <div class="modal-footer">
+                                <button class="btn" onclick="updateOriginal()">修改</button>
+                                <button class="btn" data-dismiss="modal" aria-hidden="true">取消</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>公众号阅读数</td>
+            <td>
+                <table class="table table-bordered table-hover vert-align">
+                <tr>
+                    <td>头条阅读数</td>
+                    <td>{{ detail_info['top_avg_read_num'] }}</td>
+                </tr>
+                <tr>
+                    <td>头三条阅读数</td>
+                    <td>{{ detail_info['top_three_avg_read_num'] }}</td>
+                </tr>
+                </table>
+            </td>
+            <td></td>
+        </tr>
+
+    </tbody>
+    <thead>
+        <tr class="res_tbl_title">
+            <td>刊例报价</td>
+            <td></td>
+            <td></td>
+        </tr>
+    </thead>
+    <tbody>
+        {% for price_item in detail_info['price'] %}
+                    <tr>
+                        <td>
+                            {% for attr_name in price_item['attr_value_info'] %}
+                                {{ attr_name }}:{{ price_item['attr_value_info'][attr_name] }}&#12288;
+                            {% end %}
+                        </td>
+                        <td>¥{{ price_item['price'] }}</td>
+                    </tr>
+        {% end %}
+    </tbody>
+    <thead>
+        <tr class="res_tbl_title">
+            <td>其他</td>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td><a href="http://www.yidao.info/media?a=view&id={{ detail_info['id'] }}">查看前台自媒体</a></td>
+        </tr>
+    </tbody>
+</table>
+<script type="text/javascript">
+    $(document).ready(function(){
+        //分类
+        $.ajax({
+            type: "get",
+            contentType: "application/json",
+            url: "/yidao/media?a=getCategory",
+            //data: "{}",
+            success: function (result) {
+                var obj = JSON.parse(result);
+                var category_op = "";
+                for (var i = 0; i < obj.data.length; i++) {
+                    category_op += '<option value=' + obj.data[i].id + '>';
+                    category_op += obj.data[i].name;
+                    category_op += '</option>';
+                }
+                $("#media_category").append(category_op);
+            }
+        });
+        //标签
+        $.ajax({
+            type: "get",
+            contentType: "application/json",
+            url: "/yidao/media?a=getTag&id=" + $("#media_id").val(),
+            //data: "{}",
+            success: function (result) {
+                var obj = JSON.parse(result);
+                var tag_cb = "";
+                for (var i = 0; i < obj.data.length; i++) {
+                    if (obj.data[i].checked == 1){
+                        tag_cb += '<input type="checkbox" name="media_tag" value=' + obj.data[i].id + ' checked="checked" /> ';
+                    }
+                    else {
+                        tag_cb += '<input type="checkbox" name="media_tag" value=' + obj.data[i].id + ' /> ';
+                    }
+                    tag_cb += obj.data[i].name;
+                    if (obj.data[i].idx % 8 == 0){
+                        tag_cb += '<br />'
+                    }
+                }
+                $("#media_tag").append(tag_cb);
+            }
+        });
+        //省份
+        $.ajax({
+            type: "get",
+            contentType: "application/json",
+            url: "/yidao/media?a=getArea&parent_id=0",
+            //data: "{}",
+            success: function (result) {
+                var obj = JSON.parse(result);
+                var province_op = "";
+                for (var i = 0; i < obj.data.length; i++) {
+                    province_op += '<option value=' + obj.data[i].id + '>';
+                    province_op += obj.data[i].name;
+                    province_op += '</option>';
+                }
+                $("#media_audience_province").append(province_op);
+            }
+        });
+        //当省份发生改变时，城市改变
+        $('#media_audience_province').change(function () {
+            $('#media_audience_city option:gt(0)').remove();
+            $('#media_audience_county option:gt(0)').remove();
+            $.ajax({
+                type: "get",
+                contentType: "application/json",
+                url: "/yidao/media?a=getArea&parent_id=" + $(this).val(),
+                //data: "{}",
+                success: function (result) {
+                    var obj = JSON.parse(result);
+                    var city_op = '';
+                    for (var i = 0; i < obj.data.length; i++) {
+                        city_op += '<option value=' + obj.data[i].id + '>';
+                        city_op += obj.data[i].name;
+                        city_op += '</option>';
+                    }
+                    $('#media_audience_city').append(city_op);
+                }
+            })
+        });
+
+        //当城市改变时，县改变
+        $('#media_audience_city').change(function () {
+        $('#media_audience_county option:gt(0)').remove();
+            $.ajax({
+                type: "get",
+                contentType: "application/json",
+                url: "/yidao/media?a=getArea&parent_id=" + $(this).val(),
+                //data: "{}",
+                success: function (result) {
+                    var obj = JSON.parse(result);
+                    var county_op = '';
+                    for (var i = 0; i < obj.data.length; i++) {
+                        county_op += '<option value=' + obj.data[i].id + '>';
+                        county_op += obj.data[i].name;
+                        county_op += '</option>';
+                    }
+                    $('#media_audience_county').append(county_op);
+                }
+            })
+        })
+    })
+</script>
+{% end %}

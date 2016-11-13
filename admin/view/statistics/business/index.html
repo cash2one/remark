@@ -1,0 +1,197 @@
+{% extends '../../public/main.html' %}
+
+{% block body %}
+<link rel="stylesheet" type="text/css" href="{{ static_url('style/bootstrap-responsive.css') }}" />
+<link rel="stylesheet" type="text/css" href="{{ static_url('style/bootstrap-datetimepicker.css') }}" />
+<script type="text/javascript" src="{{ static_url('script/bootstrap-datetimepicker.js') }}"></script>
+<script type="text/javascript">
+    function formatDay(dayDelta){
+        var now = new Date();
+        now.setDate(now.getDate() + dayDelta); //获取dayDelta天后的日期
+        var y = now.getFullYear();
+        var m = now.getMonth()+1; //获取当前月份的日期
+        var d = now.getDate();
+        m = m < 10 ? "0"+m : m; //补0
+        d = d < 10 ? "0"+d : d; //补0
+        return y + "-" + m + "-" + d;
+    }
+    function onLastWeek(){
+        document.getElementById('last_week_start').value = formatDay(-7);
+        document.getElementById('last_week_end').value = formatDay(0);
+        document.getElementById('last_week_form').submit();
+    }
+    function onLastMonth(){
+        document.getElementById('last_month_start').value = formatDay(-30);
+        document.getElementById('last_month_end').value = formatDay(0);
+        document.getElementById('last_month_form').submit();
+    }
+</script>
+<div class="status_title">
+    <ol class="breadcrumb">
+        <li><a href="#"></a>数据统计</li>
+        <li><a href="/statistics/business"> 业务统计</a></li>
+   </ol>
+</div>
+<div class="result_filter" id="result_filter">
+    <form class="form-inline" id="last_week_form" action='/statistics/business' method="get">
+        <input class="form-control" type="hidden" id="last_week_start" name="start" >
+        <input class="form-control" type="hidden" id="last_week_end" name="end">
+        <button class="btn btn-default" onclick="onLastWeek()">最近七天</button>
+    </form>
+    <form id="last_month_form" action='/statistics/business' method="get">
+        <input type="hidden" id="last_month_start" name="start">
+        <input type="hidden" id="last_month_end" name="end">
+        <button class="btn btn-default" onclick="onLastMonth()">最近三十天</button>
+    </form>
+    <form class="form-inline" action='/statistics/business' method="get">
+        日期
+        <input class="form_datetime form-control dateInput" size="16" type="text" readonly name="start">
+        至
+        <input class="form_datetime form-control dateInput" size="16" type="text" readonly name="end">
+        <button class="form-control btn btn-default" type="submit">筛选</button>
+    </form>
+    <script type="text/javascript">
+        $(".form_datetime").datetimepicker({
+            format: 'yyyy-mm-dd',
+            minView: 'month',
+            autoclose: true
+        });
+    </script>
+</div>
+
+<div id="echarts" style="height:400px">
+    <script type="text/javascript" src=" http://echarts.baidu.com/build/dist/echarts.js"> </script>
+    <script type="text/javascript">
+        var temp='{{business}}'
+        var c = document.createElement('div');
+        c.innerHTML = temp;
+        temp = c.innerText || c.textContent;
+        c = null;
+        var index = eval(temp)
+        var chart_date = new Array();
+        var chart_take_order_count = new Array();
+        var chart_demand_comp_count = new Array();
+        var chart_demand_count = new Array();
+        var chart_order_count = new Array();
+        var chart_user_count = new Array();
+        var chart_new_user_count = new Array()
+        var chart_new_media_count = new Array()
+        for(var i= 0;i<index.length;i++){
+            chart_date[i]=index[i][0]
+            chart_take_order_count[i]=index[i][1].take_order_count
+            chart_demand_comp_count[i]=index[i][1].demand_comp_count
+            chart_demand_count[i]=index[i][1].demand_count
+            chart_order_count[i]=index[i][1].order_count
+            chart_user_count[i]=index[i][1].user_login
+            chart_new_user_count[i]=index[i][1].new_user_count
+            chart_new_media_count[i]=index[i][1].new_media_count
+        }
+        require.config({
+            paths:{
+                echarts:'http://echarts.baidu.com/build/dist'
+            }
+        });
+        require(
+            [
+                'echarts',
+                'echarts/chart/line'
+            ],
+            function(ec){
+                var mychart=ec.init(document.getElementById('echarts'));
+                var option={
+                    tooltip:{
+                        show:true
+                    },
+                    legend:{
+                        data:['新增需求','自媒体接单数','广告主下单数','已完成需求','用户登录数','新增用户','新增自媒体']
+                    },
+                    xAxis:[
+                        {
+                            type:'category',
+                            data:chart_date
+                        }
+                    ],
+                    yAxis:[
+                        {
+                            type:'value'
+                        }
+                    ],
+                    series:[
+                        {
+                            "name":'新增需求',
+                            "type":"line",
+                            "data":chart_demand_count
+                        },
+                        {
+                            "name":'自媒体接单数',
+                            "type":"line",
+                            "data":chart_take_order_count
+                        },
+                        {
+                            "name":'广告主下单数',
+                            "type":"line",
+                            "data":chart_order_count
+                        },
+                        {
+                            "name":'已完成需求',
+                            "type":"line",
+                            "data":chart_demand_comp_count
+                        },
+                        {
+                            "name":'用户登录数',
+                            "type":"line",
+                            "data":chart_user_count
+                        },
+                        {
+                            "name":'新增用户',
+                            "type":"line",
+                            "data":chart_new_user_count
+                        },
+                        {
+                            "name":'新增自媒体',
+                            "type":"line",
+                            "data":chart_new_media_count
+                        },
+
+                    ]
+                };
+
+                mychart.setOption(option);
+            }
+        );
+    </script>
+</div>
+<div>
+    <table class="table table-bordered table-hover vert-align" id="business_table">
+        <thead>
+            <tr class="res_tbl_title">
+                <td>数据指标</td>
+                <td>新增需求</td>
+                <td>自媒体接单数</td>
+                <td>广告主下单数</td>
+                <td>已完成需求</td>
+                <td>用户登录数</td>
+                <td>新增用户</td>
+                <td>新增自媒体</td>
+            </tr>
+        </thead>
+        {% for day in index_info %}
+        <tbody>
+            <tr>
+                <td>{{ day[0] }}</td>
+                <td>{{ day[4]['demand_count'] }}</td>
+                <td>{{ day[4]['take_order_count'] }}</td>
+                <td>{{ day[4]['order_count'] }}</td>
+                <td>{{ day[4]['demand_comp_count'] }}</td>
+                <td>{{ day[2]['stat_user_day'] }}</td>
+                <td>{{ day[4]['new_user_count'] }}</td>
+                <td>{{ day[4]['new_media_count'] }}</td>
+            </tr>
+        </tbody>
+        {% end %}
+    </table>
+</div>
+<div>
+    {% raw page_html %}
+</div>
+{% end %}

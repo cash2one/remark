@@ -1,0 +1,99 @@
+<div class="up-down-btn">
+    {% if demand['status'] == 1 %}
+    {% if not owner %}
+    <div class="has-accepted">您有<span class="number">{{ my_official }}</span>个自媒体可以接单</div>
+    {% if len(jiedan_my) == 0 %}
+    <a href="javascript:onlink('/demand?a=accept&id={{ demand['id'] }}')" class="btn-with-blueBg-and-addBtn accept-btn">接单</a>
+    {% end %}
+    {% else %}
+    <div class="has-accepted">已有<span class="number">{{ jiedan_num }}</span>个自媒体接单
+        {% if jiedan_num > 0 %}
+        <small>选择适合你的营销投款位</small>
+        {% end %}
+    </div>
+    {% end %}
+    {% end %}
+    <!--
+    <div class="has-accepted">等待自媒体反馈<small>有任何动态会通过微信通知到你</small></div>
+    <div class="has-accepted">广告主已选择你参与营销投放<small>为保证营销达成，请支付报价的10%作为押金</small></div>
+    <div class="has-accepted">已有<span class="number">0</span>个自媒体接单</div>
+    <div class="has-accepted">已有<span class="number">0</span>个自媒体接单
+        <small>选择适合你的营销投款位</small>
+    </div>
+    -->
+</div>
+{% if demand['status'] == -2 %}
+<div class="am-wait-box">
+    <h4 class="fail-running">该需求已撤销</h4>
+</div>
+{% end %}
+{% if demand['status'] == -1 %}
+<div class="am-wait-box">
+    <h4 class="fail-running">该需求已禁止</h4>
+    {% if 'reason' in demand.keys() %}
+    <p style="line-height:1.5">
+    {{ demand['reason'] }}
+    </p>
+    {% end %}
+</div>
+{% end %}
+{% if demand['status'] == 0 %}
+<div class="choose-sm-status-box"><b>等待审核</b>  <small></small></div>
+{% end %}
+{% if demand['status'] == 1 %}
+<!-- 如果状态正常 -->
+    {% if owner %}
+    <!-- 如果是广告主 已接单列表 -->
+    {% include 'choose_am.html' %}
+    {% else %}
+    <!-- 如果是自媒体 已接单列表 -->
+    {% if jiedan_my %}
+    <!-- 如果已接单自媒体 自己已接单列表 -->
+    {% include 'choose_sm.html' %}
+    {% end %}
+    {% if jiedan_other %}
+    <div class="choose-sm-others-box">
+    {% include 'jiedan_list.html' %}
+    </div>
+    {% end %}
+    {% end %}
+
+{% end %}
+{% if demand['status'] == 2 %}
+<!-- 如果已付款 -->
+    {% if owner %}
+    {% include 'feedback_am.html' %}
+    {% else %}
+    {% if jiedan_my and jiedan_success %}
+    {% include 'feedback_sm.html' %}
+    {% else %}
+    <div class="am-wait-box">
+        <h4 class="fail-running">该需求正在营销中......</h4>
+    </div>
+    {% end %}
+    {% end %}
+{% end %}
+{% if demand['status'] == 3 or demand['status'] == 5 %}
+    {% if owner %}
+    {% include 'feedback_check_am.html' %}
+    {% else %}
+        {% if jiedan_my and jiedan_success %}
+        {% include 'feedback_check_sm.html' %}
+        {% else %}
+        <div class="am-wait-box">
+            <h4 class="fail-running">该需求正在营销中......</h4>
+        </div>
+        {% end %}
+    {% end %}
+{% end %}
+    <!--
+        <div class="down-content down-clear">
+            <div class="has-accepted">你有<span class="number">2</span>个自媒体可以接单</div>
+            <div class="has-accepted">&nbsp;</div>
+            <div class="btn-with-blueBg-and-addBtn accept-btn">
+                接单
+            </div>
+        </div>
+    -->
+
+

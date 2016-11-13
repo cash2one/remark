@@ -1,0 +1,108 @@
+{% extends '../public/main.html' %}
+
+{% block body %}
+<link href="{{ static_url('style/demand_case.css') }}" type="text/css" rel="stylesheet" >
+<div class="takeOrderBox">
+    <div class="title">
+        <h3>选择自媒体接单</h3>
+        <p class="defaultTip">您接单的自媒体还没有入驻？请先<a href="/user?a=media_create">自媒体入驻<b class="ydi yd-add"></b></a></p>
+    </div>
+    <div class="content">
+        <ul class="clearfix">
+            {% for media in take_order_media %}
+                {% if media['status'] == 0 %}
+                    <li class="mediaBox">
+                        <img src="{{ media['avatar'] }}" alt="{{ media['name'] }}">
+                        <div class="mediaName" data="{{ media['id'] }}">{{ media['name'] }}</div>
+                        <div class="ydi status"></div>
+                    </li>
+                {% end %}
+            {% end %}
+        </ul>
+        <!--
+        <p><span class="ydi yd-down"></span>下列自媒体已接单</p>
+        <ul class="clearfix">
+            {% for media in take_order_media %}
+                {% if media['status'] == -1 %}
+                    <li class="mediaBox">
+                        <img src="{{ media['avatar'] }}" alt="{{ media['name'] }}">
+                        <div class="mediaName">{{ media['name'] }}</div>
+                        <div class="ydi yd-select"></div>
+                    </li>
+                {% end %}
+            {% end %}
+        </ul>
+        -->
+        {% if untake_count > 0 %}
+            <p><span class="ydi yd-down"></span>下列自媒体需要完善刊例报价与价值信息才能接单</p>
+            <ul class="clearfix">
+                {% for media in take_order_media %}
+                    {% if media['status'] == -2 %}
+                        <li class="mediaBox">
+                            <a href="/user?a=media_edit&id={{ media['id'] }}" target="_blank">
+                                <img src="{{ media['avatar'] }}" alt="{{ media['name'] }}">
+                                <div class="mediaName">{{ media['name'] }}</div>
+                            </a>
+                        </li>
+                    {% end %}
+                {% end %}
+            </ul>
+        {% end %}
+    </div>
+    <div class="action">
+        <div class="takeCount">已选择<strong id="take_count">0</strong>个自媒体</div>
+        <div class="contact">
+            <input type="text" id="phone" value="{{ phone }}">
+        </div>
+        <button type="submit" class="btnOk" id="submit">接单</button>
+    </div>
+</div>
+<script type="text/javascript">
+    var phone_reg = /^(13[0-9]|15[012356789]|17[678]|18[0-9]|14[57])[0-9]{8}$/;
+    $(function(){
+        $('div[class="ydi status"]').click(function(){
+            if($(this).parent().attr('class').indexOf('select') > 0)
+                $(this).parent().attr('class', 'mediaBox');
+            else
+                $(this).parent().attr('class', 'mediaBox select');
+            $('#take_count').html($('li[class="mediaBox select"]').length);
+        });
+        
+        $('#submit').click(function(){
+            var phone = $('#phone').val();
+            if(!phone_reg.test(phone)){
+                alert("请输入正确的手机号");
+                return;
+            }
+            
+            if($('li[class="mediaBox select"]').length == 0)
+            {
+                alert("请至少选择一个自媒体");
+                return;
+            }
+            
+            var lis_media = [];
+            $('li[class="mediaBox select"]').each(function(){
+                lis_media.push($(this).children(":eq(1)").attr('data'));
+            });
+            
+            var params = {'demand_id':{{ demand_id }}, 'media_id':lis_media.join(), 'phone':phone};
+            $.ajax({
+                type: "POST",
+                url: "/demand?a=take_order_submit",
+                dataType: "JSON",
+                data: $.param(params),
+                success: function(ret){
+                    //showTipsBox('alert', dicStatusMsg['signup'][ret.status]);
+                    if(ret.status == 200) {
+                        //alert('接单成功');
+                        location.href = "/demand?a=view&id={{ demand_id }}";
+                    }
+                    else
+                        alert('接单不成功');
+                }
+            });
+        });
+    });
+</script>
+{% end %}

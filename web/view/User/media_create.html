@@ -1,0 +1,119 @@
+{% extends '../public/main.html' %}
+{% block title %}自媒体入驻{% end %}
+{% block body %}
+<link href="{{ static_url('style/media_add.css') }}" type="text/css" rel="stylesheet">
+
+<div class="mediaAddNav">
+    <h2>自媒体入驻</h2>
+    <ul>
+        <li class="wechat"><span class="ydi"></span>微信公众号</li>
+    </ul>
+</div>
+<div class="mediaAddContent">
+    <div class="wechat clearfix">
+        <div class="wechatAuth">
+            <h3>授权入驻</h3>
+            <p>使用微信公众号帐号密码登录授权<br>更便捷的入驻方式</p>
+            <!--<p class="defaultTip"><span>即将开放</span></p>-->
+            <div class="action">
+                <button class="btnOk" id='authorization' type="button">授权</button>
+            </div>
+        </div>
+        <div class="wechatVeri">
+            <h3>验证入驻</h3>
+            <form action="" method="post" target="hiddenform">
+                <dl class="item">
+                    <dt>将<strong>验证码</strong>复制到<strong>图文消息素材</strong>中</dt>
+                    <dd><div class="code">{{ vcode }}</div></dd>
+                    <dt>复制<strong>图文消息地址</strong>到下方输入框中</dt>
+                    <dd><div class="type">
+                        <input class="text" placeholder="在此粘贴图文消息地址：http://mp.weixin.qq.com/..." name="url" type="text" value="" id="url">
+                    </div></dd>
+                </dl>
+                <div class="action">
+                    <button class="btnOk" type="button" onclick="checkUrl();">验证</button>
+                </div>
+            </form>
+            <div class="help">
+                <p>不会验证入驻？请查看使用教程。</p>
+                <a href="javascript:void(0);" onclick="lightbox('videoBox');"><strong>视频教程</strong><span class="ydi yd-play"></span></a>
+                <a href="#step"><strong>图文教程</strong><span class="ydi yd-help"></span></a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="step-by-step sbs"><a name="step"></a>
+    <h4><strong>验证入驻图文教程</strong></h4>
+    <dl class="item">
+        <dt><em>1</em>登录<a href="http://mp.weixin.qq.com/" target="_blank"><strong>微信公众平台</strong></a>；<br>在<strong>素材管理</strong>中编辑或新建<strong>图文消息</strong>。</dt>
+        <dd><div class="image"><img src="{{ static_url('images/verifyweixin1.png') }}"></div></dd>
+    </dl>
+    <dl class="item">
+        <dt><em>2</em>将<strong>验证码</strong>粘贴在<strong>正文</strong>中并保存；<br>其它内容随意填写。</dt>
+        <dd><div class="image"><img src="{{ static_url('images/verifyweixin2.png') }}"></div></dd>
+    </dl>
+    <dl class="item">
+        <dt><em>3</em>复制<strong>图文信息</strong>链接地址。</dt>
+        <dd><div class="image"><img src="{{ static_url('images/verifyweixin3.png') }}"></div></dd>
+    </dl>
+    <dl class="item">
+        <dt><em>4</em>粘贴链接地址到<strong>输入框</strong>中；<br>然后点击<strong>添加</strong>完成。</dt>
+        <dd><div class="image"><img src="{{ static_url('images/verifyweixin4.png') }}"></div></dd>
+    </dl>
+</div>
+<div class="light-cover" id="videoBox" style="display: none;">
+    <div class="login-close"><span class="ydi yd-close" onClick="lightbox('videoBox');"></span></div>
+    <div class="swf" id="swf">
+    </div>
+</div>
+<script type="text/javascript" src="{{ static_url('script/swfobject.js') }}"></script>
+<script type="text/javascript">
+    swfobject.embedSWF('{{ static_url("images/video.swf") }}', "swf", "960", "540", "10.0.0",'{{ static_url("images/expressInstall.swf") }}',null,{wmode:"transparent"},{styleclass:'swf'},null);
+    var isSending = false;
+    $('#authorization').click(function(){
+        location.href='/wechat_submit'
+    });
+    function checkUrl(){
+        if(isSending)return;
+        var strUrl = $.trim($("#url").val());
+        if(!strUrl){
+            showTipsBox('alert', '请粘贴图文消息地址到输入框');
+            $("#url")[0].focus()
+            return false;
+        }
+        isSending = true;
+        $('#loading').show();
+        $.ajax({
+            url:'/user?a=media_create',
+            type:'post',
+            dataType:'json',
+            data: {
+                'url': strUrl
+            },
+            success:function(d){
+                $('#loading').fadeOut();
+                if(d.status == 200){
+                    showTipsBox('message', '添加成功');
+                    setTimeout(function(){
+                        location.href='/user?a=media_edit&id=' + d.data['media_id']
+                    },3000);
+                } else if(d.status == 604){
+                    showTipsBox('alert', '您添加的公众号已入驻过一道，有问题请联系客服。');
+                    setTimeout(function(){
+                        location.reload()
+                    },10000);
+                } else if(d.status == 603){
+                    showTipsBox('alert', '您提交的图文链接中未检测到验证码');
+                    setTimeout(function(){
+                        location.reload()
+                    },10000);
+                }else{
+                    showTipsBox('alert', dicStatusMsg['media_create'][d.status]);
+                }
+                isSending = false;
+            }
+        })
+    }
+
+</script>
+{% end %}

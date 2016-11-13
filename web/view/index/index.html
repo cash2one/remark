@@ -1,0 +1,321 @@
+{% extends '../public/main.html' %}
+
+{% block body %}
+<link rel="stylesheet" href="/static/style/home.css">
+<link rel="stylesheet" href="/static/style/winwin.css">
+<div class="banner">
+    <div class="banner-pic" style="background: #efe2c8" data="#efe2c8" onclick="onlink('/rights')"><a href="#"><img src="/static/images/banner0.png"></a></div>
+    <div class="banner-pic" style="background: #d10041" data="#d10041" onclick="onlink('/winwin')"><a href="#"><img src="/static/images/banner1.png"></a></div>
+    <div class="banner-pic" style="background: #0077cb" data="#0077cb"><a href="/list"><img src="/static/images/banner2.png"></a></div>
+    <div class="banner-pic" style="background: #c81849" data="#c81849"><a href="/union"><img src="/static/images/banner3.png"></a></div>
+</div>
+<script type="text/javascript">
+    var picIndex = 0;
+    var curPicIndex=0;
+    var cscs;
+    $(function(){
+        $('.banner-pic').hide();
+        $($('.banner').children()[picIndex]).show();
+        $('.banner').css('background',$($('.banner').children()[picIndex]).attr('data'));
+
+        var len = $('.banner-pic').length;
+        var bb = $('<div></div>');
+        bb.addClass('banner-count');
+        for(var i=0;i<len;i++){
+            var cycle = $('<div></div>');
+            cycle.attr('name',i);
+            cycle.addClass('cycle');
+            bb.append(cycle);
+            if(i==0)cycle.addClass('activity');
+            cycle.bind('mouseover',function(){
+                if(parseInt($(this).attr('name'))==picIndex)return;
+                clearTimeout(cscs);
+                changePics($(this).attr('name'));
+            })
+        }
+        $('.banner').append(bb);
+        bb.css('margin-left',bb.width()/2*-1);
+        cscs = setTimeout(changePics,6000);
+    });
+
+    function changePics(ss){
+        $($('.banner').children()[picIndex]).fadeOut();
+        $($('.cycle')[picIndex]).removeClass('activity');
+        picIndex = ss?parseInt(ss):(picIndex+1)%($('.banner').children().length-1);
+        $($('.banner').children()[picIndex]).fadeIn();
+        $('.banner').css('background',$($('.banner').children()[picIndex]).attr('data'));
+        $($('.cycle')[picIndex]).addClass('activity');
+        cscs = setTimeout(changePics,6000);
+        curPicIndex = picIndex;
+    }
+</script>
+<div class="bigContainer">
+<div id="marketingList" class="boxTotalCtrl">
+    <div class="title gsbox">
+        <div class="title-big">专属需求<div class="down-tra"></div></div>
+        <div class="btn btn-with-blueBg-and-addBtn" onclick="onlink('/user?a=demand_form')"><em class="icon-fonts">+</em>发布营销需求</div>
+        <div class="rightBtn"><a href="/list">更多需求<em class="icon-fonts">></em></a></div>
+    </div>
+    <div id="marketingContainer" class="detailContainer gsbox clearfix" style="height: 330px;"><!--all cases in this container-->
+		{% for item in demand %}
+        <div class="marketingBox" style="margin-left:0">
+            <div class="pname"><a href="/demand?a=view&id={{ item['demand_id'] }}" target="_blank" style="line-height: 16px;">{% if item['demand_form'] in form_use.keys() %}[{{ form_use[item['demand_form']]['title'] }}]{% end %}{{ item['title'] }}</a></div>
+            <div class="ptime">{{ item['time_begin'] }}<small style="font-size: 12px;color:#666;font-weight: 100;">至</small>{{ item['time_end'] }}</div>
+            <p>
+                <span style="color:#f48d19">{{ item['view_count'] }}</span> 人气 
+                <span style="color:#999">/</span> 
+                <span style="color:#f48d19">
+                    {% if item['demand_id'] in demand_jiedan.keys() %}
+                    {{ demand_jiedan[item['demand_id']] }}
+                    {% else %}
+                    0
+                    {% end %}
+                </span> 接单
+            </p>
+            <div class="cost">
+                <div style="color:#888;position: absolute; top:15px;left:0;font-size:12px;">预算</div>
+                <span>¥ </span><span class="price">{{ item['money'] }}</span>
+            </div>
+        </div>
+		{% end %}
+    </div>
+    <div id="mid-total-demands"><span class="mid-number">{{ demandCount[0] }}</span> 条需求已在一道上公布，<span class="mid-number">{{ demandCount[1] }}</span> 条需求已完成。  </div>
+</div>
+
+<div class="boxTotalCtrl" style="background: #fff;height: 333px;">
+    <div class="title gsbox">
+        <div class="title-big">一道进行时<div class="down-tra"></div></div>
+    </div>
+    <div class="detailContainer gsbox clearfix" style="height: 260px;padding:20px 0 20px 0;position: relative;"><!--all cases in this container-->
+        <div class="home-artical-with-pic"><a href="/blog?id={{ blog[0]['id'] }}">
+            <img src="{{ blog[0]['pic'] }}" width="400" height="225">
+            <div class="artical-down">
+                <p style="font-size:16px;">{{ blog[0]['title'] }}</p><br>
+                <p>{{ blog[0]['create_at'] }}</p>
+            </div></a>
+        </div>
+        <div class="home-container" style="position: absolute;top:10px;left:420px;">
+			{% for item in blog[1:5] %}
+            <div class="home-artical"><a href="/blog?id={{ item['id'] }}">
+                <div class="artitle">{{ item['title'] }}</div></a>
+                <div class="artitail">{{ item['summary'] }}</div>
+                <div class="artdate">{{ item['create_at'] }}</div>
+                <div class="artread">阅读数：{{ item['read_count'] }}</div>
+            </div>
+			{% end %}
+        </div>
+    </div>
+</div>
+
+<div class="boxTotalCtrl" style="height: 270px;">
+    <div class="title gsbox">
+        <div class="title-big">互推ING<div class="down-tra"></div></div>
+        <div class="btn btn-with-blueBg-and-addBtn" onclick="onlink('/winwin/create')"><em class="icon-fonts">+</em>组织互推</div>
+        <div class="rightBtn"><a href="/winwin">更多互推<em class="icon-fonts">></em></a></div>
+    </div>
+    <div class="ht-container gsbox clearfix" style="height: 180px;overflow: hidden;"><!--all cases in this container-->
+        <!--cases box-->
+		{% for k, item in enumerate(winwins[0]) %}
+        <dl class="copyModel" {% if k == 0 %}style="margin-left:0"{% end %}>
+            <dt>{{ item['start_date'] }}<a href="/winwin/{{ item['id'] }}"><span class="icon-next"></span></a></dt>
+            <dd>
+                <p>{{ item['description'] }}</p>
+				{% if item['id'] in winwins[1].keys() %}
+                <ul>
+					{% for value in winwins[1][item['id']]['data'] %}
+                    <li>
+						<img src="{{ value['pic'] }}" title="{{ value['name'] }}">
+					</li>
+					{% end %}
+                    <li class="count">{{ winwins[1][item['id']]['count']}}</li>
+                </ul>
+				{% end %}
+            </dd>
+        </dl>
+		{% end %}
+        <!--end-->
+    </div>
+</div>
+
+<div id="joinList" class="boxTotalCtrl" style="height:570px;background: #fff;">
+    <div class="title gsbox">
+        <div class="title-big">自媒体影响力<div class="down-tra"></div></div>
+        <div class="rightBtn"><a href="/media">更多自媒体<em class="icon-fonts">></em></a></div>
+    </div>
+    <div id="self-mediaLoaded" class="detailContainer gsbox" style="height: 500px;overflow: visible;">
+		{% for k, item in enumerate(official_top) %}
+        <div class="selfmedia_rank" {% if k == 2 %}style="margin-right:0"{% end %}>
+            <div class="title">
+                <div class="add-bg">
+					{% if k == 0 %}
+					热门推荐
+					{% elif k == 1 %}
+					黑马自媒体
+					{% else %}
+					最新入驻
+					{% end %}
+				</div>
+            </div>
+			{% for key, value in enumerate(item) %}
+            <div class="rank">
+				{% if key == 0 %}
+				<img src="/static/images/sm-rank-first.png" style="margin-top:12px;margin-left:-4px;">
+				{% else %}
+				{{ key + 1 }}
+				{% end %}
+                <div class="smdetial">
+                    <div class="heads">
+						<a href="/media/{{ value['id'] }}" target="_blank">
+							<img src="{{ value['pic'] }}" width="60" height="60">
+						</a>
+					</div>
+                    <div class="wechatType"></div>
+                    <div class="smtitle"><a href="/media/{{ value['id'] }}" target="_blank">{{ value['name'] }}</a></div>
+                    <p>平均阅读数 : {{ value['avg_num'] }}</p>
+                    <p>综合级别 : </p>
+                    <div class="slevel">{{ value['level'] }}</div>
+                </div>
+            </div>
+			{% end %}
+        </div>
+		{% end %}
+        <!--end of self-media box-->
+    </div>
+</div>
+<div id="unionList" class="boxTotalCtrl" style="height: 340px;">
+    <div class="title gsbox">
+        <div class="title-big">Hot 联盟<div class="down-tra"></div></div>
+        <div class="rightBtn"><a href="/union">更多联盟<em class="icon-fonts">></em></a></div>
+    </div>
+    <div id="unionLoaded" class="detailContainer gsbox clearfix">
+        <!--self-media box-->
+        {% for k, item in enumerate(union_top)%}
+        <div class="union_box" {% if k == 0 %}style="margin-left:0"{% end %}>
+            <a href="/union/{{ item['id'] }}" target="_blank">
+            <img src="{{ item['logo'] }}" width="220" height="146" alt="这里是名字">
+            <div class="union_name">{{ item['name'] }}</div></a>
+            <p><span style="color:#f48d19">29</span> 人 <span style="color:#999">/</span> <span style="color:#f48d19">90</span> 自媒体</p>
+            <!--
+            <div class="interestedContainer">
+                <div class="interestedBox">分类名称</div>
+            </div>
+            <input type="hidden" value="id">
+            -->
+        </div>
+		{% end %}
+        <!--end of self-media box-->
+    </div>
+</div>
+
+<div class="boxTotalCtrl" style="height: 160px;background: #fff;">
+	<div class="title gsbox">
+		<div class="title-big">友情链接<div class="down-tra"></div></div>
+	</div>
+	<div class="detailContainer gsbox clearfix united" style="height: 100px;">
+        {% for item in friendlink %}
+		<a href="{{ item['link'] }}" target="_blank">
+			<img src="{{ item['logo'] }}" title="{{ item['title'] }}" alt="" style="margin-top:10px;overflow: hidden;" width="100" height="40">
+		</a>
+        {% end %}
+	</div>
+</div>
+</div>
+
+<script type="text/javascript">
+    var dataList = [];
+    var headIndex = 0;
+    var timeout;
+    $(function(){
+        var len = $('#marketingContainer').children().length;
+        var ll = $('#marketingContainer').width()>1000?5:4;
+        for(var i=0;i<len;i++){
+            var oo = $($('#marketingContainer').children('.marketingBox')[i]);
+            if(i%ll==0){
+                oo.css('margin-left',0);
+            }else{
+                oo.css('margin-left',20);
+            }
+            var str = oo.children('.pname').children('a').text();
+            if(str.length>20)str = str.substr(0,20) + '...';
+            oo.children('.pname').children('a').text(str);
+        }
+        //getMarquee();
+        $(window).resize(function(){
+            var len = $('#marketingContainer').children().length;
+            var ll = $('#marketingContainer').width()>1000?5:4;
+            for(var i=0;i<len;i++){
+                var oo = $($('#marketingContainer').children('.marketingBox')[i]);
+                if(i%ll==0){
+                    oo.css('margin-left',0);
+                }else{
+                    oo.css('margin-left',20);
+                }
+            }
+        })
+    });
+
+    function getMarquee(){
+        $.ajax({
+            url:'/api/index/demands_marquee',
+            method:'get',
+            dataType:'json',
+            success:showList
+        })
+    }
+
+    function showList(data){
+        var list = data;
+        for(var i=0;i<list.length;i++){
+            var str = getShowData(list[i]);
+            dataList.push(str);
+        }
+        if(dataList.length>0){
+            startMoveIn();
+            timeout = 0;
+            setTimeout(startMoveing,60);
+        }
+    }
+
+    function startMoveing(){
+        var len = $('.marqueeLine').children('.tips-box').length;
+        for(var i=0;i<len;i++){
+            var obj = $('.marqueeLine').children('.tips-box')[i];
+            var left = parseInt($(obj).css('left').replace('px',''));
+            if(left>160){
+                left-=20;
+                $(obj).css('left',left);
+            }else{
+                if(timeout==0){
+                    timeout = setTimeout(showAgain,3000,obj);
+                }
+            }
+
+        }
+        setTimeout(startMoveing,10);
+    }
+
+    function showAgain(obj){
+        $(obj).fadeOut(1000,function(){$(obj).remove();timeout = 0;});
+        headIndex = ++headIndex%dataList.length;
+        startMoveIn()
+    }
+
+    function startMoveIn(){
+
+        var obj = $('<div class="tips-box">' + dataList[headIndex] + '</div>');
+        $('.marqueeLine').append(obj);
+    }
+
+    function getShowData(obj){
+        var s0 = obj.date_d.split('/');
+        var d0 = new Date(s0[0],s0[1],s0[2]);
+        var s1 = obj.date_sys.split('/');
+        var d1 = new Date(s1[0],s1[1],s1[2]);
+        if(d1.valueOf()>=d0.valueOf()){
+            return obj.name_oa + ' 已完成 ' + obj.name_d +' ' + s0[1] + '/' + s0[2];
+        }else{
+            return obj.name_oa + ' 已接单 ' + obj.name_d + ' ' + obj.date_jd.substr(obj.date_jd.indexOf('/')+1);
+        }
+    }
+</script>
+{% end %}

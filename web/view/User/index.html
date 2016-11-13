@@ -1,0 +1,277 @@
+{% extends '../public/main.html' %}
+{% block title%}基本信息{% end %}
+{% block body %}
+<link href="{{ static_url('style/uc.css')}}" type="text/css" rel="stylesheet">
+
+<script>
+    function iframeLoaded(iframe) {
+        var doc = iframe.contentWindow.window;
+        var html = doc.document.body.innerHTML;
+        var len = html.length;
+        if (len > 0) {
+            if(len > 100){
+                showTipsBox('message','保存成功');
+            }else{
+                showTipsBox('alert','保存失败');
+            }
+        }
+    }
+</script>
+<iframe frameborder="0" name='hiddenform' style="width:0;height: 0;display: none;" onload="iframeLoaded(this)"></iframe>
+{% include 'my_top.html' %}
+<div class="ucContainer clearfix">
+{% include 'my_menu.html' %}
+<div class="ucMain userinfo-body">
+    <div class="title">
+        <hr>
+        <h3>基本信息</h3>
+    </div>
+    <div class="content-box" id="basic-detail">
+        <div class="info-head">
+            <a href="#" onclick="document.getElementById('avatar').click(); return false;">
+                <img src="{{ current_user['avatar'] }}" width="100" height="100" alt="headPic">
+                <div class="change-head">点击修改</div>
+            </a>
+        </div>
+        <form class="form" action="/user" method="post" name="info" target="hiddenform">
+            <div class="mj-row">
+                <div class="mj-left">身份</div>
+                <div class="mj-middle">{{ user['vip'] }}</div>
+                <div class="mj-right"></div>
+            </div>
+            <div class="mj-row">
+                <div class="mj-left">称呼</div>
+                <div class="mj-middle"><input type="text"  maxlength="20"  value="{{ user['nickname'] }}" name="name"/></div>
+                <div class="mj-right"></div>
+            </div>
+            <div class="mj-row">
+                <input type="hidden" value="{{ user['city_id'] }}" name="city_id"/>
+                <div class="mj-left">位置</div>
+                <div class="mj-middle">
+                    <select name="province" id="province">
+                    </select>
+                    <select name="city" id="city" class="add-margin">
+                        <option value="city">{{user['city']}}</option>
+                    </select>
+                    <select name="county" id="county">
+                        <option value="county">{{user['county']}}</option>
+                    </select>
+                </div>
+                <div class="mj-right"></div>
+            </div>
+            <div class="mj-row">
+                <div class="mj-middle">
+                    <div class="save-btn btn-with-blueBg-and-addBtn" onclick="saveMsg(this)">保存</div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+</div>
+<form id="avatar-form" action="/user?a=avatar" method="post" enctype="multipart/form-data">
+    <input type="file" id="avatar" name="avatar" style="width:0;height:0;" onchange="document.getElementById('avatar-form').submit();" />
+</form>
+<script type="text/javascript">
+    var basic_url = '/area?a=get_list';
+    var cityList = [0,0,0];
+    var change_parent;
+    var isAuto = false;
+    $(function(){
+        // 初始化
+        var province    = "{{ user['province'] }}";
+        var city        = "{{ user['city'] }}";
+        var county      = "{{ user['county'] }}";
+        
+        if(province === "")
+            province = '省份';
+        if(city === "")
+            city = '城市';
+        if(county === "")
+            county = '区县';
+        
+        $('#province').empty().append('<option value="">' + province + '</option>');
+        $('#city').empty().append('<option value="">' + city + '</option>');
+        $('#county').empty().append('<option value="">' + county + '</option>');
+        
+        $('.tab-box').click(function(){
+            if(!$(this).hasClass('select-box')){
+                var id = $(this).attr('id');
+                if(id=='bangding'){
+                    location.href = '/user?a=bind';
+                }else{
+                    location.href = '/user?a=password';
+                }
+            }
+        });
+        
+        $('select').change(function(){
+            var target = $(this).attr('name');
+            var id = $(this).val();
+            if(id==''){
+                if(target=='province'){
+                    $('#city').empty().append('<option value="">城市</option>');
+                    $('#county').empty().append('<option value="">区县</option>');
+                    cityList = [0,0,0];
+                }else if(target=='city'){
+                    $('#county').empty().append('<option value="">区县</option>');
+                    cityList[1] = cityList[2] = 0;
+                }else{
+                    cityList[2] = 0;
+                }
+                return;
+            }
+            if(target!='county'){
+                getSelectList(id,target);
+                if(target=='province'){
+                    cityList[0] = id;
+                }else{
+                    cityList[1] = id;
+                }
+            }else{
+                cityList[2] = id;
+                //$('input[name="city_id"]').val(id);
+            }
+        });
+        
+        //getSelectList(0,'main');
+        if($('input[name="city_id"]').val()!=''){
+            cityList = $('input[name="city_id"]').val().split(',');
+            isAuto = true;
+        }
+        
+        // 自动加载省份
+        getSelectList(0,'main');
+    });
+
+    function saveMsg(obj){
+        var form = $(obj).parents('form');
+        //alert(form.attr('name'))
+        if(!checkInput(form.attr('name'))){
+            return;
+        }
+        //console.log(obj)
+        $('input[name="city_id"]').val(cityList.join(','));
+        //console.log(cityList);
+        form.submit();
+    }
+
+    function getSelectList(id, idfrom)
+    {
+        change_parent = idfrom;
+        var obj = {};
+        obj.method='get';
+        obj.url = basic_url + '&parent_id='+id;
+        obj.dataType = 'json';
+        obj.success = function(data){
+            var target;
+            var tarWord;
+            var tarId;
+            var tar2 = '';
+            switch (change_parent){
+                case 'province':
+                    target = 'city';
+                    tarWord = '城市';
+                    tarId = cityList[1];
+                    tar2 = 'county';
+                    break;
+                case 'city':
+                    target = 'county';
+                    tarWord = '区县';
+                    tarId = cityList[2];
+                    break;
+                case 'main':
+                    target = 'province';
+                    tarWord = '省份';
+                    tarId = cityList[0];
+                    break;
+            }
+            var main = $('#' + target);
+            //main.empty();
+            main.append('<option value="">' + tarWord + '</option>');
+            if(!isAuto && target=='city')cityList[1]=0;
+            if(tar2!=''){
+                $('#' + tar2).empty().append('<option value="">区县</option>');
+                if(isAuto){
+                    isAuto = !isAuto;
+                }else{
+                    cityList[2] = 0;
+                }
+            }
+
+            var list = data.data;
+            for(var i = 0; i < list.length; i++)
+                main.append('<option value="' + list[i].id + '">' + decodeURIComponent(list[i].name) + '</option>');
+            if(tarId!=0)
+                main.val(tarId);
+            if(change_parent!='city' && main.val()!='')
+                getSelectList(main.val(),target);
+        };
+        $.ajax(obj)
+    }
+
+    function checkInput(form){
+        //alert("checkinput")
+        //console.log(form)
+        var needToReturn = true;
+
+
+        $('form[name="' + form + '"] input').each(function(){
+            var nickname = $(this).attr('name');
+            //alert(nickname);
+            if(!needToReturn) return;
+            if($(this).val()=='' && $(this).attr('name')!='city_id'){
+                var wrongMsg = '';
+                switch ($(this).attr('name')){
+                    case 'name':
+                        wrongMsg = '请输入您的称呼';
+                        break;
+                }
+
+                alertBox(this,wrongMsg);
+                needToReturn = false;
+            }
+            if($(this).attr('name')=='name') {
+                //alert("nickename")
+                var zyw = /^[\u4e00-\u9fa5a-zA-Z]+$/;
+                if ($(this).val().length < 4 || $(this).val().length > 16) {
+                    var wrongMsg1 = '';
+                    switch ($(this).attr('name')) {
+                        case 'name':
+                            wrongMsg1 = '用户名长度为4-16个字符';
+                            break;
+                    }
+                    alertBox(this,wrongMsg1);
+                    needToReturn = false;
+                }
+                else if (!(zyw.test($(this).val()))){
+                    var wrongMsg1 = '';
+                    switch ($(this).attr('name')) {
+                        case 'name':
+                            wrongMsg1 = '用户名仅可使用中英文字符';
+                            break;
+                    }
+                    alertBox(this,wrongMsg1);
+                    needToReturn = false;
+                }
+            }
+//            if(cityList[0]==0||cityList[1]==0){
+//                alertBox($('input[name="city_id"]'),'请选择您所在位置');
+//                needToReturn = false;
+//            }
+        });
+        return needToReturn;
+    }
+
+    function alertBox(tf,textDetail){
+        $(tf).addClass('alertBox').focus(function(){
+            $(this).removeClass('alertBox');
+            $(tf).parents('.mj-row').children('.mj-right').removeClass('alertWord').text(startWord)
+        });
+        var ttf = $($(tf).parent().next()).text();
+        console.log(textDetail);
+        startWord = ttf=="！" + textDetail?startWord:ttf;
+        $(tf).parents('.mj-row').children('.mj-right').addClass('alertWord').text("！" + textDetail)
+    }
+
+</script>
+{% end %}

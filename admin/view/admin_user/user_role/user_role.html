@@ -1,0 +1,116 @@
+{% extends '../../public/main.html' %}
+
+{% block body %}
+<script type="text/javascript">
+function user_role(obj){
+    var id = obj.name;
+    $("#role"+id+" ul").empty();
+    $.getJSON("/admin_user/user_role?a=getRole&id=" + id,function(json){
+        var $html = "";
+        $(json.data).each(function(index, el) {
+            if (json.data[index].checked == 1) {
+                $html += '<li><input type="checkbox" name="role'+id+'" value=' + json.data[index].id + ' checked="checked" />';
+            }
+            else {
+                $html += '<li><input type="checkbox" name="role'+id+'" value=' + json.data[index].id + '>';
+            }
+            $html += '&nbsp' + json.data[index].label + '</li>'
+        });
+        $("#role"+id+" ul").append($html);
+    })
+}
+function update_role(obj){
+    var id = obj.name;
+    var role = [];
+    $('input[name="role'+id+'"]:checked').each(function () {
+        role.push($(this).val());
+    });
+    $.ajax({
+        url: "/admin_user/user_role?a=update_role",
+        method: "post",
+        dataType:'json',
+        data: {'role':role.join(','), 'id':id},
+        success: function (result) {
+            //console.log("result = "+result);
+            if (result.status ==200){
+                window.location.href="/admin_user/user_role";
+            }else if (result.status ==403) {
+                alert("该用户无操作权限！");
+                return false;
+            }else if (result.status ==500 || result.status ==601) {
+                alert("更新用户失败请重新操作！");
+                return false;
+            }
+        }
+    });
+}
+
+</script>
+
+<div class="nav">
+</div>
+
+<div class="funnel" >
+    <div class="searchBox">
+        <form class="form-inline" action='/admin_user/user_role' name="text" method="get">
+            <input class="form-control" type="text" name="text"  id="text" class="typeText"/>
+            <button type="submit" class="form-control btn btn-default">搜索</button>
+        </form>
+    </div>
+</div>
+
+<div style="margin-top: 50px"></div>
+<div class="colcon">
+    <div class="col1in3">
+        <table class="table table-bordered table-hover vert-align">
+        <thead>
+            <tr class="res_tbl_title" >
+                <td>序号</td>
+                <td>姓名</td>
+                <td>身份名称</td>
+                <td>操作</td>
+            </tr>
+        </thead>
+        {% for item in admin_user %}
+        <tbody>
+            <tr>
+                <td>{{ item['id'] }}</td>
+                <td>{{ item['nickname'] or item['name'] }}</td>
+                <td>{{ u'、'.join(item['role_label'] if item['role_label'] else '-') }}</td>
+                <td><button name="{{ item['id'] }}" onclick="user_role(this)" data-target="#role_dialog{{ item['id'] }}" data-toggle="modal" class="btn btnColor btn-primary" >更新角色</button>
+
+                   <div id="role_dialog{{ item['id'] }}" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" id="league_update_close" class="close" data-dismiss="modal" aria-hidden="true">X</button>
+                                    <h4 id="league_update_title">{{ item['nickname'] or item['name'] }} 角色</h4>
+                                </div>
+                                <div class="modal-body brickWall">
+                                    <form id="role_form" name="role_form" method="post" >
+                                        <div class="dataList" id="role{{ item['id'] }}">
+                                            <ul>
+                                            </ul>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="modal-footer">
+                                    <button class="btn btn-success" name="{{ item['id'] }}" onclick="update_role(this)">更新</button>
+                                    <button class="btn btn-default" data-dismiss="modal" aria-hidden="true">取消</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+        {% end %}
+        </table>
+    </div>
+    <!--<div class="col2in3">-->
+    <!--</div>-->
+</div>
+<div>
+    {% raw page_html %}
+</div>
+{% end %}

@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+	<title>{{ title }}</title>
+    <meta name="keywords" content="一道,一道网,自媒体,自媒体营销,自媒体交易,微信自媒体,自媒体变现,微信公众号,微信互推,自媒体维权,阅读数,自媒体平台,自媒体广告">
+    <meta name="description" content="一道自媒体交易平台">
+	<link rel="stylesheet" href="{{ static_url('style/bootstrap.min.css') }}" />
+    <link rel="stylesheet" href="{{ static_url('style/admin.css') }}" />
+	<script type="text/javascript" src="{{ static_url('script/jquery.min.js') }}"></script>
+	<script type="text/javascript" src="{{ static_url('script/bootstrap.min.js') }}"></script>
+</head>
+<body>
+    <div class="container" style="width: 20%;margin-top: 150px" >
+        <h4 class="form-login-heading" style="color:#5B5B5B; font-size:15px; font-weight: bold">社交账号登录</h4>
+        <a rel="external nofollow" href="https://open.weixin.qq.com/connect/qrconnect?appid=wxb3f7618fff2272e5&redirect_uri=http:
+        //www.yidao.info/wechat_login&response_type=code&scope=snsapi_login&state=1#wechat_redirect" class="social-btn social-wechat form-control">使用 微信 登录</a>
+        <a rel="external nofollow" href="https://api.weibo.com/oauth2/authorize?client_id=63372306&redirect_uri=http://www.yidao.info/wechat_login
+        " class="social-btn social-weibo form-control">使用 微博 登录</a>
+        <a rel="external nofollow" href="https://graph.qq.com/oauth/show?which=Login&display=pc&which=Login&display=pc&client_id=100251437
+        &response_type=code&redirect_uri=http://www.yidao.info/wechat_login" class="social-btn social-qq form-control">使用 qq 登录</a>
+
+        <h4 class="form-login-heading" style="color:#5B5B5B; font-size:15px; font-weight: bold">一道<span>&nbsp;</span>账号登录</h4>
+        <input type="text" class="form-control" style="margin-bottom: 10px;" id="account" name="account" placeholder="用户名或邮箱"/>
+        <input type="password" class="form-control" style="margin-bottom: 10px;" id="password" name="password" placeholder="密码"/>
+        <input type="submit" class="btn btn-md btn-block" name="login_btu" style="background-color: #fbbf2f;" value="登录">
+    </div>
+</body>
+<script type="text/javascript">
+    $("input[name='login_btu']").click(function(){
+        dicArgs = {
+            'account': $('#account').val(),
+            'password': $('#password').val()
+        };
+        $.ajax({
+            url: "/login",
+            method: "post",
+            dataType:'json',
+            data: dicArgs,
+            success: function (result) {
+                if (result.status ==200){
+                    window.location.href="/";
+                }else if (result.status ==601){
+                    alert("用户不存在，请确认用户名！");
+                }else if (result.status ==603) {
+                    alert("用户密码不正确，请重新输入！");
+                }else if (result.status ==403) {
+                    alert("该用户无登录权限！");
+                }else{
+                    alert("登录失败！");
+                }
+            }
+        });
+    })
+</script>
+</html>

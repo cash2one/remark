@@ -1,0 +1,81 @@
+{% extends '../../public/main.html' %}
+
+{% block body %}
+<link rel="stylesheet" type="text/css" href="{{ static_url('style/bootstrap-responsive.css') }}" />
+<link rel="stylesheet" type="text/css" href="{{ static_url('style/bootstrap-datetimepicker.css') }}" />
+<script type="text/javascript" src="{{ static_url('script/bootstrap-datetimepicker.js') }}"></script>
+<div class="status_title">
+	<ol class="breadcrumb">
+		自媒体管理 >
+		<li><a href="/yidao/media">已入驻</a></li>
+	</ol>
+</div>
+<div class="result_filter">
+	<form action='/yidao/media' method="get">
+        日期
+        <input size="16" type="text" readonly class="form_datetime form-control dateInput" name="start">
+        <span>&nbsp;至&nbsp;</span>
+        <input size="16" type="text" readonly class="form_datetime form-control dateInput" name="end">
+        <span>&nbsp;&nbsp;名称</span>
+        <input type="text" name="search" class="form-control dateInput" />
+        <input class="btn btn-default" type="submit" value="筛选"/>
+    </form>
+	<script type="text/javascript">
+		$(".form_datetime").datetimepicker({
+			format: 'yyyy-mm-dd',
+			minView: 'month',
+			autoclose: true
+		});
+	</script>
+</div>
+<table class="table table-bordered table-hover vert-align">
+    <thead>
+		<tr class="res_tbl_title">
+			<td>ID</td>
+			<td>名称</td>
+			<td>级别</td>
+			<td>用户</td>
+			<td>行业</td>
+			<td>原创</td>
+			<td>认证</td>
+			<td>头条平均</td>
+			<td>头条报价</td>
+			<td>入驻时间</td>
+			<td>操作</td>
+		</tr>
+	</thead>
+    {% for item in index_info %}
+		<tbody>
+			<tr>
+				<td>{{ item['idx'] }}</td>
+				<td><a href="/yidao/media?a=detail&id={{ item['id'] }}">{{ item['name'] }}</a></td>
+				<td>{{ item['value_level_label'] if item['value_level_label'] else '-' }}</td>
+				<td>
+					{% if item['nickname'] %}
+					<a href="/user?a=detail&id={{ item['user_id'] }}">{{ item['nickname'] }}</a>
+					{% else %}
+					-
+					{% end %}
+				</td>
+				<td>{{ item['category'] if item['category'] else '-'}}</td>
+				<td>{{ item['original'] if item['original'] else '-' }}</td>
+				<td>{{ item['identify']}}</td>
+				<td>{{ item['top_avg_read_num'] if item['top_avg_read_num'] else '-' }}</td>
+				<td>{{ item['top_price'] if item['top_price'] else '-'}}</td>
+				<td>{{ item['create_time'] }}</td>
+				<td>
+					{% if item['status'] == 2 %}
+                    <a class="btn btnThin" href="/yidao/media?a=unban&id={{ item['id'] }}" onclick="return confirm('确认解禁?');">解禁</a>
+					{% elif item['status'] == 0 %}
+                    <a class="btn btnColor btn-warning" href="/yidao/media?a=ban&id={{ item['id'] }}" onclick="return confirm('确认禁用?');">禁用</a>
+                	{% else %}
+                	{% end %}
+				</td>
+			</tr>
+		</tbody>
+    {% end %}
+</table>
+<div>
+	{% raw page_html %}
+</div>
+{% end %}

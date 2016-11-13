@@ -1,0 +1,30 @@
+{% extends '../../public/main.html' %}
+
+{% block body %}
+<div class="nav">
+    <a href="/project/documents?a=create_display"><button  class="btnAdd">添加文案</button></a>
+</div>
+
+<table class="table table-bordered table-hover vert-align">
+    <tbody>
+        <thead>
+        <tr class="res_tbl_title">
+            <td>ID</td>
+            <td>标题</td>
+            <td>更新时间</td>
+        </tr>
+        </thead>
+        {% for item in documentsData %}
+            <tr>
+                <td>{{ item['media_content_id'] }}</td>
+                <td><a href="/project/documents?a=details&id={{ item['media_content_id'] }}">{{ item['media_title'] }}</a></td>
+                <td>{{item['update_time'] }}</td>
+            </tr>
+        {% end %}
+    </tbody>
+</table>
+
+<div>
+    {% raw page_html %}
+</div>
+{% end %}

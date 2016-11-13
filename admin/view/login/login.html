@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+	<title>{{ title }}</title>
+    <meta name="keywords" content="一道,一道网,自媒体,自媒体营销,自媒体交易,微信自媒体,自媒体变现,微信公众号,微信互推,自媒体维权,阅读数,自媒体平台,自媒体广告">
+    <meta name="description" content="一道自媒体交易平台">
+	<link rel="stylesheet" href="{{ static_url('style/bootstrap.min.css') }}" />
+	<script type="text/javascript" src="{{ static_url('script/jquery.min.js') }}"></script>
+	<script type="text/javascript" src="{{ static_url('script/bootstrap.min.js') }}"></script>
+</head>
+<body>
+    <div class="container" style="width: 20%;margin-top: 200px" >
+        <h3 class="form-login-heading" style="text-align: center;font-weight: bold">一道<span>&nbsp;</span>后台管理系统</h3>
+        <input type="text" class="form-control" style="margin-bottom: 10px;" id="account" name="account" placeholder="用户名"/>
+        <input type="password" class="form-control" style="margin-bottom: 10px;" id="password" name="password" placeholder="密码"/>
+        <input type="submit" class="btn btn-md btn-block btn-primary" name="login_btu" value="登录">
+    </div>
+</body>
+<script type="text/javascript">
+    $("input[name='login_btu']").click(function(){
+        loginFun();
+    });
+
+    $("body").keypress(function(event) {
+        if(event.keyCode == 13){
+            loginFun();
+        }
+    });
+
+    function loginFun(){
+        dicArgs = {
+            'account': $('#account').val(),
+            'password': $('#password').val()
+        };
+        $.ajax({
+            url: "/login",
+            method: "post",
+            dataType:'json',
+            data: dicArgs,
+            success: function (result) {
+                if (result.status ==200){
+                    window.location.href="/";
+                }else if (result.status ==601){
+                    alert("用户不存在，请确认用户名！");
+                }else if (result.status ==603) {
+                    alert("用户密码不正确，请重新输入！");
+                }else if (result.status ==403) {
+                    alert("该用户无登录权限！");
+                }else{
+                    alert("登录失败！");
+                }
+            }
+        });
+    }
+
+</script>
+</html>

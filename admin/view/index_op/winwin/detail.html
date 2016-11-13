@@ -1,0 +1,41 @@
+{% extends '../../public/main.html' %}
+
+{% block body %}
+<div>
+    <a href="javascript:history.go(-1);">返回</a>
+</div>
+<table class="table table-bordered table-hover vert-align">
+    <thead>
+        <tr>
+            <td>互推详情</td>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>互推时间</td>
+            <td>{{ detail_info['start_date'] }}</td>
+        </tr>
+        <tr>
+            <td>状态</td>
+            <td>{{ detail_info['status_tag'] }}</td>
+        </tr>
+        <tr>
+            <td>发起人</td>
+            <td>{{ detail_info['nickname'] }}</td>
+        </tr>
+        <tr>
+            <td>要求</td>
+            <td>{{ detail_info['description'] }}</td>
+        </tr>
+        <tr>
+            <td>标题</td>
+            <td>{{ detail_info['title'] }}</td>
+        </tr>
+
+        <tr>
+            <td>文案</td>
+            <td>{{ detail_info['content'] }}</td>
+        </tr>
+    </tbody>
+</table>
+{% end %}

@@ -1,0 +1,274 @@
+{% extends 'view_public.html' %}
+
+{% block nav_title %}
+<!--
+<div class="case-title-mini"></div>
+-->
+{% end %}
+
+{% block list %}
+{% if demand['status']==(2) %}
+<div class="demandStatus">
+    <div class="title">
+        <h3>您有<strong>{{media_num}}</strong>个自媒体可以接单</h3>
+    </div>
+    <div class="content">
+        <p class="defaultTip">
+            <a href="javascript:onlink('/demand?a=take_order&id={{ demand['id'] }}')" class="btnNext">接单</a>
+        </p>
+    </div>
+</div>
+
+{% if len(media)>0 %}
+<div class="demandStatus">
+    <div class="title">
+        <!--<h3>您已成功接单，广告主选择后会发送手机短信给您。</h3>-->
+        <h3>您已成功接单。</h3>
+    </div>
+    <ul class="content">
+        <li class="bidderBox">
+            <div class="userBox">
+                <a href="/u?id={{user['id']}}" target="_blank">
+                    <img src="{{user['avatar']}}" alt="{{user['nickname']}}">
+                    <span class="userName">{{user['nickname']}}</span>
+                </a>
+                <!--
+                <div class="contact">
+                    <span class="ydi yd-user"></span>
+                    <span class="phone">{{user['phone']}}</span>
+                </div>
+                -->
+            </div>
+            {% for item in media %}
+            <div class="mediaBox">
+                <div class="mediaAvatar">
+                    <a href="/media?a=view&id={{item['media_id']}}" target="_blank">
+                        <img src={{item['avatar']}} alt="{{item['name']}}">
+                    </a>
+                </div>
+                <div class="mediaInfo">
+                    <div class="mediaTitle">
+                        <span class="mediaName"><a href="/media?a=view&id={{item['media_id']}}" target="_blank">{{item['name']}}</a></span>
+                        {% if item['original'] == 1 %}
+                        <span class="original" title="原创">原创</span>
+                        {% end %}
+                        {% if item['identify'] != "" %}
+                        <span class="wechatVerify ydi yd-checked" title="微信认证">已认证</span>
+                        {% end %}
+                        <span class="level" title="综合级别">级别<strong>{{item['value_level']}}</strong></span>
+                        <span class="qrcode"><img src="/static/images/qr-mini.png" alt="二维码"><img src={{item['qrcode']}} alt="{{item['name']}}二维码" class="codeL"></span>
+                    </div>
+                    <div class="mediaCategory">
+                        <span>{{item['category']['name']}}</span>
+                    </div>
+                    <div class="mediaTag">
+                        {% for tag in item['tag'] %}
+                            <span data="">{{ tag['name'] }}</span>
+                        {% end %}
+                    </div>
+                    <dl class="mediaAudience">
+                        <dt>针对地域：</dt>
+                        <dd>{{ item['area'] }}</dd>
+                        <dt>针对性别：</dt>
+                        <dd>{{ item['audience_gender'] }}</dd>
+                    </dl>
+                </div>
+                {% if item['cart_status'] == 1 %}
+                <div class="advertising">
+                    <div><strong>广告主邀请您进行改价</strong></div>
+                    <!--带上media保持id唯一性-->
+                    <input type="hidden" id="cart_id{{ item['media_id'] }}" value="{{ item['cart_id']}}">
+                    <span>{{ item['attr_value_info'] }}</span>
+                    <small class="ydi yd-money"></small>
+                    <input type="text" onkeyup="value=value.replace(/[^\d]/g,'')" onafterpaste="this.value=this.value.replace(/\D/g,'')" id="cart_price{{ item['media_id'] }}" value="{{ item['price'] }}">
+                    <button name="update_cart" value="{{ item['media_id'] }}" class="btnOkS">确认</button>
+                </div>
+                {% end %}
+                <div class="more">
+                    {% if item['cart_status'] == 1%}
+                    <span class="statusCheck">等待改价</span>
+                    {% elif item['cart_status'] == 2%}
+                    <span class="statusFinish">已改价</span>
+                    {% end %}
+                    <!--<button onclick="take_order_cancel(this)" media_id='{{ item['media_id'] }}' class="btnCancel">取消接单</button>-->
+                </div>
+            </div>
+            {% end %}
+        </li>
+    </ul>
+</div>
+{% end %}
+
+<div class="mediaList">
+</div>
+<script type="text/javascript">
+    var total_cost
+    var _html;
+    $('button[name="update_cart"]').click(function(){
+        var media_id = $(this).val();
+        var cart_id = $('#cart_id'+media_id).val();
+        var cart_price = $('#cart_price'+media_id).val();
+        var params = {'cart_id':cart_id, 'price':cart_price};
+        $.ajax({
+            type: "POST",
+            url: "/demand?a=cart_update",
+            dataType: "JSON",
+            data: $.param(params),
+            success: function(ret){
+                if(ret.status == 200) {
+                    showTipsBox('message', '改价成功');
+                    location.reload(true);
+                }
+                else
+                    showTipsBox('alert', '改价未成功');
+            }
+        });
+    });
+
+    function take_order_cancel(obj)
+    {
+        var params = {'demand_id':{{ demand['id'] }}, 'media_id':$(obj).attr('media_id')};
+        $.ajax({
+            type: "POST",
+            url: "/demand?a=take_order_cancel",
+            dataType: "JSON",
+            data: $.param(params),
+            success: function(ret){
+                //showTipsBox('alert', dicStatusMsg['signup'][ret.status]);
+                if(ret.status == 200) {
+                    alert('取消接单成功');
+                    location.href = "/demand?a=view&id={{ demand['id'] }}";
+                }
+                else
+                    alert('取消接单不成功');
+            }
+        });
+    }
+
+    $.ajax({
+        type:'get',
+        url:"{{ RECO_HOST }}/demand_take_order_rank?id={{demand['id']}}",
+        dataType: 'jsonp',
+        jsonp:"callback",
+        success: function(medias){
+            _html = '<div class="title"><h3>已有<strong>'+medias.length+'</strong>个自媒体接单</h3></div>';
+            _html += '<ul class="content">';
+            for(k in medias)
+            {
+                media = medias[k][1];
+                _html+='<li class="bidderBox">';
+                _html += '<div class="userBox">' +
+                        '<a href="/u?id=' + media['user_id'] + '" target="_blank">' +
+                            '<img src="' + media['user']['avatar'] + '" alt="' + media['user']['nickname'] + '">' +
+                            '<span class="userName">' + media['user']['nickname'] + '</span>' +
+                        '</a>' +
+                    '</div>';
+                _html += '<div class="mediaBox">' +
+                            '<div class="mediaAvatar">' +
+                                '<a href="/media?a=view&id=' + media['media_id'] + '" target="_blank">' +
+                                    '<img src=' + media['avatar'] + ' alt=' + media['name'] + '>' +
+                                '</a>' +
+                            '</div>'+
+                            '<div class="mediaInfo">'+
+                                '<div class="mediaTitle">'+
+                                    '<span class="mediaName"><a href="/media?a=view&id=' + media['media_id'] + '" target="_blank">' + media['name'] + '</a></span>';
+                                    if (media['original'] === '原创') 
+                                        _html+= '<span class="original">原创</span>';
+                                    if (media['identify'] != '')
+                                        _html+='<span class="wechatVerify ydi yd-checked" title="微信认证">已认证</span>';
+                                    _html+='<span class="level" title="综合级别">级别<strong>'+media['value_level']+'</strong></span>'+
+                                            '<span class="qrcode"><img src="/static/images/qr-mini.png" alt="二维码"><img src='+media['qrcode']+' alt="'+media['name']+'二维码" class="codeL"></span>'+
+                                '</div>'+
+                                '<div class="mediaCategory">'+
+                                    '<span>'+media['media_category']['name']+'</span>'+
+                                '</div>'+
+                                '<div class="mediaTag">';
+                                for(j in media['media_tag'])
+                                {
+                                    tag = media['media_tag'][j];
+                                    _html+= ' <span data="">' + tag['name'] + '</span>';
+                                }
+                                _html+='</div>'+
+                                '<dl class="mediaAudience">'+
+                                    '<dt>针对地域：</dt><dd>'+media['area']+'</dd><dt>针对性别：</dt><dd>'+media['audience_gender']+'</dd>'+
+                                '</dl>'+
+                            '</div>' +
+                         '</div>';
+                _html+='</li>';
+            }
+            _html+='</ul>';
+            $(".mediaList").html(_html)
+        },
+        error:function(res){
+            alert("fail")
+        },
+    });
+//    function chooseThisPosition(obj){
+//        //console.log($(obj).parent().parent().next().children().children()[1])
+//        $(obj).parent().children().removeClass("current")
+//        $(obj).addClass("current");
+//        total_cost=($(obj).attr('value'));
+//        $(obj).parent().parent().next().children().children()[1].innerHTML=total_cost
+//        $(obj).parent().parent().next().show()
+//        //alert($(".more .price strong").innerHTML)
+//
+//    };
+</script>
+<!--原代码
+<div id="v3_demand_view_media_list">
+<div class="up-down-btn">
+    <div class="has-accepted">您有<span class="number">{{ media_num }}</span>个自媒体可以接单</div>
+    <a href="javascript:onlink('/demand?a=accept&id={{ demand['id'] }}')" class="btn-with-blueBg-and-addBtn accept-btn">接单</a>
+</div>
+<div class="choose-sm-others-box">
+    <div class="title"><div class="has-accepted">已有<span class="number">21</span>个接单的自媒体</div></div>
+    <div class="self-media-main case-more-box clear-border" id="other">
+        <div class="self-media-main">
+            <div class="self-msg">
+                <img src="http://7sbnkf.com2.z0.glb.qiniucdn.com/FtX54sduN1UtnbOEV2DGhZYmXDGL-avatar" width="40" height="40">
+                <a href="/u?id=17506">李峰</a>
+            </div>
+            <div class="container">
+                <div class="media-box">
+                    <div class="media-head">
+                        <a href="/media?a=view&amp;id=2381">
+                            <img src="http://7sbnkf.com2.z0.glb.qiniucdn.com/FjRw_6a5cBtHbz2x1wGZ1caWvgau-avatarx" style="width:100px;height:100px;">
+                        </a>
+                    </div>
+                    <input type="hidden" value="">
+                    <div class="media-main am-page">
+                        <div class="media-title">
+                            <a href="/media?a=view&amp;id=2381">杨恒均</a>
+                        </div>
+                        <div class="media-title-letters">微信号：yanghengjun2013</div>
+                        <p>与大家分享我的行踪、想法与打算</p>
+                        <div class="intrested-container">
+                            <div class="interestedBox">财富</div>
+                            <div class="interestedBox">时事</div>
+                            <div class="interestedBox">全国性</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+-->
+{% end %}
+{% end %}
+{% block script %}
+<script type="text/javascript">
+    GetMediaList.prototype.run = function(){
+        var self = this;
+
+        self.request({}, function(d){
+            $('#v3_demand_view_media_list').html('');
+        });
+    };
+
+    var o = new GetMediaList();
+    o.run();
+</script>
+{% end %}
+

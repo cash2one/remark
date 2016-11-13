@@ -1,0 +1,29 @@
+<div class="ht-title">
+    <div class="inside-con">
+        <div class="ht-winwin"><span class="icon-winwin"></span>微信互推助手</div>
+        <a class="ht-btn {% if menu == 'all' %}ht-btn-click{% end %}" id="all" href="/winwin">全部互推</a>
+        <a class="ht-btn {% if menu == 'my' %}ht-btn-click{% end %}" id="mine" href="javascript:onlink('/winwin?a=my')">我的互推</a>
+        <div class="ht-build"><a href="javascript:onlink('/winwin?a=view')">组织互推<span class="icon-add"></span></a></div>
+        <div class="ht-down">
+            <select name="status" id="ht-status">
+                <option value="0" {% if status == '0' %}selected="selected"{% end %}>组织中</option>
+                <option value="1" {% if status == '1' %}selected="selected"{% end %}>已完成</option>
+            </select>
+        </div>
+    </div>
+</div>
+<script>
+$(function(){
+    var selected_menu = '{{ menu }}';
+    $('#ht-status').change(function(){
+        var strStatus = $(this).val();
+        if(strStatus){
+            if(selected_menu == 'my'){
+                location.href = "/winwin?a=my&status=" + strStatus;
+            }else{
+                location.href = "/winwin?&status=" + strStatus;
+            }
+        }
+    });
+})
+</script>

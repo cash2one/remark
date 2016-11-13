@@ -1,0 +1,120 @@
+<div class="v3_demand_step" id="v3_demand_step2" style="display:none;">
+    <div class="v3_demand_step_title">
+        <div class="v3_demand_step_title_ico"></div>
+        <div class="v3_demand_step_title_text">具体描述</div>
+    </div>
+    <div class="v3_demand_step_content">
+        <div class="v3_demand_step_content_line v3_h35">
+            <div class="v3_demand_step_content_label v3_h35 v3_w147 v3_right">性别要求：</div>
+            <div class="v3_demand_step_content_item v3_h35">
+                <label class="v3_demand_step_content_checkbox">
+                <input type="radio" name="audience_gender" class="audience_gender" value="0" checked="checked" /> 不限
+                </label>
+                <label class="v3_demand_step_content_checkbox">
+                <input type="radio" name="audience_gender" class="audience_gender" value="1" /> 偏女性
+                </label>
+                <label class="v3_demand_step_content_checkbox">
+                <input type="radio" name="audience_gender" class="audience_gender" value="2" /> 偏男性
+                </label>
+            </div>
+            <div class="v3_demand_step_content_tips v3_h35"></div>
+        </div>
+        <div class="v3_demand_step_content_line">
+            <div class="v3_demand_step_content_label v3_w147 v3_right">地域要求：</div>
+            <div class="v3_demand_step_content_item">
+                <label class="v3_demand_step_content_checkbox">
+                <input type="radio" name="audience_province_id" class="audience_province_id" value="0" checked="checked" /> 全国性
+                </label>
+                <label class="v3_demand_step_content_checkbox">
+                <input type="radio" name="audience_province_id" class="audience_province_id" value="1" /> 地方性
+                </label>
+                <div class="v3_demand_step_content_area" id="v3_demand_audience_area">
+                    <select class="v3_demand_step_content_input v3_demand_step_content_select_short" name="province" id="province">
+                        <option value="">省份</option>
+                    </select>
+                    <select class="v3_demand_step_content_input v3_demand_step_content_select_short" name="city" id="city">
+                        <option value="">城市</option>
+                    </select>
+                    <select class="v3_demand_step_content_input v3_demand_step_content_select_short" name="county" id="county">
+                        <option value="">区县</option>
+                    </select>
+                </div>
+            </div>
+            <div class="v3_demand_step_content_tips"></div>
+        </div>
+        <div class="v3_demand_step_content_line">
+            <div class="v3_demand_step_content_label v3_right v3_w147">行业：</div>
+            <div class="v3_demand_step_content_item">
+                <div id="v3_demand_category" class="v3_demand_category"></div>
+                <button class="v3_button_select" id="v3_category_select" data-type="category">选择行业类型</button>
+            </div>
+            <input type="hidden" id="category" />
+            <div class="v3_demand_step_content_tips"></div>
+        </div>
+        <div class="v3_demand_step_content_line">
+            <div class="v3_demand_step_content_label v3_right v3_w147">标签：</div>
+            <div class="v3_demand_step_content_item">
+                <div id="v3_demand_tag" class="v3_demand_category"></div>
+                <button class="v3_button_select" id="v3_tag_select" data-type="tag">选择标签</button>
+            </div>
+            <input type="hidden" id="tag" />
+            <div class="v3_demand_step_content_tips"></div>
+        </div>
+        <div class="v3_demand_step_content_line">
+            <div class="v3_demand_step_content_label v3_demand_step_content_label_top v3_w147 v3_right">粉丝数要求：</div>
+            <div class="v3_demand_step_content_item">
+                <select class="selectorG" name="audience_num" id="audience_num">
+                    <option value="0" selected>不限</option>
+                    <option value="10000">10,000 以上</option>
+                    <option value="50000">50,000 以上</option>
+                    <option value="100000">100,000 以上</option>
+                    <option value="500000">500,000 以上</option>
+                    <option value="1000000">1,000,000 以上</option>
+                </select>
+            </div>
+            <div class="v3_demand_step_content_tips"></div>
+        </div>
+        <div class="v3_demand_step_content_line">
+            <div class="v3_demand_step_content_label v3_demand_step_content_label_top v3_w147 v3_right">阅读数要求：</div>
+            <div class="v3_demand_step_content_item">
+                <select class="selectorG" name="view" id="view">
+                    <option value="0" selected>不限</option>
+                    <option value="2000">2,000 以上</option>
+                    <option value="5000">5,000 以上</option>
+                    <option value="10000">10,000 以上</option>
+                    <option value="50000">50,000 以上</option>
+                    <option value="100000">100,000 以上</option>
+                </select>
+            </div>
+            <div class="v3_demand_step_content_tips"></div>
+        </div>
+        <div class="v3_demand_step_content_line">
+            <div class="v3_demand_step_content_label v3_demand_step_content_label_top v3_w147 v3_right">自媒体数要求：</div>
+            <div class="v3_demand_step_content_item">
+                <input type="text" name="num" id="num" maxlength="2" class="v3_demand_step_content_input v3_demand_step_content_text_short" onkeyup="this.value=this.value.replace(/\D/g,'')" onafterpaste="this.value=this.value.replace(/\D/g,'')" />
+            </div>
+            <div class="v3_demand_step_content_tips"></div>
+        </div>
+        <div class="v3_demand_step_content_line v3_h129">
+            <div class="v3_demand_step_content_label v3_demand_step_content_label_top v3_w147 v3_right">其它要求：</div>
+            <div class="v3_demand_step_content_item">
+                <textarea class="v3_demand_step_content_input v3_demand_step_content_textarea" name="marketing" id="marketing" maxlength="256"></textarea>
+            </div>
+            <div class="v3_demand_step_content_tips"></div>
+        </div>
+        <div class="v3_demand_step_content_line">
+            <div class="v3_demand_step_content_label v3_demand_step_content_label_top v3_w147 v3_right"></div>
+            <div class="v3_demand_step_content_item">
+                <label class="v3_demand_step_content_checkbox">
+                    <input type="checkbox" name="original" id="original" value="0" />
+                    需要原创账号
+                </label>
+            </div>
+            <div class="v3_demand_step_content_tips"></div>
+        </div>
+        <div class="v3_demand_step_content_line">
+            <a href="javascript:;" class="v3_demand_step_content_cancel v3_w147 v3_step_next" data-next="1">上一步</a>
+            <button class="v3_button v3_step_next" data-next="3">下一步</button>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,99 @@
+{% extends '../../public/main.html' %}
+
+{% block body %}
+<script type="text/javascript">
+    function create(){
+        var a = document.getElementById('league_name').value;
+        if (a == "") {
+            alert("名称不能为空");
+            return false;
+        }
+        document.getElementById('league_form').submit();
+    }
+    $(document).ready(function(){
+        uediter('league_description');
+    })
+</script>
+<div class="nav">
+    <a class="btnAdd" name="league_create" data-target="#league_create_dialog" data-toggle="modal">增加联盟</a>
+</div>
+<div>
+    <div id="league_create_dialog" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" id="league_create_close" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 id="league_create_title">增加联盟</h4>
+                </div>
+                <div class="modal-body">
+                    <form class="form-horizontal" id="league_form" name="league_form" method="post" action="/media/league?a=create">
+                        <div class="form-group">
+                            <label for="league_name" class="col-sm-2 control-label">名称</label>
+                            <div class="col-sm-7">
+                                <input class="form-control" type="text" id="league_name" name="league_name">
+                            </div>
+                        </div>
+                        <div class="form-group uediter">
+                            <label for="league_description" class="col-sm-2 control-label">描述</label>
+                            <textarea id="league_description" name="league_description"></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-success" onclick="create()">保存</button>
+                    <button class="btn btn-default" data-dismiss="modal" aria-hidden="true">取消</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="result_filter funnel">
+    <div class="searchBox">
+        <form method="get" class="form-inline" action="/media/league" id="search_form">
+            <input class="form-control" type="text" name="search" class="typeText">
+            <button type="submit" id="search" class="btn btn-default">搜索</button>
+        </form>
+    </div>
+</div>
+<div>
+    <table class="table table-bordered table-hover vert-align">
+        <thead>
+            <tr class="res_tbl_title">
+                <td>ID</td>
+                <td>名称</td>
+                <td>描述</td>
+                <td>更新时间</td>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in league %}
+            <tr>
+                <td width="3%">{{ item['id'] }}</td>
+                <td width="5%">
+                    <a href="/media/league?a=detail&id={{item['id']}}">{{ item['name'] }}</a>
+                </td>
+                <td width="20%"><div style="overflow:hidden;display:inline-block;height:30px;text-overflow:ellipsis;">{% raw item['description'] if item['description'] else '' %}</div></td>
+                <td width="5%">{{ item['last_update_time'] }}</td>
+            </tr>
+            {% end %}
+        </tbody>
+    </table>
+</div>
+<div>
+    {% raw page_html %}
+</div>
+<script type="text/javascript">
+$(document).ready(function(){
+    $("body").keyup(function () {
+        if (event.which == 13){
+            $("#search").trigger("click");
+        }
+    }); 
+})
+/*增加样式选择器*/
+$(document).ready(function(){
+        $(".edui-container").addClass("col-sm-2");
+    })
+</script>
+
+{% end %}

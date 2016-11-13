@@ -1,0 +1,263 @@
+{% extends '../../public/main.html' %}
+
+{% block body %}
+
+<script type="text/javascript">
+    function is_phone(num){
+        num =num.toString();
+        var re = /^\d{11}$/;
+        return re.test(num)
+    }
+    function is_mail(email){
+        email = email.toString();
+        var  re = /^\w+([-+._]\w+)*@\w+([-.]\w+)*\.\w+([-.]w+)*$/;
+        return re.test(email)
+    }
+    function is_qq(qq){
+        qq = qq.toString();
+        var re = /[1-9][0-9]{4,}/;
+        return re.test(qq)
+    }
+    function is_tel(tel){
+        tel = tel.toString();
+        var re = /^\(?0\d{2}\)?[-]?\d{8}$|^0\d{2}[-]?\d{8}$|^\(?0\d{3}\)?[-]?\d{7}$|^0\d{3}[-]?\d{7}$|^\d{7,8}$/;
+        return re.test(tel)
+    }
+    function on_advertiser_commit(){
+        var a = document.getElementById('advertiser_company').value;
+        if (a == "") {
+            alert("输入不能为空");
+            return false;
+        }
+
+        dicArgs = {
+            'advertiser_company': $('#advertiser_company').val(),
+            'advertiser_link': $('#advertiser_link').val(),
+            'advertiser_remark': $('#advertiser_remark').val(),
+            'advertiser_product_info': $('#advertiser_product_info').val(),
+            'advertiser_audience_info': $('#advertiser_audience_info').val()
+        };
+        $.ajax({
+            url: "/project/advertiser?a=create",
+            method: "post",
+            dataType:'json',
+            data: dicArgs,
+            success: function (result) {
+                //console.log("result = "+result);
+                if (result.status ==200){
+                    window.location.href="/project/advertiser";
+                }else if (result.status ==403) {
+                    alert("该用户无操作权限！");
+                    return false;
+                }else if (result.status ==500) {
+                    alert("添加失败请重新操作！");
+                    return false;
+                }
+            }
+        });
+    }
+
+    function display(level){
+        var sub_status = document.getElementById("sub_status");
+//        if (level=="4"){
+//            sub_status.options[0].text = '1 执行中';
+//            sub_status.options[1].text = '2 暂停调整';
+//        }
+        if (level=="4"){
+            sub_status.options[0].text = '1 稳定客户';
+            sub_status.options[1].text = '2 短期客户';
+        }
+    }
+
+    $(document).ready(function() {
+        var searchType = "{{listSearch['searchType']}}";
+        var level = "{{listSearch['search_level']}}";
+        var status = "{{listSearch['sub_status']}}";
+        if (searchType== "3"){
+            document.getElementById("search_level").style.display="none" ;
+            document.getElementById("search_txt").style.display="none" ;
+            document.getElementById("sub_status").style.display="none" ;
+            $("#searchType").val(searchType);
+        }else{
+            if (searchType== "1") {
+                document.getElementById("search_level").style.display = "none";
+                document.getElementById("search_txt").style.display = "";
+                document.getElementById("sub_status").style.display="none" ;
+            }else if (searchType=="2"){
+                document.getElementById("search_level").style.display = "";
+                document.getElementById("search_txt").style.display = "none";
+                if (level=="4" ){
+                    document.getElementById("sub_status").style.display="" ;
+                }else{
+                    document.getElementById("sub_status").style.display="none" ;
+                }
+            }
+            if (searchType == "1" || searchType == "2" ){
+                $("#searchType").val(searchType);
+                $("#search_level").val(level);
+                display(level);
+                $("#sub_status").val(status);
+            }else{
+                $("#searchType").val("1");
+                $("#search_level").val("1");
+                $("#sub_status").val("1");
+                document.getElementById("search_level").style.display = "none";
+                document.getElementById("sub_status").style.display = "none";
+            }
+        }
+    })
+
+    function selectFun(obj){
+        var selectType = parseInt(obj.value);
+        if (selectType == 1  ){
+            document.getElementById("search_level").style.display="none" ;
+            document.getElementById("search_txt").style.display="" ;
+        }else if (selectType == 2){
+            document.getElementById("search_level").style.display="" ;
+            document.getElementById("search_txt").style.display="none" ;
+        }else{
+            document.getElementById("search_level").style.display="none" ;
+            document.getElementById("search_txt").style.display="none" ;
+        }
+        document.getElementById("sub_status").style.display="none" ;
+    }
+    function process(obj){
+        var level = parseInt(obj.value);
+        if (level=="4" ){
+            document.getElementById("sub_status").style.display="" ;
+            display(level);
+        }else{
+            document.getElementById("sub_status").style.display="none" ;
+        }
+    }
+    $(document).ready(function(){
+        uediter('advertiser_remark');
+        uediter('advertiser_product_info');
+        uediter('advertiser_audience_info');
+    })
+</script>
+
+<div class="nav">
+    <button data-target="#advertiser_dialog" data-toggle="modal" class="btnAdd">增加广告主</button>
+</div>
+
+
+<div class="funnel" >
+    <div class="searchBox">
+        <form class="form-inline" action='/project/advertiser' method="get">
+
+            <select class="form-control" name="searchType" id="searchType" onchange="selectFun(this)">
+                <option value="1" selected="true">文本搜索</option>
+                <option value="2">状态搜索</option>
+                <option value="3">老客户搜索</option>
+            </select>
+            <input class="form-control" type="text" name="search_txt"  id="search_txt" class="typeText"/>
+            <select class="form-control" name="search_level" id="search_level" onchange="process(this)">
+                <option value="1" selected="true">1 销售线索</option>
+                <option value="2">2 接触中</option>
+                <option value="3">3 意向客户</option>
+                <option value="4">4 成交客户</option>
+                <!--<option value="5">5 维护中</option>-->
+            </select>
+            <select class="form-control" name="sub_status" id="sub_status">
+                <option value="1" selected="true"></option>
+                <option value="2"></option>
+            </select>
+            <button type="submit" class="form-control btn btn-default">搜索</button>
+
+        </form>
+    </div>
+</div>
+<div>
+    <div id="advertiser_dialog" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">X</button>
+                    <h4 id="advertiser_create_title">增加广告主</h4>
+                </div>
+                <div class="modal-body brickWall">
+                    <form id="advertiser_form" name="advertiser_form" method="post" >
+                        <div>
+                            <strong>公司简称</strong>
+                            <input type="text" id="advertiser_company" name="advertiser_company" value=""> <b>*</b> <i>公司全称，如：上海壤歌市场营销策划有限公司</i>
+                        </div>
+                        <div>
+                            <strong>官网</strong>
+                            <input type="text" id="advertiser_link" name="advertiser_link" value=""> <i>官网</i>
+                        </div>
+                        <div class="uediter">
+                            <strong>备注</strong>
+                            <textarea id="advertiser_remark" name="advertiser_remark"></textarea><i>备注信息</i>
+                            <!--<textarea class="article_tip" id="myEditor" name="content">这里写你的初始化内容</textarea><br><i>备注信息</i>-->
+                        </div>
+                        <div class="uediter">
+                            <strong>产品分析</strong>
+                            <textarea id="advertiser_product_info" name="advertiser_product_info"></textarea><i>公司主营产品介绍</i>
+                        </div>
+                        <div class="uediter">
+                            <strong>受众分析</strong>
+                            <textarea id="advertiser_audience_info" name="advertiser_audience_info"></textarea><i>产品面向受众介绍</i>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-success" onclick="on_advertiser_commit()">保存</button>
+                    <button class="btn btn-default" data-dismiss="modal" aria-hidden="true">取消</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<table class="table table-bordered table-hover vert-align">
+    <thead>
+    <tr class="res_tbl_title">
+        <td>ID</td>
+        <td>公司简称</td>
+        <!--<td>官网</td>-->
+        <!--<td>公司简称</td>-->
+        <!--<td>公司介绍</td>-->
+
+        <td>需求</td>
+        <td>项目跟踪</td>
+        <td>备注</td>
+
+        <td>负责人</td>
+        <td>更新时间</td>
+    </tr>
+    </thead>
+    <tbody>
+    {% for item in advertiser %}
+    <tr>
+        <td width="3%">{{item['id']}}</td>
+        <td width="5%" ><div style="overflow:hidden;display:inline-block;max-width:100px;white-space:nowrap;text-overflow:ellipsis;"><a title="{{item['company']}}" href="/project/advertiser?a=detail&id={{item['id']}}&type=look">{{ item['company_short'] if item['company_short'] else item['company'] }}</a></div></td>
+        <!--<td>{{ item['company_short'] if item['company_short'] else '-'}}</td>-->
+        <!--<td width="5%"><div class="contentDisplay"><a href="{{  item['link'] if item['link'] else '-' }}">{{  item['link'] if item['link'] else '-' }}</a></div></td>-->
+        <!--<td width="15%"><div class="advertiserClass">{% raw item['brief'] if item['brief'] else '-' %}</div></td>-->
+        <!--<td width="15%"><div class="advertiserClass">{% raw item['requirement'] if item['requirement'] else '-' %}</div></td>-->
+
+        <!--<td>{% if item['link'] %} <a href="http://{{ item['link'] }}">孾X缾Q</a> {% else %} - {% end %}</td>&ndash;&gt;-->
+
+        <td width="20%"><div class="contentDisplay">{% raw item['requirement'] if item['requirement'] else '-' %}</div></td>
+        <td width="20%"><div class="contentDisplay">{% raw item['progress'] if item['progress'] else '-' %}</div></td>
+        <td width="20%"><div class="contentDisplay">{% raw item['remark'] if item['remark'] else '-' %}</div></td>
+
+        <td width="10%"><div style="max-width:200px">{{ u'、'.join(item['follower'] if item['follower'] else '-') }}</div></td>
+        <td width="5%" ><div style="max-width:200px">{{ item['last_update_time'] }}</div></td>
+        <!--
+       <td>
+           <div>
+               <a href="/project/advertiser?a=detail&id={{item['id']}}" class="btnThin">彟¥潜~K</a>
+               <a class="btn btnThin" href="/project/advertiser?a=delete&id={{ item['id'] }}" onclick="return confirm('确认佈| 轙¤?');">佈| 轙¤</a>
+            </div>
+        </td>
+        -->
+    </tr>
+
+    {% end %}
+    </tbody>
+</table>
+<div>
+    {% raw page_html %}
+</div>
+{% end %}

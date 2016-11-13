@@ -1,0 +1,26 @@
+
+############################################################
+------------------ modify 2016-05-10 -----------------------
+sh -x run_rotate.sh platform init 初始化创建日志目录，及日志管道
+sh -x run_rotate.sh platform start 启动日志定向
+
+
+
+
+---------------------- 1.日志清除 --------------------------
+sh -x access.sh --dir dir --command start --model dev
+
+--dir       ：nginx|platform
+--command   ：start|stop|restart
+--model     ：online|dev ...(config配置)
+
+example: sh -x access.sh platform start online
+
+---------------------- 2.跟踪组数据清除 --------------------------
+sh -x group.sh --dir dir --command start --model dev
+
+--dir       ：nginx|platform
+--command   ：start|stop|restart
+--model     ：online|dev ...(config配置)
+
+example: sh -x group.sh platform start online

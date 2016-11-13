@@ -1,0 +1,25 @@
+body{font-size:14px;margin:0;padding:0;background:url('../images/yidao_admin_bg.png') repeat-y;height:100%;background-color:#fff;}
+
+ul{padding:0;margin:0;list-style:none;}
+
+.left{float:left;}
+.right{float:right;}
+
+.header{width:100%;height:60px;background-color:#0e1414;}
+.header_logo{}
+.header_logo a{display:block;width:220px;height:60px;background:url('../images/yidao_admin_logo.jpg');text-indent:-200px;}
+.header_user{color:#fff;height:60px;line-height:60px;padding-right:42px;font-size:16px;}
+
+.main{width:100%;height:100%;}
+.menu{width:100px;height:100%;}
+.table td.menu{padding:0;}
+.menu ul{width:110px;padding-top:32px;}
+.menu ul li{width:100%;margin-bottom:34px;}
+.menu ul li a{display:block;width:100%;height:76px;background:url('../images/yidao_admin_menu_ico.png');}
+.menu ul li a.menu_1{}
+.menu ul li a.menu_2{background-position:0px -76px;}
+.menu ul li a.menu_3{background-position:0px -152px;}
+.menu ul li a.menu_4{background-position:0px -228px;}
+.menu ul li a.menu_5{background-position:0px -304px;}
+.content{height:100%;width:auto;background-color:#fff; margin-left:35px; margin-right:35px;}
+.in_content{width:100%;}

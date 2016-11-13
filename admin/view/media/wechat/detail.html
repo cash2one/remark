@@ -1,0 +1,1027 @@
+{% extends '../../public/main.html' %}
+
+{% block body %}
+<script type="text/javascript" src="{{ static_url('script/media/contact.js')}}"></script>
+
+<script type="text/javascript">
+    function only_num(obj){
+        if (isNaN(obj.value) || isNaN(obj.value.charAt(obj.value.length - 1))) {
+            alert("只能为数字！");
+            obj.value="";
+        }
+    }
+    $(document).ready(function(){
+        uediter('follow_remark');
+        uediter('remark');
+    })
+</script>
+<div id="media_id" name="{{ detail_info['id'] }}" style="display: none"></div>
+<div class="nav">
+    <a href="/media/wechat">返回上页</a>
+</div>
+<div class="colcon">
+    <div class="col1in3">
+        <table class="table table-bordered table-hover vert-align">
+            <thead class="th-title">
+                <tr>
+                   <td colspan="2">基本信息</td>
+                </tr>
+            </thead>
+            <tbody> 
+                <tr>
+                    <td>ID</td>
+                    <td>{{ detail_info['id'] }}</td>
+                </tr>
+                <tr>
+                    <td>名称</td>
+                    <td>{{ detail_info['name'] }}</td>
+                </tr>
+                <tr>
+                    <td>微信号</td>
+                    <td>
+                        <a target="_blank" href="http://weixin.sogou.com/weixin?type=1&query={{ detail_info['wechat_id'] }}">
+                            {{ detail_info['wechat_id'] }}
+                        </a>
+                    </td>
+                </tr>
+                <tr>
+                    <td>头像</td>
+                    <td>
+                        {% if detail_info['wechat_id'] %}
+                        <div style="overflow:hidden;width:86px;height:86px;border-radius:10px;background:url(http://open.weixin.qq.com/qr/code/?username={{ detail_info['wechat_id'] }}) -170px -170px no-repeat;"></div>
+                        {% elif detail_info['avatar']%}
+                        <img src="http://7sbnkf.com2.z0.glb.qiniucdn.com/{{ detail_info['avatar'] }}-avatar" height="86px" width="86px">
+                        {% else %}
+                        -
+                        {% end %}
+                    </td>
+                </tr>
+                <tr>
+                    <td>二维码</td>
+                    <td>
+                        {% if detail_info['biz'] %}
+                        <img src="http://mp.weixin.qq.com/mp/qrcode?scene=10000004&size=102&__biz={{ detail_info['biz'] }}" height="90px" width="90px">
+                        {% elif detail_info['qrcode'] and detail_info['qrcode'].startswith('http') %}
+                        <img src="{{ detail_info['qrcode'] }}" height="90px" width="90px">
+                        {% elif detail_info['qrcode'] %}
+                        <img src="http://7sbnkf.com2.z0.glb.qiniucdn.com/{{ detail_info['qrcode'] }}-avatar" height="90px" width="90px">
+                        {% elif detail_info['wechat_id'] %}
+                        <img src="http://open.weixin.qq.com/qr/code/?username={{ detail_info['wechat_id'] }}" height="90px" width="90px">
+                        {% else %}
+                        -
+                        {% end %}
+                    </td>
+                </tr>
+                <tr>
+                    <td>微信认证</td>
+                    <td>{{ detail_info['identify'] if detail_info['identify'] else '-'}}</td>
+                </tr>
+                <tr>
+                    <td>简介</td>
+                    <td>{{ detail_info['brief'] if detail_info['brief'] else '-'}} </td>
+                </tr>
+                <tr>
+                    <td>来源</td>
+                    <td>{{ detail_info['src_type'] }}</td>
+                </tr>
+                <tr>
+                    <td>添加时间</td>
+                    <td>{{ detail_info['create_time'] }}</td>
+                </tr>
+                <tr>
+                    <td>更新时间</td>
+                    <td>{{ detail_info['last_update_time'] }}</td>
+                </tr>
+                <tr>
+                    <td>更新用户</td>
+                    <td>{{ detail_info['user'] }}</td>
+                </tr>
+            </tbody>
+        </table>
+        <div class="opc">
+            <button class="btnNormal" id="update_wechat">更新资料</button>
+            <button class="btnNormal" id="media_follow" data-target="#media_follow_dialog" data-toggle="modal">加入跟踪</button>
+            <button op="add" mid="{{ detail_info['id'] }}" name="{{ detail_info['name'] }}" type='button' class='btnOk'>加入待选</button>
+        </div>
+        <div id="media_follow_dialog" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" id="media_follow_close" class="close" data-dismiss="modal" aria-hidden="true">X</button>
+                        <h4 id="media_follow_title">{{ '跟踪自媒体' if not follow else '取消跟踪自媒体'}}</h4>
+                    </div>
+                    <div class="modal-body brickWall">
+                        {% if not follow %}
+                        <div id="group_checkbox">
+                            <strong>跟踪分组</strong>
+                            {% for g_item in group %}
+                            <label><input type="checkbox" name="group" value="{{g_item['id']}}">{{g_item['name']}}</label>
+                            {% end %}
+                        </div>
+                        <div class="uediter">
+                            <strong>备注信息</strong>
+                            <textarea id="follow_remark" name="follow_remark" >{% raw follow.get('remark', '') if follow else '' %}</textarea><i>备注信息，可为空</i>
+                        </div>
+                        {% end %}
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn" name="follow_btn" id="follow_btn">确定</button>
+                        <button class="btn" data-dismiss="modal" aria-hidden="true">取消</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 联系方式 -->
+        <table id="contact-list" class="table table-bordered table-hover vert-align contact-list">
+            <thead class="th-title">
+                <tr>
+                    <td colspan="9">联系方式</td>
+                </tr>
+            </thead>
+            <tbody>
+                
+            </tbody>
+        </table>
+        <div class="opc">
+            <button class="btnNormal" id="" data-target="#add_contact" data-toggle="modal">添加联系人</button>
+        </div>
+        <!-- 添加联系人 -->
+        <div id="add_contact" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button"  class="close" data-dismiss="modal" aria-hidden="true">X</button>
+                        <h4 id="">添加联系人</h4>
+                    </div>
+                    <div class="modal-body brickWall">
+                        <div>
+                            <div>
+                                <strong>联系人</strong>
+                                <input type="text" id="add_contact_person" name="add_contact_person" value="" width="30px"> <i>公司负责人<em> * </em></i>
+                            </div>
+                            <div>
+                                <strong>职位</strong>
+                                <input type="text" id="add_contact_position" name="add_contact_position" value=""> <i>公司职位</i>
+                            </div>
+                            <div>
+                                <strong>手机</strong>
+                                <input type="text" id="add_contact_phone" name="add_contact_phone" value=""> <i>手机号<em> * </em></i>
+                            </div>
+                            <div>
+                                <strong>座机</strong>
+                                <input type="text" id="add_contact_tel" name="add_contact_tel" value=""> <i>如021-1000000</i>
+                            </div>
+                            <div>
+                                <strong>微信</strong>
+                                <input type="text" id="add_contact_wechat" name="add_contact_wechat" value=""><em> * </em>
+                            </div>
+                            <div>
+                                <strong>QQ</strong>
+                                <input type="text" id="add_contact_qq" name="add_contact_qq" value=""><em> * </em>
+                            </div>
+                            <div>
+                                <strong>邮件</strong>
+                                <input type="text" id="add_contact_email" name="add_contact_email" value=""> <i>电子邮箱</i>
+                            </div>
+                            <div>
+                                <strong>其它</strong>
+                                <input type="text" id="add_contact_other" name="add_contact_other" value=""> <i>除以上信息外的其它重要信息</i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button id="add_contact_btn" class="btn btn-success" name="follow_btn"  onclick="">确定</button>
+                        <button class="btn" data-dismiss="modal" aria-hidden="true">取消</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- 修改联系人表格 -->
+        <div id="contact_update_dialog" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" id="" class="close" data-dismiss="modal" aria-hidden="true">X</button>
+                        <h4 id="">修改联系方式</h4>
+                    </div>
+                    <div class="modal-body brickWall">
+                        <div id="update_contact_form">
+                            <div>
+                                <strong>联系人</strong>
+                                <input id="contact_person" name="contact_person" value=""> <i>填写联系人<em> * </em></i>
+                            </div>
+                            <div>
+                                <strong>职位</strong>
+                                <input id="contact_position" name="contact_position" value=""> <i>填写职位</i>
+                            </div>
+                            <div>
+                                <strong>手机</strong>
+                                <input id="contact_phone" name="contact_phone" value=""> <i>11 位数字<em> * </em></i>
+                            </div>
+                            <div>
+                                <strong>座机</strong>
+                                <input type="text" id="contact_tel" name="contact_tel" value="">
+                            </div>
+                            <div>
+                                <strong>QQ</strong>
+                                <input id="contact_qq" name="contact_qq" value=""> <i>只可填写数字</i><em> * </em>
+                            </div>
+                            <div>
+                                <strong>微信</strong>
+                                <input id="contact_wechat" name="contact_wechat" value=""> <i>填写微信号</i><em> * </em>
+                            </div>
+                            <div>
+                                <strong>邮箱</strong>
+                                <input id="contact_email" name="contact_email" value=""> <i>填写邮箱</i>
+                            </div>
+                            <div>
+                                <strong>其它</strong>
+                                <input type="text" id="contact_other" name="contact_other" value=""> <i>除以上信息外的其它重要信息</i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-success" name="media_contact_update" id="media_contact_update">确定</button>
+                        <button class="btn btn-default" data-dismiss="modal" aria-hidden="true">取消</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <br>
+
+        <!-- 图文信息 -->
+        <table class="table table-bordered table-hover vert-align contact-list">
+            <thead class="th-title">
+                <tr>
+                    <td colspan="7">图文信息</td>
+                </tr>
+            </thead>
+            <tr>
+                <td>位置</td>
+                <td>标题</td>
+                <td>原创</td>
+                <td>发布时间</td>
+                <td>阅读数</td>
+                <td>点赞数</td>
+                <td>评论数</td>
+            </tr>
+            <tbody id="msg">
+            
+            </tbody>
+        </table>
+    </div>
+    <div class="col2in3">
+        <table class="table table-bordered table-hover vert-align">
+            <thead class="th-title">
+                <tr>
+                    <td colspan="2">价值信息</td>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>原创号</td>
+                    <td>{{ detail_info['original_label'] }}</td>
+                </tr>
+                <tr>
+                    <td>行业</td>
+                    <td>{{ '-' if not detail_info['category'] else ','.join(detail_info['category'].values()) }}</td>
+                </tr>
+                <tr>
+                    <td>标签</td>
+                    <td>{{ '-' if not detail_info['tag'] else ','.join(detail_info['tag'].values()) }}</td>
+                </tr>
+                <tr>
+                    <td>帐号类型</td>
+                    <td>{{ '-' if not detail_info['role'] else detail_info['role'][1] }}</td>
+                </tr>
+                <tr>
+                    <td>帐号状态</td>
+                    <td>{{ '-' if not detail_info['status'] else detail_info['status'][1] }}</td>
+                </tr>
+                <tr>
+                    <td>评论</td>
+                    <td>{{ '-' if not detail_info['comment'] else detail_info['comment'][1] }}</td>
+                </tr>
+                <tr>
+                    <td>赞赏</td>
+                    <td>{{ '-' if not detail_info['award'] else detail_info['award'][1] }}</td>
+                </tr>
+                <tr>
+                    <td>粉丝数</td>
+                    <td>{{ '-' if not detail_info['fans_num'] else str(detail_info['fans_num'])+'+'}}</td>
+                </tr>
+                <tr>
+                    <td>平均阅读数</td>
+                    <td>{{ '-' if not detail_info['top_three_avg_read_num'] else str(detail_info['top_three_avg_read_num'])+'+'}}</td>
+                </tr>
+                <tr>
+                    <td>头条平均阅读数</td>
+                    <td>{{ '-' if not detail_info['top_avg_read_num'] else str(detail_info['top_avg_read_num'])+'+'}}</td>
+                </tr>
+                <tr>
+                    <td>平均点赞数</td>
+                    <td>{{ '-' if not detail_info['like_num'] else str(detail_info['like_num'])+'+'}}</td>
+                </tr>
+                <tr>
+                    <td>KOL</td>
+                    <td>{{ '-' if not detail_info['kol'] else detail_info['kol'][1] }}</td>
+                </tr>
+            </tbody>
+        </table>
+        <div class="opc">
+            <button name="wechat_value_update" data-target="#wechat_value_update_dialog" data-toggle="modal" class="btnNormal">更新</button>
+        </div>
+        <div id="wechat_value_update_dialog" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" id="wechat_value_update_close" class="close" data-dismiss="modal" aria-hidden="true">X</button>
+                        <h4 id="wechat_value_update_title">修改价值信息</h4>
+                    </div>
+                    <div class="modal-body brickWall">
+                        <form id="update_value_form" method="post" action="/media/wechat?a=update_value&id={{ detail_info['id'] }}">
+                        <div id="category_radio"><strong>媒体行业</strong></div>
+                        <div id="tag_checkbox"><strong>媒体标签</strong></div>
+                        <div><strong>帐号类型</strong>
+                            <label><input type="radio" name="role" value="1">企业</label>
+                            <label><input type="radio" name="role" value="2">个人</label>
+                            <label><input type="radio" name="role" value="3">企业品牌号</label>
+                        </div>
+                        <div><strong>帐号状态</strong>
+                            <label><input type="radio" name="status" value="1">活跃号</label>
+                            <label><input type="radio" name="status" value="2">一般号</label>
+                            <label><input type="radio" name="status" value="3">僵尸号</label>
+                        </div>
+                        <div><strong>原创认证</strong>
+                            <label><input type="checkbox" name="original" value="1">原创</label>
+                        </div>
+                        <div><strong>有无评论</strong>
+                            <label><input type="radio" name="comment" value="1">是</label>
+                            <label><input type="radio" name="comment" value="2">否</label>
+                        </div>
+                        <div><strong>有无赞赏</strong>
+                            <label><input type="radio" name="award" value="1">是</label>
+                            <label><input type="radio" name="award" value="2">否</label>
+                        </div>
+                        <div><strong>是否KOL</strong>
+                            <label><input type="radio" name="kol" value="1">是</label>
+                            <label><input type="radio" name="kol" value="2">否</label>
+                        </div>
+                        <div>
+                            <strong>粉丝数</strong>
+                            <input onkeyup="only_num(this);" id="fans_num" name="fans_num" value="{{ detail_info['fans_num'] }}"> <i>只可填写整数</i>
+                        </div>
+                        <div>
+                            <strong>平均阅读数</strong>
+                            <input onkeyup="only_num(this);" id="top_three_avg_read_num" name="top_three_avg_read_num" value="{{ detail_info['top_three_avg_read_num'] }}"> <i>只可填写整数</i>
+                        </div>
+                        <div>
+                            <strong>头条阅读数</strong>
+                            <input onkeyup="only_num(this);" id="top_avg_read_num" name="top_avg_read_num" value="{{ detail_info['top_avg_read_num'] }}"> <i>只可填写整数</i>
+                        </div>
+                        <div>
+                            <strong>平均点赞数</strong>
+                            <input onkeyup="only_num(this);" id="like_num" name="like_num" value="{{ detail_info['like_num'] }}"> <i>只可填写整数</i>
+                        </div>
+                    </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-success" name="wechat_value_update" id="wechat_value_update">保存</button>
+                        <button class="btn btn-default" data-dismiss="modal" aria-hidden="true">取消</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <br>
+        <table class="table table-bordered table-hover vert-align">
+            <thead class="th-title">
+                <tr>
+                    <td colspan="2">投放价值</td>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>是否接黑稿</td>
+                    <td>{{ '-' if not detail_info['black_pr'] else detail_info['black_pr'][1] }}</td>
+                </tr>
+                <tr>
+                    <td>可否撰写</td>
+                    <td>{{ '-' if not detail_info['can_afford_article'] else detail_info['can_afford_article'][1] }}</td>
+                </tr>
+                <tr>
+                    <td>有无社群</td>
+                    <td>{{ '-' if not detail_info['association'] else detail_info['association'][1] }}</td>
+                </tr>
+                <tr>
+                    <td>接广告</td>
+                    <td>{{ '-' if not detail_info['ad'] else detail_info['ad'][1] }}</td>
+                </tr>
+                <tr>
+                    <td>广告类型</td>
+                    <td>{{ '-' if not detail_info['ad_type'] else ','.join(detail_info['ad_type'].values()) }}</td>
+                </tr>
+                <tr>
+                    <td>刷单程度</td>
+                    <td>{{ '-' if not detail_info['farm_level'] else detail_info['farm_level'][1] }}</td>
+                </tr>
+                <tr>
+                    <td>投放价值</td>
+                    <td>{{ '-' if not detail_info['worth'] else detail_info['worth'][1] }}</td>
+                </tr>
+                <tr>
+                    <td>入驻平台意愿</td>
+                    <td>{{ '-' if not detail_info['station'] else detail_info['station'][1] }}</td>
+                </tr>
+                <tr>
+                    <td>头条报价</td>
+                    <td>{{ '-' if not detail_info['first_price'] else detail_info['first_price'] }}</td>
+                </tr>
+                <tr>
+                    <td>二条报价</td>
+                    <td>{{ '-' if not detail_info['second_price'] else detail_info['second_price'] }}</td>
+                </tr>
+                <tr>
+                    <td>其他报价</td>
+                    <td>{{ '-' if not detail_info['other_price'] else detail_info['other_price'] }}</td>
+                </tr>
+                <tr>
+                    <td>备注</td>
+                    <td>{% raw detail_info['remark'] if detail_info['remark'] else '-' %}</td>
+		</tr>
+            </tbody>
+        </table>
+        <div class="opc">
+            <button name="wechat_price_update" data-target="#wechat_price_update_dialog" data-toggle="modal" class="btnNormal">更新</button>
+        </div>
+        <div id="wechat_price_update_dialog" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" id="wechat_price_update_close" class="close" data-dismiss="modal" aria-hidden="true">X</button>
+                        <h4 id="wechat_price_update_title">修改投放价值</h4>
+                    </div>
+                    <div class="modal-body brickWall">
+                        <form id="update_price_form" method="post" action="/media/wechat?a=update_price&id={{ detail_info['id'] }}">
+                            <div><strong>是否接黑稿</strong>
+                                <label><input type="radio" name="black_pr" value="1">是</label>
+                                <label><input type="radio" name="black_pr" value="2">否</label>
+                            </div>
+                            <div><strong>能否文案</strong>
+                                <label><input type="radio" name="can_afford_article" value="1">是</label>
+                                <label><input type="radio" name="can_afford_article" value="2">否</label>
+                            </div>
+                            <div><strong>有无社群</strong>
+                                <label><input type="radio" name="association" value="1">是</label>
+                                <label><input type="radio" name="association" value="2">否</label>
+                            </div>
+                            <div><strong>入驻意愿</strong>
+                                <label><input type="radio" name="station" value="1">是</label>
+                                <label><input type="radio" name="station" value="2">否</label>
+                            </div>
+                            <div><strong>刷单程度</strong>
+                                <label><input type="radio" name="farm_level" value="1">无</label>
+                                <label><input type="radio" name="farm_level" value="2">轻度</label>
+                                <label><input type="radio" name="farm_level" value="3">严重</label>
+                            </div>
+                            <div><strong>投放价值</strong>
+                                <label><input type="radio" name="worth" value="1">是</label>
+                                <label><input type="radio" name="worth" value="2">否</label>
+                            </div>
+                            <div><strong>接受广告</strong>
+                                <label><input type="radio" name="ad" value="1">是</label>
+                                <label><input type="radio" name="ad" value="2">否</label>
+                            </div>
+                            <div><strong>广告类型</strong>
+                                <label><input type="checkbox" name="ad_type" value="1">软广</label>
+                                <label><input type="checkbox" name="ad_type" value="2">硬广</label>
+                            </div>
+                            <div>
+                                <strong>头条报价</strong>
+                                <input onkeyup="only_num(this);" id="first_price" name="first_price" value="{{ detail_info['first_price'] }}"> <i>只可填写整数</i>
+                            </div>
+                            <div>
+                                <strong>二条报价</strong>
+                                <input onkeyup="only_num(this);" id="second_price" name="second_price" value="{{ detail_info['second_price'] }}"> <i>只可填写整数</i>
+                            </div>
+                            <div>
+                                <strong>其他报价</strong>
+                                <input onkeyup="only_num(this);" id="other_price" name="other_price" value="{{ detail_info['other_price'] }}"> <i>只可填写整数</i>
+                            </div>
+                            <div class="uediter">
+                                <strong>备注信息</strong>
+                                <textarea id="remark" name="remark">{% raw '' if not detail_info['remark'] else detail_info['remark'] %}</textarea><i>除以上信息的其它重要情况备注</i>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-success" name="wechat_price_update" id="wechat_price_update">保存</button>
+                        <button class="btn btn-default" data-dismiss="modal" aria-hidden="true">取消</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <br>
+        <table class="table table-bordered table-hover vert-align">
+            <thead class="th-title">
+                <tr>
+                    <td colspan="2">受众信息</td>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>性别</td>
+                    <td>{{ detail_info['audience_gender'][1] }}</td>
+                </tr>
+                <tr>
+                    <td>地域</td>
+                    <td>{{ detail_info['audience_area'] }}</td>
+                </tr>
+                <tr>
+                    <td>年龄</td>
+                    <td>{{ '-' if not detail_info['audience_age'] else ','.join(detail_info['audience_age'].values()) }}</td>
+                </tr>
+                <tr>
+                    <td>职业</td>
+                    <td>{{ '-' if not detail_info['audience_career'] else ','.join(detail_info['audience_career'].values()) }}</td>
+                </tr>
+            </tbody>
+        </table>
+        <div class="opc">
+            <button name="wechat_audience_update" data-target="#wechat_audience_update_dialog" data-toggle="modal" class="btnNormal">更新</button>
+        </div>
+        <div id="wechat_audience_update_dialog" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" id="wechat_audience_update_close" class="close" data-dismiss="modal" aria-hidden="true">X</button>
+                        <h4 id="wechat_audience_update_title">修改受众信息</h4>
+                    </div>
+                    <div class="modal-body brickWall">
+                        <form id="update_audience_form" method="post" action="/media/wechat?a=update_audience&id={{ detail_info['id'] }}">
+                            <div><strong>性别</strong>
+                                <label><input type="radio" name="audience_gender" value="0">不限</label>
+                                <label><input type="radio" name="audience_gender" value="1">偏女性</label>
+                                <label><input type="radio" name="audience_gender" value="2">偏男性</label>
+                            </div>
+                            <div><strong>地域</strong>
+                                <select id="audience_province_id" name="audience_province_id">
+                                    <option value="-1">--不限--</option>
+                                </select>
+                                <select  id="audience_city_id" name="audience_city_id">
+                                    <option value="-1">--不限--</option>
+                                </select>
+                                <select id="audience_county_id" name="audience_county_id">
+                                    <option value="-1">--不限--</option>
+                                </select>
+                            </div>
+                            <div><strong>年龄</strong>
+                                <label><input type="checkbox" name="audience_age" value="1">70后</label>
+                                <label><input type="checkbox" name="audience_age" value="2">80后</label>
+                                <label><input type="checkbox" name="audience_age" value="3">85后</label>
+                                <label><input type="checkbox" name="audience_age" value="4">90后</label>
+                                <label><input type="checkbox" name="audience_age" value="5">95后</label>
+                                <label><input type="checkbox" name="audience_age" value="6">其它</label>
+                            </div>
+                            <div><strong>职业</strong>
+                                <label><input type="checkbox" name="audience_career" value="1">工薪阶层</label>
+                                <label><input type="checkbox" name="audience_career" value="2">白领</label>
+                                <label><input type="checkbox" name="audience_career" value="3">高管</label>
+                                <label><input type="checkbox" name="audience_career" value="4">创业者</label>
+                                <label><input type="checkbox" name="audience_career" value="5">企事业单位</label>
+                                <label><input type="checkbox" name="audience_career" value="6">国企</label>
+                                <label><input type="checkbox" name="audience_career" value="7">公职人员</label>
+                                <label><input type="checkbox" name="audience_career" value="8">自由职业者</label>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-success" name="wechat_audience_update" id="wechat_audience_update">保存</button>
+                        <button class="btn btn-default" data-dismiss="modal" aria-hidden="true">取消</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% if sale_result %}
+<table class="table table-bordered table-hover vert-align">
+    <thead>
+        <tr class="res_tbl_title">
+            <td>ID</td>
+            <td>业务需求</td>
+            <td>平台需求</td>
+            <td>文章链接</td>
+            <td>投放金额</td>
+            <td>销售金额</td>
+            <td>ROI</td>
+            <td>详细说明</td>
+        </tr>
+    </thead>
+    <tbody>
+        {% for item in sale_result %}
+            <tr>
+                <td>{{ item['id'] }}</td>
+                <td>{% if item['plan_demand_id'] %}<a href="/profile/demand?a=detail&id={{ item['plan_demand_id'] }}" style="overflow:hidden;display:inline-block;max-width:100px;white-space:nowrap;text-overflow:ellipsis;">{{ item['plan_demand_name'] }}</a>{% else %}-{% end %}</td>
+                <td>{% if item['demand_id'] %}<a href="/demand?a=detail&id={{ item['demand_id'] }}" style="overflow:hidden;display:inline-block;max-width:100px;white-space:nowrap;text-overflow:ellipsis;">{{ item['web_demand_name'] }}</a>{% else %}-{% end %}</td>
+                <td>{% if item['link'] %}<a href="{{ item['link'] }}" target="_blank">打开链接</a>{% else %}-{% end %}</td>
+                <td>{{ item['money']}}</td>
+                <td>{{ '-' if not item['sale_money'] else item['sale_money'] }}</td>
+                <td>{{ item['roi'] }}</td>
+                <td>{{ item['description'] if item['description'] else '-'}}</td>
+            </tr>
+        {% end %}
+    </tbody>
+</table>
+{% end %}
+<br><br><br>
+<div class="mediaCart">
+    <div class="title">自媒体筛选工具</div>
+    <div class="dick">-</div>
+    <ul id="mediaList" class="mediaList">
+        <!--
+        <li>
+            <strong><a href="/media/wechat?a=detail&id=810531">猜火车</a></strong>
+            <span>
+                <button type="button" class="btnThin">选择</button>
+                <button type="button" class="btnThin">移出</button>
+            </span>
+        </li>
+        -->
+    </ul>
+</div>
+<script type="text/javascript">
+$(document).ready(function() {
+    $('#media_follow').text("{{ '取消跟踪' if follow else '加入跟踪'}}");
+
+    $.ajax({
+        type: "get",
+        contentType: "application/json",
+        url: "/media/wechat?a=msg_info&media_id=" + "{{ detail_info['id'] }}",
+        success: function (result) {
+            var d = JSON.parse(result);
+//            console.log(d);
+            if(d.status==200){
+                var _op = '<tr>';
+                for (var i = 0; i < d.data.length; i++) {
+                    _op += '<td>' + d.data[i].idx + '</td>';
+                    _op += '<td><a target="_blank" href="'+ d.data[i].url +'">' + d.data[i].title + '</a></td>';
+                    _op += '<td>' + d.data[i].original + '</td>';
+                    _op += '<td>' + d.data[i].post_time + '</td>';
+                    _op += '<td>' + d.data[i].read_num + '</td>';
+                    _op += '<td>' + d.data[i].like_num + '</td>';
+                    _op += '<td>' + d.data[i].comment_num + '</td>';
+                    _op += '</tr>';
+                }
+                $('#msg').html(_op);
+            }
+        }
+    });
+
+    $('#update_wechat').click(function(){
+        // 使更新按钮失效
+        $('#update_wechat').attr("disabled", true);
+        $.ajax({
+            type: "post",
+            dataType: "json",
+            url: "/media/wechat?a=update_wechat",
+            data: {'wechat_id': "{{ detail_info['wechat_id'] }}", 'media_id': "{{ detail_info['id'] }}"},
+            success: function (d) {
+                // 使更新按钮恢复
+                $('#update_wechat').attr("disabled", false);
+                if(d.status==200){
+                    alert('更新成功');
+                    location.reload(true);
+                } else if (d.status==404){
+                    alert('无法获取公众号资料');
+                } else {
+                    alert('更新失败');
+                }
+            }
+        });
+    });
+
+//    $('#wechat_base_update').click(function(){
+//        var url = $("#mp_url").val();
+//        console.log(url);
+//        if (url == ''){
+//            alert('地址不能为空');
+//            return;
+//        }
+//        // 使保存按钮失效
+//        $('#wechat_base_update').attr("disabled", true);
+//        $.ajax({
+//            type: "post",
+//            dataType: "json",
+//            url: "/media/wechat?a=update_base",
+//            data: {'url': url, 'id': "{{ detail_info['id'] }}"},
+//            success: function (d) {
+//                // 使保存按钮失效
+//                $('#wechat_base_update').attr("disabled", false);
+//                if(d.status==200){
+//                    $("#wechat_base_update_close").click();
+//                    alert('更新成功');
+//                    location.reload(true);
+//                } else if (d.status==601) {
+//                    alert('该链接不匹配')
+//                } else if (d.status==401) {
+//                    alert('无效的图文链接')
+//                } else {
+//                    alert('出错啦。。。')
+//                }
+//            }
+//        })
+//    });
+    $('#follow_btn').click(function(){
+        var chk_value =[];
+        $('input[name="group"]:checked').each(function(){
+            chk_value.push($(this).val());
+        });
+        $.ajax({
+            type: "post",
+            dataType: "json",
+            url: "/media/wechat?a=follow",
+            data: {'media_id': "{{ detail_info['id'] }}", 'remark': $('#follow_remark').val(), 'group_id': chk_value.join(',')},
+            success: function (d) {
+                if(d.status==200){
+                    if (d.data.follow == 1){
+                        $('#media_follow').text("取消跟踪");
+                    } else {
+                        $('#media_follow').text("加入跟踪");
+                    }
+                }else if(d.status == 401){
+                   alert('['+d.data.join(',')+'] 组已经满员，请重新选择跟踪组');
+                }
+                else {
+                    alert('加入跟踪失败。。。')
+                }
+                $('#media_follow_close').click();
+                location.reload();
+            }
+        })
+    });
+    
+    $('#wechat_value_update').click(function(){
+        $('#update_value_form').submit();
+    });
+    $('#wechat_audience_update').click(function(){
+        $('#update_audience_form').submit();
+    });
+    $('#wechat_price_update').click(function(){
+        $('#update_price_form').submit();
+    });
+    $('#media_contact_update').click(function(){
+        $('#update_contact_form').submit();
+    });
+    $("button[name='wechat_price_update']").click(function(){
+        $("input[name=black_pr][value=" + "{{ detail_info['black_pr'][0] }}" + "]").attr("checked", true);
+        $("input[name=can_afford_article][value=" + "{{ detail_info['can_afford_article'][0] }}" + "]").attr("checked", true);
+        $("input[name=station][value=" + "{{ detail_info['station'][0] }}" + "]").attr("checked", true);
+        $("input[name=worth][value=" + "{{ detail_info['worth'][0] }}" + "]").attr("checked", true);
+        $("input[name=association][value=" + "{{ detail_info['association'][0] }}" + "]").attr("checked", true);
+        $("input[name=farm_level][value=" + "{{ detail_info['farm_level'][0] }}" + "]").attr("checked", true);
+        $("input[name=ad][value=" + "{{ detail_info['ad'][0] }}" + "]").attr("checked", true);
+        $("input[name=ad_type]").each(function(){
+            if ($.inArray($(this).val(), '{{ ",".join(detail_info["ad_type"].keys()) }}'.split(',')) != -1) {
+                $(this).attr("checked", true);
+            }
+        });
+    });
+    $("button[name='wechat_value_update']").click(function(){
+        $("input[name=category_media_id][value=" + "{{ detail_info['category_media_id'] }}" + "]").attr("checked", true);
+        $("input[name=tag]").each(function(){
+            if ($.inArray($(this).val(), '{{ ",".join(detail_info["tag"].keys()) }}'.split(',')) != -1) {
+                $(this).attr("checked", true);
+            }
+        });
+        $("input[name=original][value=" + "{{ detail_info['original'] }}" + "]").attr("checked", true);
+        $("input[name=role][value=" + "{{ detail_info['role'][0] }}" + "]").attr("checked", true);
+        $("input[name=status][value=" + "{{ detail_info['status'][0] }}" + "]").attr("checked", true);
+        $("input[name=comment][value=" + "{{ detail_info['comment'][0] }}" + "]").attr("checked", true);
+        $("input[name=award][value=" + "{{ detail_info['award'][0] }}" + "]").attr("checked", true);
+        $("input[name=kol][value=" + "{{ detail_info['kol'][0] }}" + "]").attr("checked", true);
+    });
+    $("button[name='wechat_audience_update']").click(function(){
+        $("#audience_province_id").val("{{detail_info['audience_province_id']}}");
+        $.ajax({
+            type: "get",
+            contentType: "application/json",
+            url: "/yidao/media?a=getArea&parent_id=" + "{{detail_info['audience_province_id']}}",
+            //data: "{}",
+            success: function (result) {
+                var obj = JSON.parse(result);
+                var city_op = '';
+                for (var i = 0; i < obj.data.length; i++) {
+                    city_op += '<option value=' + obj.data[i].id + '>';
+                    city_op += obj.data[i].name;
+                    city_op += '</option>';
+                }
+                $('#audience_city_id').append(city_op);
+                $("#audience_city_id").val("{{detail_info['audience_city_id']}}");
+            }
+        });
+        $.ajax({
+            type: "get",
+            contentType: "application/json",
+            url: "/yidao/media?a=getArea&parent_id=" + "{{detail_info['audience_city_id']}}",
+            //data: "{}",
+            success: function (result) {
+                var obj = JSON.parse(result);
+                var county_op = '';
+                for (var i = 0; i < obj.data.length; i++) {
+                    county_op += '<option value=' + obj.data[i].id + '>';
+                    county_op += obj.data[i].name;
+                    county_op += '</option>';
+                }
+                $('#audience_county_id').append(county_op);
+                $("#audience_county_id").val("{{detail_info['audience_county_id']}}");
+            }
+        });
+
+        $("input[name=audience_gender][value=" + "{{ detail_info['audience_gender'][0] }}" + "]").attr("checked", true);
+        $("input[name=audience_age]").each(function(){
+            if ($.inArray($(this).val(), '{{ ",".join(detail_info["audience_age"].keys()) }}'.split(',')) != -1) {
+                $(this).attr("checked", true);
+            }
+        });
+        $("input[name=audience_career]").each(function(){
+            if ($.inArray($(this).val(), '{{ ",".join(detail_info["audience_career"].keys()) }}'.split(',')) != -1) {
+                $(this).attr("checked", true);
+            }
+        });
+    });
+
+    //省份
+    $.ajax({
+        type: "get",
+        contentType: "application/json",
+        url: "/yidao/media?a=getArea&parent_id=0",
+        //data: "{}",
+        success: function (result) {
+            var obj = JSON.parse(result);
+            var province_op = "";
+            for (var i = 0; i < obj.data.length; i++) {
+                province_op += '<option value=' + obj.data[i].id + '>';
+                province_op += obj.data[i].name;
+                province_op += '</option>';
+            }
+            $("#audience_province_id").append(province_op);
+        }
+    });
+    //当省份发生改变时，城市改变
+    $('#audience_province_id').change(function () {
+        $('#audience_city_id option:gt(0)').remove();
+        $('#audience_county_id option:gt(0)').remove();
+        $.ajax({
+            type: "get",
+            contentType: "application/json",
+            url: "/yidao/media?a=getArea&parent_id=" + $(this).val(),
+            //data: "{}",
+            success: function (result) {
+                var obj = JSON.parse(result);
+                var city_op = '';
+                for (var i = 0; i < obj.data.length; i++) {
+                    city_op += '<option value=' + obj.data[i].id + '>';
+                    city_op += obj.data[i].name;
+                    city_op += '</option>';
+                }
+                $('#audience_city_id').append(city_op);
+            }
+        })
+    });
+
+    //当城市改变时，县改变
+    $('#audience_city_id').change(function () {
+    $('#audience_county_id option:gt(0)').remove();
+        $.ajax({
+            type: "get",
+            contentType: "application/json",
+            url: "/yidao/media?a=getArea&parent_id=" + $(this).val(),
+            //data: "{}",
+            success: function (result) {
+                var obj = JSON.parse(result);
+                var county_op = '';
+                for (var i = 0; i < obj.data.length; i++) {
+                    county_op += '<option value=' + obj.data[i].id + '>';
+                    county_op += obj.data[i].name;
+                    county_op += '</option>';
+                }
+                $('#audience_county_id').append(county_op);
+            }
+        })
+    });
+    // category
+    var category = JSON.parse('{{ category_info }}'.replace(/&quot;/g,"\""));
+    // console.log(category);
+    var _html = '';
+    $.each(category, function(i,val){
+        _html += '<label>';
+        _html += '<input type="radio" name="category_media_id" value=' + val.id + '>';
+        _html += val.name;
+        _html += '</label>';
+    });
+    $('#category_radio').append(_html);
+    // tag
+    var tag = JSON.parse('{{ tag_info }}'.replace(/&quot;/g,"\""));
+    // console.log(tag);
+    var _html = '';
+    $.each(tag, function(i,val){
+        _html += '<label>';
+        _html += '<input type="checkbox" name="tag" value=' + val.id + '>';
+        _html += val.name;
+        _html += '</label>';
+    });
+    $('#tag_checkbox').append(_html);
+    // 标签最多选6个
+    $('button[name=wechat_value_update]').click(function() {
+        if ($("input[name=tag]:checked").length >= 6) {
+            $("input[name=tag]").attr('disabled', true);
+            $("input[name=tag]:checked").attr('disabled', false);
+        }
+    });
+    $('input[name=tag]').click(function() {
+        $("input[name=tag]").attr('disabled', true);
+        if ($("input[name=tag]:checked").length >= 6) {
+            $("input[name=tag]:checked").attr('disabled', false);
+        } else {
+            $("input[name=tag]").attr('disabled', false);
+        }
+    });
+
+    // 自媒体筛选工具
+    $.ajax({
+        type: "get",
+        contentType: "application/json",
+        url: "/media/common?a=get_media_cart",
+        success: function (result) {
+            var obj = JSON.parse(result);
+            var media_list_html = '';
+            for (var i = 0; i < obj.data.length; i++) {
+                var m_id = obj.data[i].media_id;
+                var m_name = obj.data[i].name;
+                var p_name = obj.data[i].platform_name;
+                media_list_html += " <li>" +
+                        "<strong><a href='/media/" + p_name + "?a=detail&id=" + m_id + "'>" + m_name + "</a></strong>" +
+                        "<span>" + "<button op='del' mid='" + m_id + "' class='btnThin'>移出</button></span></li>";
+            }
+            $('#mediaList').html(media_list_html);
+            // 点击事件
+            $("button[class=btnThin]").click(function(){
+                var op = $(this).attr('op');
+                var mid = $(this).attr('mid');
+                if(op == 'add') {
+                    add_media(mid);
+                } else if(op == 'del') {
+                    del_media(mid);
+                }
+            });
+            $("button[class=btnOk]").click(function(){
+                var op = $(this).attr('op');
+                var mid = $(this).attr('mid');
+                if(op == 'add') {
+                    add_media(mid);
+                } else if(op == 'del') {
+                    del_media(mid);
+                }
+            });
+        }
+    });
+});
+
+function add_media(mid)
+{
+    $.ajax({
+        type: "post",
+        dataType: "json",
+        url: "/media/common?a=add_media_cart",
+        data: {'media_id': mid},
+        success: function (d) {
+            if(d.status==200){
+                location.reload();
+            } else if (d.status==601) {
+                alert('已加入预选')
+            } else {
+                alert('出错啦。。。')
+            }
+        }
+    })
+}
+
+function del_media(mid)
+{
+    $.ajax({
+        type: "post",
+        dataType: "json",
+        url: "/media/common?a=del_media_cart",
+        data: {'media_id': mid},
+        success: function (d) {
+            if(d.status==200){
+                location.reload();
+            } else {
+                alert('出错啦。。。')
+            }
+        }
+    })
+}
+</script>
+{% end %}

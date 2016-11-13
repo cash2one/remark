@@ -1,0 +1,198 @@
+{% extends '../public/main.html' %}
+{% block title%}联盟列表{% end %}
+{% block body %}
+<link href="{{ static_url('style/union.css') }}" type="text/css" rel="stylesheet">
+
+<div class="union_show_detail">
+    <div class="head_img">
+        <img src="{{ union['logo'] }}" width="150" height="100">
+    </div>
+    <div class="all_msg">
+        <div class="head-detail">{{ union['name'] }}</div>
+        <div class="builder">创建者：{{ union['nickname'] }}　　创建时间：{{ union['create_time'] }}</div>
+        <p>{{ union['desc'] }}</p>
+        <div class="interested-container">
+            {% if union['id'] in union['category'].keys() %}
+            {% for item in union['category'][union['id']] %}
+            <div class="interestedBox">{{ item['name'] }}</div>
+            {% end %}
+            {% end %}
+        </div>
+    </div>
+    {% if union_user_status == 4  %}
+    <div class="join-btn btn-with-blueBg-and-addBtn" onclick="changeStatus(this)">组织管理</div>
+    {% elif union_user_status == -1 or union_user_status == 0 %}
+    <div class="join-btn btn-with-blueBg-and-addBtn" onclick="changeStatus(this)">申请加入</div>
+    {% elif union_user_status == 1 %}
+    <div class="join-btn btn-with-blueBg-and-addBtn" onclick="changeStatus(this)">退出联盟</div>
+    {% elif union_user_status == 2 %}
+    <div class="join-btn btn-with-blueBg-and-addBtn" onclick="changeStatus(this)">等待审批</div>
+    {% end %}
+</div>
+<div class="union_show_member">
+    <div class="title">联盟成员<span class="member_detail">共有<b id="menbers">{{ len(member) }}</b>个成员，<b id="smc">{{ official_count }}</b>个自媒体</span></div>
+    <div class="container" style="max-width: 100%;">
+        {% for item in member %}
+        <div class="member" style="display:inline-block;">
+            <div class="head_pic">
+                <a href="" target="_blank">
+                    <img src="{{ item['avatar'] }}" alt="" style="width:75px;height:75px;" />
+                </a>
+            </div>
+            <div class="sm_box">
+                <div class="uname">
+                    <a href="/u?id={{ item['user_id'] }}" target="_blank">
+                        {{ item['nickname'] }}
+                    </a>
+                </div>
+                <div class="sm_container">
+                    {% for value in item['official']['list'] %}
+                    <div class="sm">
+                        <a href="/media?a=view&id={{ value['id'] }}">
+                            <img src="{{ value['avatar'] }}" alt="" style="width:40px;height:40px;" />
+                            <div class="light">
+                            </div>
+                        </a>
+                    </div>
+                    {% end %}
+                    {% if item['official']['count'] > 3 %}
+                    ...
+                    <div class="total-count">{{ item['official']['count'] }}</div>
+                    {% end %}
+                </div>
+            </div>
+        </div>
+        {% end %}
+    </div>
+</div>
+<div class="member" style="display: none;">
+    <div class="head_pic"><a href="#" target="_blank"><img src="{{ static_url('images/headExample.png') }}" width="75" height="75"></a></div>
+    <div class="sm_box">
+        <div class="uname"><a href="#" target="_blank">小孙</a></div>
+        <div class="sm_container">
+
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    var sending = false;
+    var source;
+    $(function(){
+        var ss = '';
+        if(ss=='-1'){
+            showTipsBox('alert','您已经被盟主移出联盟');
+        }
+        source = $('.member');
+        getList();
+    });
+
+    function getList(){
+        $.ajax({
+            url:'/api/union/union_show_member',
+            dataType:'json',
+            method:'get',
+            data:{uid:''},
+            success:showList
+        })
+    }
+
+    function showList(data){
+        $('#menbers').text(data.member_total);
+        $('#smc').text(data.oa_total);
+        var list = data.members;
+        var main = $('.union_show_member .container');
+        for(var i=0;i<list.length;i++){
+            var f1 = source.clone();
+            f1.children('.head_pic').children('a').attr('href','/smedia_info/' + list[i].id);
+            f1.children('.head_pic').children('a').children('img').attr('src',list[i].logo);
+            f1.children('.sm_box').children('.uname').children('a').text(shortName(list[i].name,12)||'　');
+            f1.children('.sm_box').children('.uname').children('a').attr('href','/smedia_info/' + list[i].id);
+            var list2 = list[i].oainfo;
+            for(var t=0;t<list2.length;t++){
+                f1.children('.sm_box').children('.sm_container').append('<div class="sm"><a href="/media/' + list2[t].id + '" target="_blank"><img src="' + list2[t].logo + '" width="40" height="40"><div class="light"></div></a></div>');
+            }
+            if(list2.length>2){
+                f1.children('.sm_box').children('.sm_container').append('···<div class="total-count">' + list[i].oa_count + '</div>');
+            }
+            f1.css('display','inline-block');
+            main.append(f1);
+        }
+        checkFootLocation();
+    }
+
+    function shortName(str,num){
+        if(str.length>num){
+            str = str.substr(0,num-2) + '...';
+        }
+        return str;
+    }
+
+
+    function changeStatus(obj){
+        var str = $(obj).text().replace(/(^\s+)|(\s+$)/g,"");
+        switch (str){
+            case '残忍拒绝':
+            case '申请加入':
+                if(!is_login){
+                    lightbox('lb1');
+                    return;
+                }
+                showAcceptBox('申请加入组织','您将申请加入该组织，申请通过后，您将成为组织成员。',true,function(){
+                    if(sending)return;
+                    //lightbox('accetpBox');
+                    sending = true;
+                    $.ajax({
+                        url:'/union?a=apply',
+                        dataType:'json',
+                        method:'post',
+                        data:{'union_id': {{ union['id'] }}},
+                        success:function(data){
+                            var strMsg = ''
+                            if(data.status == 200){
+                                strMsg = "申请成功，等待管理员审核"
+                            }else if(data.status == 602){
+                                strMsg = "你已是该联盟成员或正在等待管理员审核，请耐心等待"
+                            }
+                            
+                            //showAcceptBox('系统提示', strMsg, false, function(){
+                            //    lightbox('accetpBox');
+                            //})
+                            alert(strMsg)
+                            lightbox('accetpBox');
+                            sending =false;
+                        }
+                    })
+                });
+                break;
+            case '等待审批':
+
+                break;
+            case '退出联盟':
+                showAcceptBox('退出组织','您将退出该组织。',true,function(){
+                    if(sending)return;
+                    sending = true;
+                    $.ajax({
+                        url:'/api/auth/union_quit',
+                        method:'post',
+                        dataType:'json',
+                        data:{uid:'',user:''},
+                        success:function(data){
+                            if(data.success==1){
+                                location.reload();
+                            }else{
+                                showTipsBox('alert','退出失败');
+                            }
+                            sending =false;
+                        }
+                    });
+                });
+                break;
+
+            case '组织管理':
+                location.href = '/union?a=manage&id={{ union['id'] }}';
+                break;
+        }
+
+    }
+</script>
+{% end %}

@@ -1,0 +1,276 @@
+    {% extends '../../public/main.html' %}
+
+{% block body %}
+<script type="text/javascript">
+    function update_remark(obj){
+        var id = obj.name;
+        var media_id = obj.id;
+        var chk_value =[];
+        $('input[name="user_group_id'+id+'"]:checked').each(function(){
+            chk_value.push($(this).val());
+        });
+        $.ajax({
+            url: "/admin_user/media_follow?a=update_remark",
+            method: "post",
+            dataType:'json',
+            data: {'id': media_id, 'follow_remark': $('#follow_remark'+id).val(), 'group_id': chk_value.join(',')},
+            success: function (d) {
+                if(d.status==401){
+                    alert('['+d.data.join(',')+'] 组已经满员，请重新选择跟踪组');
+                } else if (d.status!=200) {
+                    alert('加入跟踪失败。。。');
+                }
+                $('#change_remark_close'+id).click();
+                location.reload();
+            }
+        });
+    }
+    function update_group(obj){
+        var id = obj.name;
+        var form_id = 'update_group_form' + id;
+        document.getElementById(form_id).submit();
+    }
+    function export_group(){
+        var len_group = $("input[name='group']:checked").length;
+        var len_column = $("input[name='column']:checked").length;
+        if (len_group == 0){
+            alert("请选择分组!");
+            return false;
+        }
+        if (len_column == 0){
+            alert("请选择字段!");
+            return false;
+        }
+        var form_id = 'export_form';
+        document.getElementById(form_id).submit();
+    }
+    function process(obj){
+        var str_id = obj.id;
+        var str = 'follow_remark'+str_id;
+        uediter(str);
+    }
+    $(function(){
+        $("#media_export_btu").click(function(event) {
+            $.getJSON("/admin_user/media_follow?a=check_export",function(json){
+                if(json.status==1002){
+                    alert("该用户今天下载受限！");
+                    location.reload();
+                }
+            });
+        });
+    });
+</script>
+<!--<div class="status_title">-->
+    <!--<div>-->
+        <!--个人中心 >-->
+        <!--<a href="/admin_user/media_follow">跟踪的自媒体</a>-->
+    <!--</div>-->
+<!--</div>-->
+<div class="nav">
+    <a class="btnAdd" name="group_create" data-target="#group_create_dialog" data-toggle="modal">新增分组</a>
+    <div id="group_create_dialog" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" id="group_create_close" class="close" data-dismiss="modal" aria-hidden="true">X</button>
+                    <h4 id="group_create_title">新增分组</h4>
+                </div>
+                <div class="modal-body brickWall">
+                    <label>分组名称：</label><input id="group_name">
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-success" name="group_create" id="group_create">保存</button>
+                    <button class="btn btn-default" data-dismiss="modal" aria-hidden="true">取消</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <button class="btnAdd" id="view_group">查看分组</button>
+    <a  class="btnAdd" name="export" id="media_export_btu" data-target="#export_dialog" data-toggle="modal">导出</a>
+    <div id="export_dialog" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" id="export_close" class="close" data-dismiss="modal" aria-hidden="true">X</button>
+                    <h4 id="export_title">导出分组媒体</h4>
+                </div>
+                <div class="modal-body brickWall">
+                    <form id="export_form" method="post" action="/admin_user/media_follow?a=export">
+                        <div id="group_checkbox">
+                            <strong>分 组</strong>
+                            {% for group_id in sorted(group_name.keys()) %}
+                            <label><input type="checkbox" name="group" value="{{group_id}}">{{group_name[group_id]}}</label>
+                            {% end %}
+                        </div>
+                        <div id="column_checkbox">
+                            <strong>字 段</strong>
+                            {% for col in column %}
+                            <label><input type="checkbox" name="column" value="{{col[0]}}">{{col[1]}}</label>
+                            {% end %}
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn" name="export_group" onclick="export_group()">确定</button>
+                    <button class="btn" data-dismiss="modal" aria-hidden="true">取消</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="group_list" style="display: none">
+        <br>
+        <table class="table table-bordered table-hover vert-align">
+            <thead>
+                <tr class="res_tbl_title">
+                    <td>序号</td>
+                    <td>分组名</td>
+                    <td>添加时间</td>
+                    <td>操作</td>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>0</td>
+                    <td>默认</td>
+                    <td>-</td>
+                    <td><a class="btn btnThin" href="/admin_user/media_follow?a=delete_group&id=0" onclick="return confirm('此操作将取消跟踪默认分组下的自媒体,确认清空?');">清空</a></td>
+                </tr>
+            {% for item in group %}
+                <tr>
+                    <td>{{ item['id'] }}</td>
+                    <td>{{ item['name'] }}</td>
+                    <td>{{ item['create_time'] }}</td>
+                    <td>
+                        <button class="btn btnThin" name="group_update{{item['id']}}" data-target="#group_update_dialog{{item['id']}}" data-toggle="modal">修改</button>
+                        <div id="group_update_dialog{{item['id']}}" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <button type="button" id="group_update_close{{item['id']}}" class="close" data-dismiss="modal" aria-hidden="true">X</button>
+                                        <h4 id="group_update_title{{item['id']}}">修改分组</h4>
+                                    </div>
+                                    <div class="modal-body brickWall">
+                                        <form id="update_group_form{{item['id']}}" method="post" action="/admin_user/media_follow?a=update_group&id={{ item['id'] }}">
+                                        <label>分组名称：</label><input id="group_name{{item['id']}}" name="group_name" value="{{ item['name'] if item['name'] else ''}}">
+                                        </form>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button class="btn" name="{{ item['id'] }}" onclick="update_group(this)">确定</button>
+                                        <button class="btn" data-dismiss="modal" aria-hidden="true">取消</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <a class="btn btnThin" href="/admin_user/media_follow?a=delete_group&id={{ item['id'] }}" onclick="return confirm('删除分组将取消跟踪该分组下的自媒体,确认删除?');">删除</a>
+                    </td>
+                </tr>
+            {% end %}
+            </tbody>
+        </table>
+    </div>
+</div>
+<div>
+    <ul id="group_tab" class="nav nav-tabs">
+        {% for group_id in sorted(media.keys()) %}
+        <li id="group_name{{group_id}}"><a href="#group{{group_id}}" data-toggle="tab">{{ group_name[group_id]}}</a></li>
+        {% end %}
+    </ul>
+    <div id="group_tab_content" class="tab-content">
+        {% for group_id in sorted(media.keys()) %}
+        <div class="tab-pane" id="group{{group_id}}">
+            <!--<a class="btn btnAdd" href="/admin_user/media_follow?a=export&group_id={{group_id}}" onclick="return confirm('确认导出?');">导出</a><br><br>-->
+            <table class="table table-bordered table-hover vert-align">
+                <thead>
+                    <tr class="res_tbl_title">
+                        <td>ID</td>
+                        <td>自媒体</td>
+                        <td>备注</td>
+                        <td>跟踪时间</td>
+                        <td>操作</td>
+                    </tr>
+                </thead>
+                {% for item in media[group_id] %}
+                <tbody>
+                    <tr>
+                        <td>{{ item['media_id'] }}</td>
+                        <td>
+                            <a href="/media/wechat?a=detail&id={{item['media_id']}}" title="简介：{{ item['brief'] }}">{{ item['name'] }}</a>
+                        </td>
+                        <td>{% raw item['remark'] if item['remark'] else '-' %}</td>
+                        <td>{{ item['create_time'] }}</td>
+                        <td>
+                            <a class="btn btnThin" name="change_remark{{item['id']}}" id="{{item['id']}}" data-target="#change_remark_dialog{{item['id']}}" data-toggle="modal" onclick="process(this)">修改</a>
+                            <div id="change_remark_dialog{{item['id']}}" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <button type="button" id="change_remark_close{{item['id']}}" class="close" data-dismiss="modal" aria-hidden="true">X</button>
+                                        <h4 id="change_remark_title{{item['id']}}">修改跟踪</h4>
+                                    </div>
+                                    <div class="modal-body brickWall">
+                                        <form id="update_remark_form{{item['id']}}" name="update_remark_form" method="post" >
+                                            <div>
+                                                <strong>分 组</strong>
+                                                {% for gid in sorted(group_name.keys()) %}
+                                                    {% if str(gid)+str(item['media_id']) in mediaFow.keys() %}
+                                                        <label><input type="checkbox" name="user_group_id{{item['id']}}" value="{{ gid }}" checked />{{group_name[gid]}}</label>
+                                                    {% elif gid !=0   %}
+                                                        <label><input type="checkbox" name="user_group_id{{item['id']}}" value="{{ gid }}">{{group_name[gid]}}</label>
+                                                    {% end %}
+                                                {% end %}
+                                            </div>
+
+                                            <div class="uediter">
+                                                <strong>备注信息</strong>
+                                                <textarea id="follow_remark{{item['id']}}" name="follow_remark" >{% raw item['remark'] if item['remark'] else '' %}</textarea>
+                                            </div>
+                                        </form>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button class="btn" name="{{ item['id'] }}" id="{{ item['media_id'] }}" onclick="update_remark(this)">确定</button>
+                                        <button class="btn" data-dismiss="modal" aria-hidden="true">取消</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        </td>
+                    </tr>
+                </tbody>
+                {% end %}
+            </table>
+        </div>
+        {% end %}
+    </div>
+</div>
+<script type="text/javascript">
+$(document).ready(function(){
+    $("#group_name0").addClass('active');
+    $("#group0").addClass('active');
+    $('#view_group').click(function(){
+        $("#group_list").toggle();
+    });
+    $('#group_create').click(function(){
+        var group = $("#group_name").val();
+        if (group == ''){
+            alert('分组名不能为空');
+            return;
+        }
+        $.ajax({
+            type: "post",
+            dataType: "json",
+            url: "/admin_user/media_follow?a=create_group",
+            data: {'group': group},
+            success: function (d) {
+                if(d.status==200){
+                    $("#group_create_close").click();
+                    alert('添加成功')
+                } else {
+                    alert('出错啦。。。')
+                }
+                location.reload();
+            }
+        })
+    });
+});
+</script>
+{% end %}

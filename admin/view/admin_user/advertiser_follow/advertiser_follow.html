@@ -1,0 +1,174 @@
+{% extends '../../public/main.html' %}
+
+{% block body %}
+<script type="text/javascript">
+    function display(level){
+        var sub_status = document.getElementById("sub_status");
+//        if (level=="4"){
+//            sub_status.options[0].text = '1 执行中';
+//            sub_status.options[1].text = '2 暂停调整';
+//        }
+        if (level=="4"){
+            sub_status.options[0].text = '1 稳定客户';
+            sub_status.options[1].text = '2 短期客户';
+        }
+    }
+   $(document).ready(function() {
+        var searchType = "{{listSearch['searchType']}}";
+        var level = "{{listSearch['search_level']}}";
+        var status = "{{listSearch['sub_status']}}";
+        if (searchType== "3"){
+            document.getElementById("search_level").style.display="none" ;
+            document.getElementById("search_txt").style.display="none" ;
+            document.getElementById("sub_status").style.display="none" ;
+        }else{
+            if (searchType== "1") {
+                document.getElementById("search_level").style.display = "none";
+                document.getElementById("search_txt").style.display = "";
+                document.getElementById("sub_status").style.display="none" ;
+            }else if (searchType=="2"){
+                document.getElementById("search_level").style.display = "";
+                document.getElementById("search_txt").style.display = "none";
+                if (level=="4" || level=="5"){
+                    document.getElementById("sub_status").style.display="" ;
+                }else{
+                    document.getElementById("sub_status").style.display="none" ;
+                }
+            }
+            if (searchType == "1" || searchType == "2" ){
+                $("#searchType").val(searchType);
+                $("#search_level").val(level);
+                display(level);
+                $("#sub_status").val(status);
+            }else{
+                $("#searchType").val("1");
+                $("#search_level").val("1");
+                $("#sub_status").val("1");
+                document.getElementById("search_level").style.display = "none";
+                document.getElementById("sub_status").style.display = "none";
+            }
+        }
+    });
+    function selectFun(obj){
+        var selectType = parseInt(obj.value);
+        if (selectType == 1  ){
+            document.getElementById("search_level").style.display="none" ;
+            document.getElementById("search_txt").style.display="" ;
+        }else if (selectType == 2){
+            document.getElementById("search_level").style.display="" ;
+            document.getElementById("search_txt").style.display="none" ;
+        }else{
+            document.getElementById("search_level").style.display="none" ;
+            document.getElementById("search_txt").style.display="none" ;
+        }
+        document.getElementById("sub_status").style.display="none" ;
+    }
+    function process(obj){
+        var level = parseInt(obj.value);
+        if (level=="4" || level=="5"){
+            document.getElementById("sub_status").style.display="" ;
+            display(level);
+        }else{
+            document.getElementById("sub_status").style.display="none" ;
+        }
+    }
+
+</script>
+<div class="funnel" >
+    <div class="searchBox">
+        <form class="form-inline" action='/admin_user/advertiser_follow' method="get">
+            <select class="form-control" name="searchType" id="searchType" onchange="selectFun(this)">
+                <option value="1" selected="true">文本搜索</option>
+                <option value="2">状态搜索</option>
+                <option value="3">老客户搜索</option>
+            </select>
+            <input class="form-control" type="text" name="search_txt"  id="search_txt" class="typeText"/>
+            <select class="form-control" name="search_level" id="search_level" onchange="process(this)">
+                <option value="1" selected="true">1 销售线索</option>
+                <option value="2">2 接触中</option>
+                <option value="3">3 意向客户</option>
+                <option value="4">4 成交客户</option>
+                <!--<option value="5">5 维护中</option>-->
+            </select>
+            <select class="form-control" name="sub_status" id="sub_status">
+                <option value="1" selected="true"></option>
+                <option value="2"></option>
+            </select>
+            <button type="submit" class="form-control btn btn-default">搜索</button>
+        </form>
+    </div>
+</div>
+
+<div style="padding-top: 50px">
+<table class="table table-bordered table-hover vert-align">
+    <thead>
+    <tr class="res_tbl_title">
+        <td>ID</td>
+        <td>公司简称</td>
+        <td>需求</td>
+        <td>项目跟踪</td>
+        <td>备注</td>
+        <!--<td>负责人</td>-->
+        <td>更新时间</td>
+        <td>操作</td>
+    </tr>
+    </thead>
+    <tbody>
+    {% for item in advertiser %}
+    <tr>
+        <td width="5%">{{item['id']}}</td>
+        <td width="5%" ><div style="overflow:hidden;display:inline-block;max-width:100px;white-space:nowrap;text-overflow:ellipsis;">
+                <a title="{{item['company']}}" href="/admin_user/advertiser_follow?a=detail&id={{item['id']}}&type=look">{{ item['company_short'] if item['company_short'] else item['company'] }}</a></div></td>
+        <td><div class="tabDisplay">{% raw item['requirement'] if item['requirement'] else '-' %}</div></td>
+        <td><div class="tabDisplay">{% raw item['progress'] if item['progress'] else '-' %}</div></td>
+        <td><div class="tabDisplay">{% raw item['remark'] if item['remark'] else '-' %}</div></td>
+        <!--<td width="10%">{{ u'、'.join(item['follower'] if item['follower'] else '-') }}</td>-->
+        <td width="10%" >{{ item['last_update_time'] }}</td>
+        <td width="5%">
+            <a class="btn btnColor btn-danger" href="/admin_user/advertiser_follow?a=delete&id={{ item['id'] }}" onclick="return confirm('确认删除?');">删除</a>
+        </td>
+    </tr>
+
+    {% end %}
+    </tbody>
+</table>
+</div>
+<div>
+    {% raw page_html %}
+</div>
+<script type="text/javascript">
+    $(document).ready(function(){
+        $("a[name='advertiser_btu']").click(function(){
+            var str_id = this.id;
+            var id = str_id.split("_").pop();
+            $.ajax({
+                type: "get",
+                contentType: "application/json",
+                url: "/project/advertiser?a=getUser&id="+id,
+                success: function (result) {
+                    var adv_op="";
+                    var str = JSON.parse(result);
+                    $("#advertiser_follower").empty();
+                    adv_op +='<table class="checkTable"><tr>';
+                    for (var i = 0; i < str.data.length; i++) {
+                        if (str.data[i].checked == 1) {
+                            adv_op += '<td width="5%" ><input type="checkbox" name="follower"  value=' + str.data[i].id + ' checked="checked" />';
+                        }
+                        else {
+                            adv_op += '<td width="5%"><input type="checkbox" name="follower" value=' + str.data[i].id + '>';
+                        }
+                        adv_op +='</td><td width="20%">';
+                        adv_op += str.data[i].name;
+                        adv_op +='</td>';
+                        if (str.data[i].idx%4==0){
+                             adv_op += '</tr><tr>';
+                        }
+                    }
+                    adv_op +='</tr></table>';
+                    $("#advertiser_follower").append(adv_op);
+                }
+            });
+        })
+    })
+</script>
+{% end %}

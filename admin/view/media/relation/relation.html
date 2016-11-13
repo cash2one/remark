@@ -1,0 +1,240 @@
+{% extends '../../public/main.html' %}
+
+{% block body %}
+<script type="text/javascript" src="{{ static_url('script/media/relation.js')}}"></script>
+
+<div class="nav"></div>
+<br>
+<div class="result_filter funnel">
+    <form method="get" action="/media/relation" class="form-inline" id="search_form">
+        <div class="searchBox">
+            <select class="form-control" title="搜索项" id="field" name="field">
+                <option id="field_1" name="field" value="1">联系人</option>
+                <option id="field_4" name="field" value="2">手机</option>
+                <option id="field_5" name="field" value="3">座机</option>
+                <option id="field_6" name="field" value="4">微信</option>
+                <option id="field_7" name="field" value="5">QQ</option>
+                <option id="field_8" name="field" value="6">邮件</option>
+                <option id="field_9" name="field" value="7">其它</option>
+            </select>
+            <input class="form-control" title="搜索内容" type="text" id="query" name="query" value="{{condition['query']}}" class="typeText">
+            <button type="button" id="search" class="form-control btn btn-default">搜索</button>
+        </div>
+    </form>
+</div>
+<br>
+<div>
+    <table class="table table-bordered table-hover vert-align">
+        <thead>
+            <tr class="res_tbl_title">
+                <td>ID</td>
+                <td>联系人</td>
+                <td>职位</td>
+                <td>手机</td>
+                <td>座机</td>
+                <td>QQ</td>
+                <td>微信</td>
+                <td>邮件</td>
+                <td>其它</td>
+                <td>操作</td>
+            </tr>
+        </thead>
+        <tbody>
+        {% for item in index_info %}
+            <tr>
+                <td>{{ item['id'] }}</td>
+                <td>{{ item['contact_person'] if item['contact_person'] else '-'}}</td>
+                <td>{{ item['contact_position'] if item['contact_position'] else '-'}}</td>
+                <td>{{ item['contact_phone'] if item['contact_phone'] else '-'}}</td>
+                <td>{{ item['contact_tel'] if item['contact_tel'] else '-'}}</td>
+                <td>{{ item['contact_qq'] if item['contact_qq'] else '-'}}</td>
+                <td>{{ item['contact_wechat'] if item['contact_wechat'] else '-'}}</td>
+                <td>{{ item['contact_email'] if item['contact_email'] else '-'}}</td>
+                <td>{{ item['contact_other'] if item['contact_other'] else '-'}}</td>
+                <td>
+                    <div>
+                        <a class="btn btnColor btn-info btn-xs" href="/media/relation?a=detail&id={{ item['id'] }}">详情</a>
+                        <button class="btn btnColor btn-info btn-xs contact_edit" name="{{ item['id'] }}" data-target="#contact_update_dialog{{ item['id'] }}" data-toggle="modal">编辑</button>
+                        <!-- 修改联系人表格 -->
+                        <div id="contact_update_dialog{{ item['id'] }}" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <button type="button" id="" class="close" data-dismiss="modal" aria-hidden="true">X</button>
+                                        <h4 id="">修改联系方式</h4>
+                                    </div>
+                                    <div class="modal-body brickWall">
+                                        <div>
+                                            <div>
+                                                <strong>联系人</strong>
+                                                <input id="contact_person{{ item['id'] }}" name="contact_person" value="{{ item['contact_person'] if item['contact_person'] else ''}}"> <i>填写联系人<em> * </em></i>
+                                            </div>
+                                            <div>
+                                                <strong>职位</strong>
+                                                <input id="contact_position{{ item['id'] }}" name="contact_position" value="{{ item['contact_position'] if item['contact_position'] else ''}}"> <i>填写职位</i>
+                                            </div>
+                                            <div>
+                                                <strong>手机</strong>
+                                                <input id="contact_phone{{ item['id'] }}" name="contact_phone" value="{{ item['contact_phone'] if item['contact_phone'] else ''}}"> <i>11 位数字<em> * </em></i>
+                                            </div>
+                                            <div>
+                                                <strong>座机</strong>
+                                                <input type="text" id="contact_tel{{ item['id'] }}" name="contact_tel" value="{{ item['contact_tel'] if item['contact_tel'] else ''}}">
+                                            </div>
+                                            <div>
+                                                <strong>QQ</strong>
+                                                <input id="contact_qq{{ item['id'] }}" name="contact_qq" value="{{ item['contact_qq'] if item['contact_qq'] else ''}}"> <i>只可填写数字</i><em> * </em>
+                                            </div>
+                                            <div>
+                                                <strong>微信</strong>
+                                                <input id="contact_wechat{{ item['id'] }}" name="contact_wechat" value="{{ item['contact_wechat'] if item['contact_wechat'] else ''}}"> <i>填写微信号</i><em> * </em>
+                                            </div>
+                                            <div>
+                                                <strong>邮箱</strong>
+                                                <input id="contact_email{{ item['id'] }}" name="contact_email" value="{{ item['contact_email'] if item['contact_email'] else ''}}"> <i>填写邮箱</i>
+                                            </div>
+                                            <div>
+                                                <strong>其它</strong>
+                                                <input type="text" id="contact_other{{ item['id'] }}" name="contact_other" value="{{ item['contact_other'] if item['contact_other'] else ''}}"> <i>除以上信息外的其它重要信息</i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button class="btn btn-success media_contact_update" name="{{ item['id'] }}">确定</button>
+                                        <button class="btn btn-default" data-dismiss="modal" aria-hidden="true">取消</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <button class="btn btnColor btn-danger btn-xs btn-delete" name="{{ item['id'] }}" relation-type="{{ item['relation_type'] }}">删除</button>
+                    </div>
+                </td>
+            </tr>
+        {% end %}
+        </tbody>
+    </table>
+   
+
+</div>
+<div>
+    {% raw page_html %}
+</div>
+<script type="text/javascript">
+$(document).ready(function() {
+    $("body").keyup(function () {
+        if (event.which == 13) {
+            $("#search").trigger("click");
+        }
+    });
+    // 提交搜索
+    $('#search').click(function () {
+        $('#search_form').submit();
+    });
+    var field = "{{ condition['field']}}";
+    if (field != "") {
+        $("option[name=field][value=" + field + "]").attr("selected", true);
+    }
+
+    // 修改联系方式提交
+    $(".media_contact_update").click(function(event) {
+        var name_id = $(this).attr('name');
+        update_contact_wechat(name_id);
+    });
+
+    //删除联系人
+    delete_contact();
+})
+
+// 修改联系人提交
+function update_contact_wechat(name_id){
+    var $contact_id = name_id;
+    var a = $('#contact_position' + name_id).val();
+    var b = $('#contact_person' + name_id).val();
+    var c = $('#contact_phone' + name_id).val() ;
+    var d = $('#contact_email' + name_id).val();
+    var e = $('#contact_tel' + name_id).val();
+    var f = $('#contact_qq' + name_id).val();
+    var w = $('#contact_wechat' + name_id).val();
+    if (c == "" &&  w== "" && f == "") {
+        alert("手机、微信或QQ,请至少填写一项");
+        return false;
+    }
+    if (b == "") {
+        alert("输入不能为空");
+        return false;
+    }
+    if (c && ! is_phone(c)){
+        alert("请输入正确格式的手机号码");
+        return false
+    }
+    if( d &&(! is_mail(d))){
+        alert("请输入正确的email格式");
+        return false
+    }
+    if( e &&(! is_tel(e))){
+        alert("请输入正确的电话格式");
+        return false
+    }
+    if( f &&(! is_qq(f))){
+        alert("请输入正确的qq格式");
+        return false
+    }
+    dicArgs = {
+        'contact_id':$contact_id,
+        'contact_person': b,
+        'contact_position': a,
+        'contact_phone': c,
+        'contact_tel': e,
+        'contact_wechat': $('#contact_wechat').val(),
+        'contact_qq': f,
+        'contact_email': d,
+        'contact_other': $('#contact_other').val(),
+    };
+    $.ajax({
+        url: "/media/common?a=update_contact",
+        method: "post",
+        dataType:'json',
+        data: dicArgs,
+        success: function (result) {
+            console.log(result)
+            if (result.status == 200){
+                location.reload();
+            }else if (result.status == 403) {
+                alert("该用户无操作权限！");
+                return false;
+            }else {
+                alert("更新失败请重新操作！");
+                return false;
+            }
+        }
+    });
+}
+
+// 删除联系人
+function delete_contact(){
+    $(".btn-delete").click(function(event) {
+        var $this = $(this);
+        if(confirm("此操作将删除联系人信息并解除所有自媒体绑定，确认？")){
+            var $contact_id = $(this).attr('name');
+            var $relation_type = $(this).attr('relation_type')
+            var dicArgs = {
+                'contact_id': $contact_id,
+                'relation_type': $relation_type,
+            }
+            $.ajax({
+                url: '/media/common?a=del_contact',
+                method: 'post',
+                dataType: 'json',
+                data: dicArgs,
+                success: function(json){
+                    if(json.status == 200){
+                        $this.parent("div").parent("td").parent("tr").remove();
+                    }
+                }
+            })
+        }
+    });
+}  
+
+</script>
+{% end %}

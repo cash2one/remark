@@ -1,0 +1,900 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{% block title %}{{ title }}{% end %}</title>
+    <meta charset="utf-8">
+    <meta name="keywords" content="一道,一道网,自媒体,自媒体营销,广告需求,广告交易,自媒体交易,微信自媒体,自媒体变现,微信公众号,微信互推,自媒体维权,阅读数,自媒体平台,自媒体广告">
+    <meta name="description" content="一道是中国领先的自媒体聚合及效果营销平台。通过大数据技术，一道帮助广告主精准定位优质自媒体并实现效果营销。一道坚信“每个声音都有价值”，专注长尾，发现优质。实现效果，协助成长。">
+    <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no">
+    <link rel="stylesheet" href="{{ static_url('style/bootstrap.css') }}" />
+    <link rel="stylesheet" href="{{ static_url('style/base.css') }}" />
+    <link rel="stylesheet" href="{{ static_url('style/fonts.css') }}" />
+    <link rel="stylesheet" href="{{ static_url('style/ydi.css') }}" />
+    <link rel="stylesheet" href="{{ static_url('style/perfect-scrollbar.min.css') }}" />
+    <link rel="stylesheet" href="{{ static_url('style/user_center.css') }}" />
+    <link rel="stylesheet" href="{{ static_url('style/hover.css') }}" />
+    <link rel="stylesheet" href="{{ static_url('style/bootstrap-datepicker.standalone.min.css') }}" />
+    <link rel="stylesheet" href="{{ static_url('style/common.css') }}" />
+    <script type="text/javascript" src="{{ static_url('script/jquery.min.js') }}"></script>
+    <script type="text/javascript" src="{{ static_url('script/bootstrap.min.js') }}"></script>
+    <script type="text/javascript" src="{{ static_url('script/bootstrap-datepicker.min.js') }}"></script>
+    <script type="text/javascript" src="{{ static_url('script/locales/bootstrap-datepicker.zh-CN.min.js') }}"></script>
+    <script type="text/javascript" src="{{ static_url('script/jay.js') }}"></script>
+    <script type="text/javascript" src="{{ static_url('script/common.js') }}"></script>
+    <script type="text/javascript" src="{{ static_url('script/json2.js') }}"></script>
+    <script type="text/javascript" src="{{ static_url('script/perfect-scrollbar.jquery.min.js') }}"></script>
+    <!--script type="text/javascript" src="{{ static_url('script/header.js') }}"></script-->
+    <link rel="shortcut icon" type="image/x-icon" href="{{ static_url('images/favicon.ico') }}">
+</head>
+<body role="document">
+<div class="light-cover" style="display: none;" id="loading">
+    <div class="loading-box">
+        <div class="loading" ><img src="{{ static_url('images/loading.png') }}"></div>
+    </div>
+</div>
+<div id="header" class="header headerfixed">
+    <h1><a href="/" title="一道自媒体广告营销平台"><img src="{{ static_url('index_v2/images/logo.png') }}" alt="一道"></a></h1>
+    <div class="menu">
+        <ul>
+            <li><a href="/">首页</a></li>
+            <li class="pList"><a href="javascript:onlink('/user?a=media')">我的<span class="ydi yd-down"></span></a>
+                <ul>
+                    <li><a href="javascript:onlink('/user?a=media')">我的自媒体</a></li>
+                    <li><a href="javascript:onlink('/user?a=demand')">我发布的广告需求</a></li>
+                    <li><a href="javascript:onlink('/user?a=demand_take_order')">我接单的广告需求</a></li>
+                    <li><a href="javascript:onlink('/user?a=demand_order')">我的订单</a></li>
+                </ul>
+            </li>
+            <li><a href="/list?status=2">广告需求</a></li>
+            <li><a href="/media">自媒体资源</a></li>
+        </ul>
+    </div>
+    <div class="siteControl">
+        <ul>
+            {% if login_user['user_id'] %}
+            <li>
+                <div class="notifications"><a href="javascript:showNotifications()" title="通知"><span class="ydi yd-notification"></span></a></div>
+                
+                <div class="notificationsList scrollBar">
+                    <div class="moreBtn"><a href="/user?a=notification">查看更多通知</a></div>
+                </div>
+            </li>
+            {% end %}
+            <li>
+                <div class="account">
+                    {% if login_user['user_id'] %}
+                    <div class="avatar"><a href="javascript:showSide()"><img src="{{ login_user['avatar'] }}" alt="{{ login_user['nickname'] }}"></a></div>
+                    <div class="accountInfo">
+                        <div class="timeLine"></div>
+                        <ul>
+                            <li>
+                                <a href="/user?a=media">用户中心<span class="ydi yd-setting"></span></a>
+                            </li>
+                            <li>
+                                <a href="/login?a=logout">退出<span class="ydi yd-signout"></span></a>
+                            </li>
+                        </ul>
+                    </div>
+                    {% else %}
+                    <div class="accountSign">
+                        <a href="javascript:;" onClick="lightbox('lb1');showBox('loginBox');">登录</a>
+                        <a href="/account?a=signup">注册</a>
+                    </div>
+                    {% end %}
+                </div>
+            </li>
+        </ul>
+    </div>
+</div>
+{% block body %}{% end %}
+<div class="sideNav">
+    <ul>
+        <li class="customService">
+            <span class="ydi yd-user" title="在线客服"></span>
+            <div class="tip">
+                <p>广告需求咨询客服</p>
+                <a href="http://wpa.qq.com/msgrd?v=1&uin=413959299&site=qq&menu=yes" target="_blank"><span class="ydi yd-user"></span>市场经理·小平</a>
+                <p>平台使用咨询客服</p>
+                <a href="http://wpa.qq.com/msgrd?v=1&uin=3271992923&site=qq&menu=yes" target="_blank"><span class="ydi yd-user"></span>客服经理·道长</a>
+            </div>
+        </li>
+    </ul>
+    <ul>
+        <li class="qqqrcode">
+            <img src="{{ static_url('images/qq.png') }}" alt="官方QQ群">
+            <div class="tip">
+                <p>扫描二维码加入<br>官方QQ群</p>
+                <img src="{{ static_url('images/qqqrcode.jpg') }}" alt="一道官方QQ群">
+            </div>
+        </li>
+        <li class="wechatqrcode">
+            <img src="{{ static_url('images/wechat.png') }}" alt="官方微信公众号">
+            <div class="tip">
+                <p>扫描二维码关注<br>官方微信公众号</p>
+                <img src="{{ static_url('images/wechatqrcode.jpg') }}" alt="一道官方微信公众号">
+            </div>
+        </li>
+        <li class="gotop">
+            <a href="#top">
+                <span class="ydi yd-up"></span>
+                <span>返回顶部</span>
+            </a>
+        </li>
+    </ul>
+</div>
+
+<div class="statusBox" id="statusBox">
+    <div>提示文字</div>
+    <span class="ydi yd-close" onClick="lightbox('statusBox');" title="关闭提示"></span>
+</div>
+<div id="lb1" class="light-cover" style="display: none">
+    <div class="light-mid" id="loginBoxtip">
+        <div class="login-close">
+            <span class="icon-close" onClick="lightbox('lb1');deleteTargetLink();"></span>
+        </div>
+        <div class="login-title icon-fonts">
+            <span title="一道">一</span>
+        </div>
+        <div id="regBox" style="display: none;">
+            <div class="login-weixin">
+                <div class="login-tipsword" ><span id="loginThirdTitle">使用第三方账号注册</span></div>
+                <img src="/static/images/weixinlogo.png" onclick="wechatLogin();"/>
+            </div>
+            <div class="login-form">
+                <div class="login-tipsword"><span id="loginEmail">使用邮箱注册 </span></div>
+                <form class="iform" name="form_reg">
+                    <div class="inputform emailForm"><span>称呼</span><input type="text" maxlength="16" data-check="name" name="name"/><div class="mright">4-16个字符</div></div>
+                    <div class="inputform emailForm"><span>邮箱</span><input type="email" maxlength="32" data-check="email" name="email"/><div class="mright">账号登陆凭证</div></div>
+                    <div class="inputform pwdForm"><span>密码</span><input type="password" maxlength="32" data-check="password" name="password"/><div class="mright">　6-32个字符</div></div>
+                    <input class="acceptBtn" value="注　册" type="button" onclick="checkForm_reg(this)"/>
+                    <div id="regError" class="errorMsg"></div>
+                    <div class="reg-more">
+                        <span>已有账号？</span>
+                        <span><a onclick="onchangePage('login')">点击登录一道</a></span>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div id="loginBox">
+            <div class="login-weixin">
+                <div class="login-tipsword" ><span>使用第三方账号登录</span></div>
+                <img src="/static/images/weixinlogo.png" onclick="wechatLogin();"/>
+            </div>
+            <div class="login-form">
+                <div class="login-tipsword"><span>登录 </span></div>
+                <form class="iform" name="form_login">
+                    <div class="inputform emailForm"><span>帐号</span><input type="email" maxlength="32" name="account"/></div>
+                    <div class="inputform pwdForm"><span>密码</span><input type="password" maxlength="32" name="password"/></div>
+                    <input class="acceptBtn" value="登　录" type="button" onclick="checkForm_login(this)"/>
+                    <div id="loginError"  class="errorMsg"></div>
+                    <div class="login-more">
+                        <a href="/account?a=forget_pwd" target="_blank">忘记密码</a>
+                        <span><a href="/account?a=signup">点击注册</a></span>
+                        <span>没有账号？</span>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="light-midBg"></div>
+    </div>
+</div>
+<div id="acceptBox">
+    <div class="container">
+        <div class="title">
+            <strong>您确定要进行此操作吗？</strong>
+            <span class="ydi yd-close" onClick="lightbox('acceptBox');"></span>
+        </div>
+        <div class="content">
+            如果是请点击确定，不是请点击取消
+        </div>
+        <div class="action">
+            <button type="button" class="btnOk" id="acceptThis">确定</button>
+            <button type="button" class="btnOther" id="cancelThis" onClick="lightbox('acceptBox');">取消</button>
+        </div>
+    </div>
+</div>
+<div class="light-cover" id="sm_type" style="display: none;">
+    <div class="sm_tips_main">
+        <div class="inner_board">
+            <div class="login-close"><span class="icon-close" onClick="lightbox('sm_type');"></span></div>
+            <div class="title">选择添加自媒体类型</div>
+            <div class="icon_board" style="left:15px;"><img id="bilibili" src="/static/images/bilibili.png" width="100" height="100">bilibili播主</div>
+            <div class="icon_board" style="left:135px;"><img id="yao" src="/static/images/yao.png" width="100" height="100">有妖气漫画</div>
+            <div class="icon_board" style="left:255px;"><img id="wei" src="/static/images/wei.png" width="100" height="100">微信公众号</div>
+        </div>
+    </div>
+</div>
+<div class="footer">
+    <div class="cc footerNav clearfix">
+        <ul>
+            <li><a href="/about" target="_blank">关于我们</a></li>
+            <li><a href="/about?a=contact" target="_blank">联系我们</a></li>
+        </ul>
+    </div>
+    <div class="copyright">&copy;2014-2015 壤歌 <a href="http://www.miibeian.gov.cn" target="_blank">沪ICP备14051525</a></div>
+</div>
+<div class="footer_paddingline-temp1102938"></div>
+
+<script>
+    //设置meta标签值
+    $.ajax({
+        url: '/?a=getSeo',
+        method: 'post',
+        dataType: 'json',
+        data: 'tag=1',
+        success: function(json){
+            $("meta[name = keywords]").attr("content",json.data.keywords);
+            $("meta[name = description]").attr("content",json.data.description);
+        }
+    })
+
+
+    var is_login = {% if login_user['user_id'] %}true{% else %}false{% end %};
+    var targetLink = '/';
+    var navTimer = {};
+    var loginBoxTarget;
+    var showStatusId;
+    var needMoreMsg = false;
+    var closeSideCheck = false;
+    var hideNotificationsCheck = false;
+    var allMsgList;
+    var user_id = '{{login_user["user_id"]}}';
+    //alert(user_id);
+
+    $.ajax({
+        url : '/user?a=index_msg',
+        type :'post',
+        dateType :'json',
+        data : user_id,
+        success : function(ret){
+            //if(res.status)
+            //console.log(ret);
+            var msg = (JSON.parse(ret)).data;
+            //console.log(msg[0]['info']);
+            var num = 0;
+            for (item in msg){
+                num+=1;
+            }
+            if (num > 0){
+                var _html = '<ul>';
+                for (var i = 0; i< num;i++){
+                    _html += '<li>'+
+                                    msg[i]['info']+
+                             '</li>';
+                    //console.log(msg[i])
+                }
+                _html += '</ul>';
+                $('.siteControl .notifications').prepend('<div class="notificationsNew" title="新通知"></div>');
+            }else{
+                $('.siteControl .notificationsList').prepend('<p class="defaultTip">没有新通知</p>');
+            }
+            $('.siteControl .notificationsList').prepend(_html);
+        }
+    });
+
+    $(function(){
+        $('.scrollBar').perfectScrollbar();
+    });
+
+    //新通知过多显示滚动条
+    function resetNotificationsHeight(){
+        var limitHeight = $(window).height() - 80;
+        $('.siteControl .notificationsList').css('max-height', limitHeight);
+    };
+    resetNotificationsHeight();
+    $(window).resize(function(e) {
+        resetNotificationsHeight();
+    });
+
+    $(document).ready(function(){
+        //checkToMobile();
+        getParams();
+        ul();
+        getExplorer();
+        $(".wechat").hover(function(){
+                    $(".close-image").css('visibility','visible');
+                },
+                function(){
+                    $(".close-image").css('visibility','hidden');
+                });
+        var href = location.href;
+        if(href.indexOf('http://yidao.info')!=-1){
+            location.href = href.replace('http://yidao.info','http://www.yidao.info');
+        }
+        if(href.indexOf('yidao.info')!=-1){
+            var _hmt = _hmt || [];
+            (function() {
+                var hm = document.createElement("script");
+                hm.src = "//hm.baidu.com/hm.js?90d759cbb892b43f47d5a4716264c0f7";
+                var s = document.getElementsByTagName("script")[0];
+                s.parentNode.insertBefore(hm, s);
+            })();
+        }
+        $(window).resize(function(){
+            $('body').css('width',window.innerWidth);
+            //checkFootLocation();
+        });
+        $('input').bind('change',function(){
+            if($(this).attr('id')=='artical'||$(this).attr('id')=='xhe0_fixffcursor')return;
+            var str = $(this).val();
+            var wrongList = ['<','>','{','}','[',']','\"',"\'",'(',')'];
+            for(var i=0;i<wrongList.length;i++){
+                var ss = wrongList[i];
+                if(str.indexOf(ss)!=-1||str.indexOf(encodeURIComponent(ss))!=-1){
+                    showTipsBox('alert','存在非法字符"' + ss + '"，请重新输入');
+                    $(this).val($(this).val().split(ss).join('').split(encodeURIComponent(ss)).join(''));
+                }
+            }
+        });
+        $('#lb1').keydown(function(e){
+            //var tid = $(this).attr('id');
+            //console.log(loginBoxTarget);
+            if(e.keyCode==13){
+                if(loginBoxTarget=='loginBox'){
+                    checkForm_login($('#loginBox form'));
+                }else{
+                    checkForm_reg($('#regBox form'));
+                }
+            }
+        });
+        setInterval(changeLoaindg,50);
+        $(document).click(function(){
+            clearShow();
+            clearNotifications();
+        });
+        //getNotices();
+    });
+
+    function getNotices(){
+        $.ajax({
+            url:'/api/auth/msg_list',
+            method:'get',
+            dataType:'json',
+            success:getNoticeList
+        })
+    }
+
+    function getNoticeList(data){
+        var main = $('.notice-main');
+        main.empty();
+        var total = data.cnt;
+        if(total>0){
+            $('.notificationsCount').text(total>99?99:total).show();
+            var list = data.dates;
+            for(var i=0;i<list.length;i++){
+                var date = list[i].date;
+                main.append('<div class="msg-notice-date">' + date + '<img src="/static/images/point.png" style="margin-right:-6px;"></div>');
+                var list2 = list[i].msgs;
+                for(var t=0;t<list2.length;t++){
+                    main.append(buildNotice(list2[t]));
+                }
+            }
+            if(main.height()>40){
+                $('.notice-main').css('overflow-y','hidden').css('height',80);
+                $('.more-btn').text('显示全部');
+                needMoreMsg = true;
+            }else{
+                needMoreMsg = false;
+                $('.more-btn').hide();
+            }
+        }else{
+            main.hide();
+            //$('.more-btn').hide();
+        }
+        $('.more-btn').unbind('click').bind('click',function(){
+            $(this).hide();
+            var main = $('.notice-main');
+            main.css('overflow-y','auto').css('height','auto');
+            if(main.height()>document.documentElement.clientHeight-400){
+                $('.notice-main').css('overflow-y','auto').css('height',document.documentElement.clientHeight - 300);
+            }else{
+                main.css('overflow-y','auto').css('height',main.height());
+            }
+            if($(this).text()=='显示全部'){
+                $(this).text('查看更多通知')
+            }else{
+                if(allMsgList){
+                    showAllMsg();
+                }else{
+                    $.ajax({
+                        url:'/api/auth/msg_list?type=all',
+                        method:'get',
+                        dataType:'json',
+                        success:setAllNotice
+                    })
+                }
+
+            }
+        })
+    }
+
+    function setAllNotice(data){
+        allMsgList = data.dates;
+        showAllMsg();
+    }
+
+    function showAllMsg(){
+        var main = $('.notice-main');
+        main.empty();
+        var len = allMsgList.length;
+        for(var i=0;i<len;i++){
+            var date = allMsgList[i].date;
+            main.append('<div class="msg-notice-date">' + date + '<img src="/static/images/point.png" style="margin-right:-6px;"></div>');
+            var list2 = allMsgList[i].msgs;
+            for(var t=0;t<list2.length;t++){
+                main.append(buildNotice(list2[t]));
+            }
+        }
+        main.css('overflow-y','auto').css('height','auto');
+        if(main.height()>document.documentElement.clientHeight-400){
+            $('.notice-main').css('overflow-y','auto').css('height',document.documentElement.clientHeight - 300);
+        }
+        main.show();
+    }
+
+    function buildNotice(obj){
+        var str = '';
+        switch(obj.type){
+            case 0:
+
+                break;
+            case -1:
+            case 1:
+                switch (obj.info.act){
+                    case 'demand_yijiedan':
+                        var list = obj.info.data.act_user;
+                        for(var i=0;i<list.length;i++){
+                            str+='<a href="/sm_info/' + list[i].oid + '">' + decodeURIComponent(list[i].name) + '</a> ';
+                        }
+                        str +=  '已接单<a href="/demand/' + obj.info.data.did + '">' + decodeURIComponent(obj.info.data.name) + '</a>';
+                        break;
+                    case 'demand_cancel':
+                        str =  '营销需求<a href="/demand/' + obj.info.data.did + '">' + decodeURIComponent(obj.info.data.name) + '</a>已取消';
+                        break;
+                    case 'demand_choose':
+                        str =  '广告主<a href="/demand/' + obj.info.data.did + '">' + decodeURIComponent(obj.info.data.name) + '</a>已选择你参与营销需求';
+                        break;
+                    case 'demand_choose_not':
+                        str = '<a href="/demand/' + obj.info.data.did + '">你的自媒体未被选择</a>';
+                        break;
+                    case 'demand_sm_pay':
+                        str = '<a href="/demand/' + obj.info.data.did + '">自媒体已支付押金</a>';
+                        break;
+                    case 'demand_feedback':
+                        str = '你的营销需求<a href="/demand/' + obj.info.data.did + '">' + decodeURIComponent(obj.info.data.name) + '</a>有新的反馈';
+                        break;
+                    case 'demand_feedback_ok':
+                        str = '<a href="/demand/' + obj.info.data.did + '">你提交的反馈已经验收</a>';
+                        break;
+                    case 'demand_feedback_fail':
+                        str = '<a href="/demand/' + obj.info.data.did + '">广告主对你的反馈不满意</a>';
+                        break;
+                }
+                break;
+            case 2:
+
+                break;
+            case 3:
+
+                break;
+        }
+        return '<div class="msg-notice"><p>' + str + '</p><img src="/static/images/point2.png" style="margin-right:-3px;"></div>'
+    }
+
+    function showSide(){
+        $('.notificationsCount').hide();
+        var obj = $('.accountInfo');
+        $.ajax({
+            url:'/api/auth/msg_readed',
+            method:'post',
+            contentType:'application/json',
+            data:JSON.stringify({read:0})
+        });
+        if(obj.hasClass('showInfo')){
+            //$('.accountInfo').removeClass('showInfo');
+            closeSide();
+        }else{
+            obj.addClass('showInfo').unbind('click').bind('click',function(){
+                closeSideCheck = false;
+            });
+            closeSideCheck = true;
+        }
+    }
+
+    function closeSide(){
+        $('.notice-main').css('overflow-y','hidden').css('height',40);
+        //setTimeout(resetBtn,600);
+        resetBtn();
+        $('.accountInfo').removeClass('showInfo');
+        //closeSideCheck = false;
+        //closeSideCheck = true;
+    }
+
+    function resetBtn(){
+        $('.more-btn').show();
+    }
+
+    function showDown(obj){
+        setTimeout(function(){
+            if($(obj).children('.other-box').is(':hidden')){
+                clearShow();
+                $(obj).children('.other-box').show();
+                $(obj).css('opacity',1);
+            }else{
+                $(obj).children('.other-box').hide();
+                $(obj).css('opacity',0.9);
+            }
+        },0,obj)
+    }
+
+    function clearShow(){
+        $('.other-box').hide();
+        var tips = $('.accountInfo');
+        //closeSideCheck = true;
+        if(tips.hasClass('showInfo')){
+            if(closeSideCheck){
+                //closeSide();
+                setTimeout(closeSide,30);
+            }else{
+                closeSideCheck = true;
+            }
+        }
+        //closeSide();
+    }
+
+    function showNotifications(){
+        var obj = $('.notificationsList');
+        if(obj.hasClass('showNotifications')){
+            hideNotifications();
+        }else{
+            $.ajax({
+            url:'/user?a=update_index_msg',
+            method:'post',
+            dataType:'json',
+            });
+            obj.addClass('showNotifications').unbind('click').bind('click',function(){
+                hideNotificationsCheck = false;
+            });
+            hideNotificationsCheck = true;
+        }
+    }
+    function hideNotifications(){
+        resetBtn();
+        $('.notificationsList').removeClass('showNotifications');
+    }
+    function clearNotifications(){
+        var tips = $('.notificationsList');
+        if(tips.hasClass('showNotifications')){
+            if(hideNotificationsCheck){
+                setTimeout(hideNotifications,30);
+            }else{
+                hideNotificationsCheck = true;
+            }
+        }
+    }
+
+    function changeLoaindg(){
+        var ll = $('.loading img').css('margin-left');
+        ll = parseInt(ll.replace('px',''));
+        if(ll<=-198){
+            ll = 0;
+        }else{
+            ll-=22;
+        }
+        $('.loading img').css('margin-left',ll);
+    }
+    function deleteTargetLink(){
+        targetLink = '/';
+    }
+
+    function wechatLogin(){
+        //location.href = 'https://open.weixin.qq.com/connect/qrconnect?appid=wxb3f7618fff2272e5&redirect_uri=http://' + location.host + '/wechat_login&response_type=code&scope=snsapi_login&state=1#wechat_redirect';
+        location.href = 'https://open.weixin.qq.com/connect/qrconnect?appid=wxb3f7618fff2272e5&redirect_uri=http://www.yidao.info/wechat_login&response_type=code&scope=snsapi_login&state=1#wechat_redirect';
+    }
+
+    function ul() {
+        //is_login = false;
+        //setTimeout(checkFootLocation,200);
+        var needLoginList = ['/home','/demand_post','/userinfo','/rights','/official_account_check','/union_admin','/union/create'];
+        if(checkList(needLoginList,location.pathname) && !is_login){
+            location.href = '/';
+        }
+    }
+    function checkList(list,key){
+        var tt = false;
+        var len = list.length;
+        for(var i=0;i<len;i++){
+            if(key==list[i]){
+                tt = true;
+            }
+        }
+        return tt;
+    }
+    function getIndexInList(list,key){
+        var tt = -1;
+        var len = list.length;
+        for(var i=0;i<len;i++){
+            if(key==list[i]){
+                tt = i;
+            }
+        }
+        return tt;
+    }
+    function formatNumber(num){
+        var ss = String(num);
+        var str;
+        if(ss.indexOf('.')==-1){
+            str = ss;
+            ss = '';
+        }else{
+            str = ss.split('.')[0];
+            ss = ss.split('.')[1];
+        }
+        var list = [];
+        var len = str.length;
+        var times = 1;
+        while(len>2){
+            list.unshift(str.substr(-3*times++,3));
+            len-=3;
+        }
+        if(len>0)list.unshift((str.substr(-3*times,len)));
+        len = list.length;
+        str = '';
+        for(i=0;i<len;i++){
+            str +=list[i];
+            if(i!=len-1){
+                str += ',';
+            }
+        }
+        if(str=='')str = '0';
+        return str+(ss==''?'':'.'+ss);
+    }
+
+    /*
+     function checkFootLocation(){
+
+     if(document.body.clientHeight<document.documentElement.clientHeight-100){
+     $('.footer').css('position','absolute').css('bottom',0);
+     }else{
+     $('.footer').css('position','relative').css('bottom',0);
+     }
+     }
+     */
+
+    $('.menu-icon, .menu-box .close').click(function(){
+        clearTimeout(navTimer);
+        $('.menu-box').animate({left: $(this).is('.close') ? -200 : 0});
+    });
+    $('.menu-box').mouseleave(function(){
+        navTimer = setTimeout(function(){
+            $('.menu-box').animate({left: -200});
+        }, 1000);
+    });
+    function othersCheck(){
+        if($("#np").val() !== $("#op").val()){
+            return "密码不一致，请重新填写";
+        }
+        if($("#cp").val()){
+            if($("#np").val() == "" || $("#op").val() == ""){
+                return "请填写新密码并确认"
+            }
+        }
+        return true;
+    }
+    function link(href){
+        location.href = href;
+    }
+    function chkstrlen(str)
+    {
+        var strlen = 0;
+        for(var i = 0;i < str.length; i++){
+            if(str.charCodeAt(i) > 255) //如果是汉字，则字符串长度加2
+                strlen += 2;
+            else
+                strlen++;
+        }
+        return   strlen;
+    }
+
+    function checkForm_reg(form){
+        email = $('form[name="form_reg"] input[name="email"]').val();
+        var uname = $('form[name="form_reg"] input[name="name"]').val();
+        password = $('form[name="form_reg"] input[name="password"]').val();
+        var reg = /^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]+$/;
+        if(!reg.test(email)){
+            $('#regError').text('请输入正确的邮箱');
+            return;
+        }
+
+        if($.trim(uname).length<2){
+            $('#regError').text('称呼至少2个字符');
+            return;
+        }
+
+        if(email.length<2||password.length<6){
+            //alert('用户名或者密码错误');
+            $('#regError').text('用户名或者密码错误');
+            return;
+        }
+        var params = {email:email, password:password,uname:uname};
+
+        $.ajax({
+            type: "POST",
+            url: "/register",
+            dataType: "JSON",
+            data: $.param(params),
+            success: function(ret){
+                $('#regError').text(dicStatusMsg['reg'][ret.status]);
+                if(ret.status == 200){
+                    location.reload();
+                }
+            }
+        });
+    }
+
+    function checkForm_login(form){
+        account = $('form[name="form_login"] input[name="account"]').val();
+        password = $('form[name="form_login"] input[name="password"]').val();
+        var params = {'account':account, 'password':password};
+        $.ajax({
+            type: "POST",
+            url: "/login",
+            dataType: "JSON",
+            data: $.param(params),
+            success: function(ret){
+                //alert(1)
+                if(ret.status == 200){
+                    var form_alert = $('#loginError');
+                    form_alert.text('登录成功，正在跳转...');
+                    location.reload();
+                }else if(ret.status == 704){
+                    var form_alert = $('#loginError');
+                    form_alert.text('账号有问题，请联系客服');
+                }else if(ret.status == 201){
+                    location.href = '/account?a=bind_phone';
+                }else if(ret.status == 401) {
+                    var form_alert = $('#loginError');
+                    form_alert.text('账号不能为空');
+                }else if(ret.status == 402) {
+                    var form_alert = $('#loginError');
+                    form_alert.text('密码不能为空');
+                }else{
+                    var form_alert = $('#loginError');
+                    form_alert.text(dicStatusMsg['login'][ret.status]);
+                }
+            }
+        });
+    }
+
+    function onlink(str){
+        if(is_login){
+            location.href = str;
+        }else{
+            targetLink = str;
+            showLoginBox();
+            setTimeout(clearShow,100);
+        }
+    }
+
+    function showBox(str){
+        loginBoxTarget = str;
+        $('form[name="form_reg"] input[name="email"]').val('');
+        $('form[name="form_reg"] input[name="password"]').val('');
+        $('#loginError').text('');
+        $('#regError').text('');
+        $('#loginBox').hide();
+        $('#regBox').hide();
+        $('#'+str).show();
+        if(loginBoxTarget=='loginBox'){
+            $('.light-mid').css('height',440);
+            $('.light-midBg').css('height',450);
+        }else{
+            $('.light-mid').css('height',480);
+            $('.light-midBg').css('height',490);
+        }
+    }
+
+
+    function onchangePage(str){
+        loginBoxTarget = str;
+        /*if(str=='login'){
+         $('#loginBoxtip').addClass('rotateBox');
+         }else{
+         $('#loginBoxtip').addClass('rotateBox');
+         }*/
+        $('#loginBoxtip').addClass('rotateBox');
+        var t = 300;
+        if(explorerType=='ie'||explorerType=='Safari')t= 0;
+        setTimeout(exchangeBox,t);
+        setTimeout(function(){
+            $('#loginBoxtip').removeClass('rotateBox');
+        },1000);
+    }
+
+    function exchangeBox(){
+        if(loginBoxTarget=='login'){
+            $('#loginBox').show();
+            $('#regBox').hide();
+            $('.light-mid').css('height',440);
+            $('.light-midBg').css('height',450);
+        }else{
+            $('#loginBox').hide();
+            $('#regBox').show();
+            $('.light-mid').css('height',480);
+            $('.light-midBg').css('height',490);
+        }
+    }
+
+
+    function showLoginBox(){
+        lightbox('lb1');
+    }
+
+    function showStatusBox(color,str){
+        clearTimeout(showStatusId);
+        $('#statusBox').css('background',color).show();
+        $('#statusBox div').html(str);
+        showStatusId = setTimeout(function(){$('#statusBox').fadeOut()},7000);
+    }
+
+    function showStatusBoxWithLink(color,str){
+        clearTimeout(showStatusId);
+        $('#statusBox').css('background',color).empty().append('<a target="_blank" href="/sm_info/' + str.id + '">' + (str.name.length>15?str.name.substr(0,13)+'...':str.name) + '</a> 已存在').show();
+        showStatusId = setTimeout(function(){$('#statusBox').fadeOut()},7000);
+    }
+
+    function showTipsBox(type,str){
+        switch (type){
+            case 'alert':
+                showStatusBox('#e14779',str);
+                break;
+            case 'message':
+                showStatusBox('#0DB',str);
+                break;
+            case 'tips':
+                showStatusBox('#3cf',str);
+                break;
+        }
+    }
+
+    function showAcceptBox(title, detail, ok, cancel,callFn){
+        if(title)
+            $('#acceptBox .title strong').text(title);
+        if(detail)
+            $('#acceptBox .content').html(detail);
+        if(ok)
+            $('#acceptBox .btnOk').text(ok);
+
+        if(!cancel){
+            $('#acceptBox .btnOther').hide();
+            $('#acceptBox .close').hide();
+            $('#acceptBox .btnOk').bind('click',callFn);
+            $('#acceptThis').bind('click',callFn);
+        }else{
+            $('#acceptBox .btnOther').show().text(cancel);
+            $('#acceptBox .close').show();
+            $('#acceptBox .btnOk').unbind('click');
+            $('#acceptThis').unbind('click').bind('click',callFn);
+        }
+
+        lightbox('acceptBox');
+
+        $('#acceptBox .container').css('margin-top', 0 - $('#acceptBox .container').height() / 2);
+    }
+
+    function showBoxDefineEverything(title,detail,accbtn,falbtn,callFn,cancleFn){
+        if(title){
+            $('#acceptBox .title').text(title);
+        }
+        if(detail)$('#acceptBox .content').html(detail);
+        if(accbtn)$('#acceptThis').text(accbtn).unbind('click').bind('click',callFn);
+        if(falbtn)$('#cancelThis').text(falbtn).unbind('click').bind('click',cancleFn);
+
+        lightbox('acceptBox');
+    }
+
+</script>
+</body>
+</html>

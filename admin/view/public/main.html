@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ title }}</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="{{ static_url('style/bootstrap.min.css') }}" />
+    <link rel="stylesheet" href="{{ static_url('style/common.css') }}" />
+    <link rel="stylesheet" type="text/css" href="{{ static_url('style/admin.css') }}" />
+    <script type="text/javascript" src="{{ static_url('script/jquery.min.js') }}"></script>
+    <script type="text/javascript" src="{{ static_url('script/bootstrap.min.js') }}"></script>
+    <script type="text/javascript" src="{{ static_url('script/global.js') }}"></script>
+    <script type="text/javascript" src="{{ static_url('script/jquery.cookie.js') }}"></script>
+    <script type="text/javascript" src="{{ static_url('script/regular.js') }}"></script>
+
+    <link rel="stylesheet" href="{{ static_url('ueditor/themes/default/css/umeditor.css') }}" />
+    <script type="text/javascript" src="{{ static_url('ueditor/umeditor.config.js') }}"></script>
+    <script type="text/javascript" src="{{ static_url('ueditor/umeditor.js') }}"></script>
+    <script type="text/javascript" src="{{ static_url('ueditor/umeditor.min.js') }}"></script>
+    <script type="text/javascript" src="{{ static_url('ueditor/lang/zh-cn/zh-cn.js') }}"></script>
+
+</head>
+<script type="text/javascript">
+</script>
+<body>
+    <div class="header">
+        <div class="header_logo left">一道后台管理</div>
+        <div class="header_user right">
+            <div class="top-menu">
+                <ul class="top-nav"></ul>
+            </div>
+            <div class="other-info">
+                <span>
+                    <ul class="his-nav">
+                        <li class="first-nav history">
+                            <a href="#">历史导航</a>
+                        </li>
+                    </ul>
+                </span>
+                <span><a href="/admin_user/center">{{ login_user }}</a></span>
+                <span><a href="/login?a=logout">退出</a></span>
+            </div>
+        </div>
+    </div>
+    <div class="main">
+        <table class="table table_container" >
+            <tr>
+                <td class="menu">
+                    <div id="main_menu" ></div>
+                </td>
+                <td>
+                    <div class="content">
+                        <div class="in_content">
+                        {% block body %}{% end %}
+                        </div>
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </div>
+</body>
+<script type="text/javascript">
+    $(document).ready(function() {
+        var status = "{{ moduleOpera }}";
+
+        var userAccess ="{{ login_user['accesslist'] }}";
+        var userAccess = userAccess.replace(/\&quot;/g,'"');
+        var menuContainer = $.parseJSON(userAccess);
+        var menuLevel = [];
+        for (var i = menuContainer.length - 1; i >= 0; i--) {
+            menuLevel.push(parseInt(menuContainer[i].level));
+        };
+        var maxLevel = Math.max.apply(Math, menuLevel);
+        //创建顶层菜单
+        $("#main_menu").append('<ul class="menu-nav"></ul>');
+        for(p in menuContainer){
+            // 判断左右
+            // 该菜单不显示
+            if (menuContainer[p].validity == "0") {
+            };
+            // 左侧边栏
+            if (menuContainer[p].validity == "1") {
+                if (menuContainer[p].parent_id == "0" && menuContainer[p].menu_route == "") {
+                    $('.menu-nav').append('<li class="first-nav"><a class="nav-head" id="first-nav" name="'+ menuContainer[p].access_id +'" href="###">'+ menuContainer[p].label +'<span class="glyphicon glyphicon-chevron-right"></span></a></li>');
+                }
+                if (menuContainer[p].parent_id == "0" && menuContainer[p].menu_route != "") {
+                    $('.menu-nav').append('<li class="first-nav"><a class="nav-head" id="first-nav" name="'+ menuContainer[p].access_id +'" href="'+ menuContainer[p].menu_route +'">'+ menuContainer[p].label+'</a></li>');
+                };
+            };
+            //头部导航
+            if (menuContainer[p].validity == 2) {
+                    if (menuContainer[p].parent_id == "0" && menuContainer[p].menu_route == "") {
+                        $('.top-nav').append('<li class="first-nav"><a class="nav-head top_head" id="first-nav" name="'+ menuContainer[p].access_id +'" href="###">'+ menuContainer[p].label +'<span class="glyphicon glyphicon-chevron-down"></span></a></li>');
+                    }
+                    if (menuContainer[p].parent_id == "0" && menuContainer[p].menu_route != "") {
+                        $('.top-nav').append('<li class="first-nav"><a class="nav-head top_head" id="first-nav" name="'+ menuContainer[p].access_id +'" href="'+ menuContainer[p].menu_route +'">'+ menuContainer[p].label+'</a></li>');
+                    };
+                };
+        }
+        function createMenuUnit(level_stat){
+            var headNav = $(".nav-head");
+            for (var j = menuContainer.length - 1; j >= 0; j--) {
+                //子菜单
+                if (menuContainer[j].level == level_stat && menuContainer[j].validity == 1) {
+                    for (var a = headNav.length - 1; a >= 0; a--) {
+                        if (headNav[a].getAttribute("name") == menuContainer[j].parent_id){
+                            if (menuContainer[j].menu_route != "") {
+                                $(headNav[a]).after('<ul class="second-nav"><li class="first-nav"><a class="nav-head" name="'+ menuContainer[j].access_id +'" href="'+  menuContainer[j].menu_route+'">'+menuContainer[j].label+'</a></li></ul>');
+                            }else{
+                                $(headNav[a]).after('<ul class="second-nav"><li class="first-nav"><a class="nav-head" name="'+ menuContainer[j].access_id +'" href="###">'+menuContainer[j].label+'<span class="glyphicon glyphicon-chevron-right"></span></a></li></ul>');
+                            }    
+                        }
+                    };
+                }
+                if (menuContainer[j].level == level_stat && menuContainer[j].validity == 2) {
+                    for (var a = headNav.length - 1; a >= 0; a--) {
+                        if (headNav[a].getAttribute("name") == menuContainer[j].parent_id){
+                            if (menuContainer[j].menu_route != "") {
+                                $(headNav[a]).after('<ul class="second-nav"><li class="first-nav"><a class="nav-head" name="'+ menuContainer[j].access_id +'" href="'+  menuContainer[j].menu_route+'">'+menuContainer[j].label+'</a></li></ul>');
+                            }else{
+                                $(headNav[a]).after('<ul class="second-nav"><li class="first-nav"><a class="nav-head" name="'+ menuContainer[j].access_id +'" href="###">'+menuContainer[j].label+'<span class="glyphicon glyphicon-chevron-right"></span></a></li></ul>');
+                            }    
+                        }
+                    };
+                }
+
+
+            };
+        }
+        for (var countA = 2; countA <= maxLevel; countA++) {
+            var countB = countA;
+            createMenuUnit(countB);
+        };
+        //当前菜单展开/高亮
+        var locUrl = window.location.pathname;
+        $(".menu-nav .first-nav a").each(function(index, el) {
+            var href = this.getAttribute("href");
+            if( href == locUrl){
+                $(this).parent("li").addClass('current');
+            }
+        });
+        $(".current").each(function(){
+            if ($(this).parent(".second-nav")) {
+                $(this).parent().parents(".first-nav").addClass("on");
+            }else{
+                $(this).parent(".first-nav").addClass("on");
+            }
+        })
+        //菜单动画
+        $(".menu-nav .first-nav a").click(function(){
+             if($(this).parent(".first-nav").hasClass("on")){
+                $(this).nextAll(".second-nav").slideUp(200,function(){
+                    $(this).parent(".first-nav").removeClass("on");
+                    $(this).prev(".nav-head").children("span").removeClass("glyphicon glyphicon-chevron-down").addClass("glyphicon glyphicon-chevron-right");
+                });
+            }else{
+                $(this).nextAll(".second-nav").slideDown(200,function(){
+                    $(this).parent(".first-nav").addClass("on");
+                    $(this).prev(".nav-head").children("span").removeClass("glyphicon glyphicon-chevron-right").addClass("glyphicon glyphicon-chevron-down");
+                });
+        }
+        })
+        $(".current").parent(".second-nav").prevAll(".nav-head").children("span").addClass("glyphicon glyphicon-chevron-down");
+        $(".current").parent(".second-nav").parent(".first-nav").parent(".second-nav").prevAll(".nav-head").children("span").addClass("glyphicon glyphicon-chevron-down");
+        //---菜单动画结束
+        if (status && status==403){
+            alert("用户无操作权限!");
+            return false;
+        }
+
+        $("#pageGo").click(function(){
+            var page = parseInt($('#pageInput').val());
+            var page_max = parseInt($('#pageMax').text());
+            if (isNaN(page) || page > page_max || page < 1) {
+                alert("请输入有效页码！");
+                return
+            }
+            var url = location.href;
+            if (url.indexOf('page=') > -1) {
+                url = url.replace(/page=\d+/, 'page=' + page);
+            } else if (url.indexOf('?') > -1){
+                url = url + '&page=' + page;
+            } else {
+                url = url + '?page=' + page;
+            }
+            location.href = url;
+        });
+        //创建历史导航
+        if ($.cookie("history")) {
+            var his_cookie = $.cookie("history");
+            var arr_his = his_cookie.split(",");
+            hisUnit(arr_his)
+        };
+
+        $(".nav-head").click(function(){
+            if ($(this).attr('href') != "###") {
+                var his_cookie = $.cookie("history")
+                var temp = $(this).attr('href');
+                var tempName = $(this).text();
+                var cookieUnit = temp + "*" +tempName;
+                var duplicate = 0;
+                if (his_cookie) {
+                    var arr_his = his_cookie.split(",")
+                    for (var i = 0;i<arr_his.length; i++) {
+                        if (cookieUnit == arr_his[i] || cookieUnit == arr_his[0]) {
+                            duplicate = 1;
+                            return duplicate;
+                        }
+                    };
+                    if(duplicate == 0){
+                        if (arr_his.length>5) {
+                            arr_his.pop()
+                            var new_arr_his = arr_his.join()
+                            var newcookie = cookieUnit +","+ new_arr_his;
+                            $.cookie("history",newcookie,{
+                                "path":"/",
+                                "expires":1,
+                            })
+                        }else{
+                            var newcookie = cookieUnit +","+ his_cookie;
+                            $.cookie("history",newcookie,{
+                                "path":"/",
+                                "expires":1,
+                            })
+                        } 
+                    }
+                }else{
+                    $.cookie("history",cookieUnit,{
+                            "path":"/",
+                            "expires":1,
+                    })
+                }; 
+            }
+        })
+        function hisUnit(list){
+            if (list.length>0) {
+                $(".history").children("a").append('<span class="glyphicon glyphicon-chevron-down"></span>')  
+            };
+            for(p in list){
+                var a = list[p].split("*")
+                var link = a[0]
+                var descript = a[1]
+                $(".his-nav>.first-nav").append('<ul class="second-nav"><li class="first-nav"><a class="nav-head" href="'+link+'">'+ descript +'</a></li></ul>')
+            }
+        }
+})
+
+
+</script>
+</html>

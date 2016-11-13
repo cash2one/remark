@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ title }}</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="{{ static_url('style/bootstrap.min.css') }}" />
+    <link rel="stylesheet" href="{{ static_url('style/common.css') }}" />
+    <link rel="stylesheet" type="text/css" href="{{ static_url('style/admin.css') }}" />
+    <script type="text/javascript" src="{{ static_url('script/jquery.min.js') }}"></script>
+    <script type="text/javascript" src="{{ static_url('script/bootstrap.min.js') }}"></script>
+    <script type="text/javascript" src="{{ static_url('script/global.js') }}"></script>
+    <script type="text/javascript" src="{{ static_url('script/jquery.cookie.js') }}"></script>
+    <script type="text/javascript" src="{{ static_url('script/regular.js') }}"></script>
+
+    <link rel="stylesheet" href="{{ static_url('ueditor/themes/default/css/umeditor.css') }}" />
+    <script type="text/javascript" src="{{ static_url('ueditor/umeditor.config.js') }}"></script>
+    <script type="text/javascript" src="{{ static_url('ueditor/umeditor.js') }}"></script>
+    <script type="text/javascript" src="{{ static_url('ueditor/umeditor.min.js') }}"></script>
+    <script type="text/javascript" src="{{ static_url('ueditor/lang/zh-cn/zh-cn.js') }}"></script>
+
+</head>
+<body>
+    <div class="header">
+        <div class="header_logo left">自媒体运营工具</div>
+        <div class="header_user right">
+            <div class="other-info">
+                <a href="/"><i class="zg-icon zg-icon-dd-home"></i>首页</a>
+                <a href="/admin_user/center"><i class="zg-icon zg-icon-dd-home"></i>我的主页</a>
+                <a href="/media">我要编辑</a>
+
+                {% if login_user['name'] %}
+                    <a href="/login?a=logout">退出</a>
+                {% else %}
+                    <a href="/login">登录</a>
+                {% end %}
+
+            </div>
+        </div>
+    </div>
+
+    <div class="main">
+    <div class="zg-wrap zu-main clearfix">
+        <div class="content-block clearfix">
+            {% block body %} {% end %}
+        </div>
+    </div>
+    </div>
+</body>
+</html>

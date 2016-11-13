@@ -1,0 +1,108 @@
+<div class="sm-first-pick-sm-get">
+    <div class="title">等待自媒体反馈</div>
+    <div class="case-more-box clear-margin">
+        {% for k in feedback_list %}
+        <div class="self-media-main">
+            <div class="self-msg">
+                <a href="/u/{{ feedback_list[k]['user']['user_id'] }}">
+                    <img src="{{ feedback_list[k]['user']['avatar'] }}" alt="" style="width:40px;height:40px;" />
+                    {{ feedback_list[k]['user']['nickname'] }}
+                </a>
+            </div>
+            {% if feedback_list[k]['user']['phone'] %}
+            <div class="mobile">
+                <img src="/static/images/mobile.png" />
+                {{ feedback_list[k]['user']['phone'] }}
+            </div>
+            {% end %}
+            <div class="container clear-padding">
+                {% for item in feedback_list[k]['jiedan'] %}
+                {% if item['feedback'] %}
+                <div class="media-box">
+                    <div class="media-main deposit-page">
+                        <div class="media-title result-title">
+                            <a href="{{ item['feedback']['url'] }}" target="_blank">{{ item['feedback']['title'] }}</a>
+                        </div>
+                        <div>
+                            <small>阅读: {{ item['feedback']['read_count'] }}</small>
+                        </div>
+                        <div>
+                            {{ item['feedback']['time'] }}
+                            <span class="blue-link">
+                                <a href="/media?a=view&id={{ item['oa_id'] }}">{{ item['name'] }}</a>
+                            </span>
+                            {{ item['wechat_id'] }}
+                        </div>
+                        <div class="am-choose-pick-form for-deposit-page">
+                            <h5>投放位置</h5>
+                            <div class="choose-btn">{{ item['feedback']['type'] }}</div>
+                        </div>
+                        {% if item['feedback']['status'] == 0 %}
+                        <div class="check-btn check-accept" data-id="{{ item['feedback']['id'] }}">验收</div>
+                        <div class="check-btn check-fail" data-id="{{ item['feedback']['id'] }}">不满意</div>
+                        {% else %}
+                        <div class="status-box result-box-success">已验收</div>
+                        {% end %}
+                        <input type="hidden" value="642" />
+                    </div>
+                    <div class="media-head">
+                        <a href="/media?a=view&id={{ item['feedback']['oa_id'] }}">
+                            <img src="{{ item['feedback']['picture'] }}" alt="" style="width:60px;height:60px;" />
+                        </a>
+                    </div>
+                </div>
+                {% else %}
+                <div class="media-box">
+                    <div class="media-main deposit-page">
+                        <div class="media-title">
+                            <a href="/media?a=view&id={{ item['oa_id'] }}">{{ item['name'] }}</a>
+                        </div>
+                        <div class="am-choose-pick-form for-deposit-page">
+                            <h5>投放位置</h5>
+                            <div class="choose-btn">{{ item['type'] }}</div>
+                        </div>
+                        <div class="status-box reset-status-box">等待自媒体反馈</div>
+                        <input type="hidden" value="" />
+                    </div>
+                    <div class="media-head">
+                        <a href="/media?a=view&id={{ item['oa_id'] }}">
+                            <img src="{{ item['avatar'] }}" alt="" style="width:60px;height:60px;" />
+                        </a>
+                    </div>
+                </div>
+                {% end %}
+                {% end %}
+            </div>
+        </div>
+        {% end %}
+    </div>
+</div>
+<script>
+$(function(){
+    // 验收
+    var check = function(){
+        // 监听验收
+        $('.check-accept').click(function(){
+            // 反馈ID
+            var strId = $(this).attr('data-id');
+            if(!strId){
+                showTipsBox('alert','数据有误，请刷新重试');
+                return false;
+            }
+            showAcceptBox('系统提示','确定要执行验收吗', true, function(){
+                $.ajax({
+                    url: '/demand?a=feedback_check',
+                    type: 'POST',
+                    dataType: 'JSON',
+                    data: {
+                        'id': strId
+                    }
+                }).then(function(d){
+                    alert('验收成功');
+                    location.reload();
+                });
+            })
+        });
+    }();
+})
+</script>

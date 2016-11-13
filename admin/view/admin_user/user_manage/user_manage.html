@@ -1,0 +1,385 @@
+{% extends '../../public/main.html' %}
+
+{% block body %}
+<script type="text/javascript">
+    function update_password(obj){
+        var id = obj.name;
+        var form_id = 'reset_password_form' + id;
+        var reg_pass = new RegExp("[\\u4E00-\\u9FFF]+","g");
+        var pass = $('#update_password'+id).val();
+        if (pass.length < 6 ||  pass.length > 18 || reg_pass.test(pass)) {
+            alert("请输入正确格式的密码！由6-18位的字符组成！");
+            return false;
+        }
+        document.getElementById(form_id).submit();
+    }
+
+    function on_create_admin_user(){
+        var name = $('#user_name').val();
+        var pass = $('#user_password').val();
+        var position = $('#user_position').val();
+        var remark = $('#remark').val();
+        var reg_name = /^(\w|[\u4E00-\u9FA5])*$/;
+        var reg_pass = new RegExp("[\\u4E00-\\u9FFF]+","g");
+        if (name.length < 2 || name.length > 20 || reg_name.test(name) == false) {
+            alert("请输入正确格式的用户名！由2-20位的中文、英文、数字组成！");
+            return false;
+        }
+        if (pass.length < 6 || pass.length > 18 || reg_pass.test(pass)) {
+            alert("请输入正确格式的密码！由6-18位的字符组成！");
+            return false;
+        }
+        dicArgs = {
+            'user_name': name,
+            'user_position': position,
+            'user_password': pass,
+            'remark':remark
+        };
+        $.ajax({
+            url: "/admin_user/user_manage?a=create",
+            method: "post",
+            dataType:'json',
+            data: dicArgs,
+            success: function (result) {
+                //console.log("result = "+result);
+                if (result.status ==200){
+                    window.location.href="/admin_user/user_manage";
+                }else if (result.status ==401) {
+                    alert("用户已存在！ 请重新输入！");
+                }else if (result.status ==500) {
+                    alert("创建用户失败请重新操作！");
+                }
+            }
+        });
+    }
+    
+    function on_update_admin_user(obj){
+        var id = obj.name;
+        var name = $('#user_name'+id).val();
+        var nickname = $('#user_nickname'+id).val();
+        var phone = $('#user_phone'+id).val();
+        var email = $('#user_email'+id).val();
+        var reg_name = /^(\w|[\u4E00-\u9FA5])*$/;
+        var reg_email = /^\w+([-+._]\w+)*@\w+([-.]\w+)*\.\w+([-.]w+)*$/;
+        var reg_phone = /^\d{11}$/;
+
+        if (name.length < 2 || name.length > 20 || reg_name.test(name) == false) {
+            alert("请输入正确格式的用户名！由2-20位的中文、英文、数字组成！");
+
+            return false;
+        }
+        if (nickname && nickname.length < 2  || nickname.length > 20 || reg_name.test(nickname) == false ) {
+            alert("请输入正确格式的姓名！由2-20位的中文、英文、数字组成！");
+            return false;
+        }
+        if (phone && reg_phone.test(phone) == false) {
+            alert("请输入正确手机号码！");
+            return false;
+        }
+        if (email && reg_email.test(email) == false) {
+            alert("请输入正确邮箱！");
+            return false;
+        }
+        dicArgs = {
+            'user_id': id,
+            'user_name': name,
+            'user_nickname': nickname,
+            'user_phone': phone,
+            'user_email': email,
+            'user_position': $('#user_position'+id).val(),
+            'user_status': $('#user_status_option'+id).val(),
+            'leader':$('#user_leader'+id).val(),
+            'remark':$('#user_remark'+id).val()
+        };
+        $.ajax({
+            url: "/admin_user/user_manage?a=update",
+            method: "post",
+            dataType:'json',
+            data: dicArgs,
+            success: function (result) {
+                //console.log("result = "+result);
+                if (result.status ==200){
+                    window.location.href="/admin_user/user_manage";
+                }else if (result.status ==401) {
+                    alert("信息已经存在！ 请重新确认！");
+                }else if (result.status ==403) {
+                    alert("该用户无操作权限！");
+                    return false;
+                }else if (result.status ==500) {
+                    alert("更新用户失败请重新操作！");
+                    return false;
+                }
+            }
+        });
+    }
+
+    function deleteUser(obj){
+        if(confirm('确定删除此用户信息 ！！！')==false){
+            return;
+        }
+        var id = obj.name;
+        $.ajax({
+            url: "/admin_user/user_manage?a=delete&id=" + id,
+            method: "post",
+            dataType: 'json',
+            success: function (result) {
+                if (result.status == 200) {
+                    window.location.href = "/admin_user/user_manage";
+                } else if (result.status == 403) {
+                    alert("该用户无操作权限！");
+                    return false;
+                } else if (result.status == 500) {
+                    alert("删除失败请重新操作！");
+                    return false;
+                }
+            }
+        })
+    }
+</script>
+<div class="nav">
+    <button class="btnAdd" data-target="#admin_user_dialog" data-toggle="modal">+ 用户</button>
+</div>
+<div>
+    <div id="admin_user_dialog" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">X</button>
+                    <h4 id="admin_user_create_title">新增员工</h4>
+                </div>
+                <div class="modal-body">
+                    <form id="admin_user_form" name="admin_user_form" method="post" class="form-horizontal">
+                        <div class="form-group">
+                            <label class="control-label col-sm-3">&#12288;用户名:</label>
+                            <div class="col-sm-5">
+                                <input class="form-control" type="text" id="user_name" name="user_name" >
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label col-sm-3">职位信息:</label>
+                            <div class="col-sm-5">
+                                <input class="form-control" type="text" id="user_position" name="user_position" >
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label col-sm-3">初始密码:</label>
+                            <div class="col-sm-5">
+                                <input class="form-control" type="text" id="user_password" name="user_password" value="123456">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label col-sm-3">备&#12288;&#12288;注:</label>
+                            <div class="col-sm-5">
+                                <input class="form-control" type="text" id="remark" name="remark" >
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-success" onclick="on_create_admin_user()">新建</button>
+                    <button class="btn btn-default" data-dismiss="modal" aria-hidden="true">取消</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="funnel" >
+    <div class="searchBox">
+        <form class="form-inline" action='/admin_user/user_manage' method="get">
+            <input class="form-control" type="text" name="text"  id="text" class="typeText"/>
+            <button type="submit" class="form-control btn btn-default">搜索</button>
+        </form>
+    </div>
+</div>
+
+<table class="table table-bordered table-hover vert-align">
+    <thead>
+        <tr class="res_tbl_title">
+            <td>序号</td>
+            <td>用户名</td>
+            <td>姓名</td>
+            <!--<td>姓名（登录名）</td>-->
+
+            <td>联系方式</td>
+            <td>邮件地址</td>
+            <td>上级</td>
+            <td>状态</td>
+            <td>备注</td>
+            <td>操作</td>
+        </tr>
+    </thead>
+    {% for item in admin_user %}
+    <tbody>
+        <tr>
+            <td>{{ item['idx'] }}</td>
+            <td>{{ item['name'] }}</td>
+            <td>{{ item['nickname'] }}</td>
+            <td>{{ item['phone'] }}</td>
+            <td>{{ item['email'] }}</td>
+            <td>{{ leader[item['leader']] if item['leader'] in leader.keys() else '' }}</td>
+            <td>{% if item['status'] == 1 %}禁用
+                {% else %}正常
+                {% end %}</td>
+            <td>{{ item['remark'] if item['remark'] else '' }}</td>
+            <td>
+                <a id="update_btn_{{ item['id'] }}" name="update_btn" class="btn btnColor btn-info" data-target="#admin_user_dialog{{ item['id'] }}" data-toggle="modal">编辑</a>
+                <div id="admin_user_dialog{{ item['id'] }}" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">X</button>
+                                <h4 id="admin_user_update_title{{ item['id'] }}">编辑员工信息</h4>
+                            </div>
+                            <div class="modal-body">
+                                <form action="" class="form-horizontal">
+                                    <input class="form-control" type="hidden" id="user_id{{ item['id'] }}" name="user_id" value="{{ item['id'] }}">
+                                    <div class="form-group">
+                                         <label class="control-label col-sm-3">&#12288;用户名</label>
+                                        <div class="col-sm-5">
+                                            <input class="form-control" type="text" id="user_name{{ item['id'] }}" name="user_name" value="{{ item['name'] }}">
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                            <label class="control-label col-sm-3">姓&#12288;&#12288;名</label>
+                                            <div class="col-sm-5">
+                                                <input class="form-control" type="text" id="user_nickname{{ item['id'] }}" name="user_nickname" value="{{ item['nickname'] }}">
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                            <label class="control-label col-sm-3">用户电话</label>
+                                            <div class="col-sm-5">
+                                                <input class="form-control" type="text" id="user_phone{{ item['id'] }}" name="user_phone" value="{{ item['phone'] }}">
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                            <label class="control-label col-sm-3">QQ</label>
+                                            <div class="col-sm-5">
+                                                <input class="form-control" type="text" id="user_phone{{ item['id'] }}" name="user_phone" value="{{ item['qq'] }}">
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                            <label class="control-label col-sm-3">微信</label>
+                                            <div class="col-sm-5">
+                                                <input class="form-control" type="text" id="user_phone{{ item['id'] }}" name="user_phone" value="{{ item['weixin'] }}">
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                            <label class="control-label col-sm-3">用户邮箱</label>
+                                            <div class="col-sm-5">
+                                                <input class="form-control" type="text" id="user_email{{ item['id'] }}" name="user_email" value="{{ item['email'] }}">
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                            <label class="control-label col-sm-3">职位信息</label>
+                                            <div class="col-sm-5">
+                                            <input class="form-control" type="text" id="user_position{{ item['id'] }}" name="user_position" value="{{ item['position'] }}">
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                            <input class="form-control" type="hidden" id="leader{{ item['id'] }}" name="leader" value="{{ item['leader'] }}">
+                                            <label class="control-label col-sm-3">上&#12288;&#12288;级</label>
+                                            <div class="col-sm-5">
+                                            <select  class="form-control" id="user_leader{{ item['id'] }}" name="user_leader">
+                                                <option value="0">--无--</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                            <label class="control-label col-sm-3">备&#12288;&#12288;注</label>
+                                            <div class="col-sm-5">
+                                            <input class="form-control" type="text" id="user_remark{{ item['id'] }}" name="user_remark" value="{{ item['remark'] if item['remark'] else '' }}">
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="control-label col-sm-3">用户状态</label>
+                                        <div class="col-sm-5">
+                                            <input type="hidden" id="user_status{{ item['id'] }}" name="user_status{{ item['id'] }}" value="{{ item['status'] }}">
+                                        <select class="form-control"  name="user_status" id="user_status_option{{ item['id'] }}" >
+                                            <option  id="0" value="0">正常</option>
+                                            <option  id="1" value="1">禁用</option>
+                                        </select>
+                                    </div>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="modal-footer">
+                                <button class="btn btn-success" name="{{ item['id'] }}" onclick="on_update_admin_user(this)">保存</button>
+                                <button class="btn btn-default" data-dismiss="modal" aria-hidden="true">取消</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <a id="reset_password_{{ item['id'] }}" name="reset_password" class="btn btnColor btn-warning" data-target="#reset_password_dialog{{ item['id'] }}"
+                   data-toggle="modal">密码重置</a>
+                <div id="reset_password_dialog{{ item['id'] }}" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">X</button>
+                                <h4 id="reset_password_title{{ item['id'] }}">编辑员工信息</h4>
+                            </div>
+                            <div class="modal-body">
+                                <form id="reset_password_form{{ item['id'] }}" name="admin_user_form" method="post" action="/admin_user/user_manage?a=password">
+                                    <input type="hidden" id="password_id" name="user_id" value="{{ item['id'] }}">
+
+                                    更新密码
+                                    <input type='text' id="update_password{{ item['id'] }}" name="update_password" maxlength="18" > <b>*</b> <br /><br />
+
+                                </form>
+                            </div>
+                            <div class="modal-footer">
+                                <button class="btn btn-success" name="{{ item['id'] }}" onclick="update_password(this)">保存</button>
+                                <button class="btn btn-default" data-dismiss="modal" aria-hidden="true">取消</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <a class="btn btnColor btn-danger" name="{{ item['id'] }}" onclick="deleteUser(this)">删除</a>
+            </td>
+        </tr>
+    </tbody>
+    {% end %}
+</table>
+<div>
+    {% raw page_html %}
+</div>
+<script type="text/javascript">
+    $(document).ready(function(){
+        $("#text").val("{{searchCondition}}");
+
+        $("a[name='update_btn']").click(function(){
+            var str_id = this.id;
+            var id = str_id.split("_").pop();
+            var value = $('#user_status'+id).val();
+            var all_options = document.getElementById("user_status_option"+id).options;
+            for (i=0; i<all_options.length; i++){
+                if (all_options[i].id == value) // 根据option标签的ID来进行判断 测试的代码这里是两个等号
+                {
+                    all_options[i].selected = "true";
+                }
+            }
+
+            $.ajax({
+                type: "get",
+                contentType: "application/json",
+                url: "/admin_user/user_manage?a=get_user",
+                success: function (result) {
+                    var obj = JSON.parse(result);
+                    var leader = '';
+                    for (var i = 0; i < obj.data.length; i++) {
+                        leader += '<option value=' + obj.data[i].id + '>';
+                        leader += obj.data[i].nickname || obj.data[i].name;
+                        leader += '</option>';
+                    }
+                    $('#user_leader'+id).append(leader);
+                    $('#user_leader'+id).val($('#leader'+id).val());
+                }
+            });
+        });
+    })
+</script>
+{% end %}

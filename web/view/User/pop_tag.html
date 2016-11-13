@@ -1,0 +1,99 @@
+<div class="side-trade-list-tag">
+    <div class="trade-list-title">选择标签<div class="login-close"><span class="icon-close" id="tag-close"></span></div></div>
+    <div class="mCustomScrollbar side-content"  data-mcs-theme="minimal-dark">
+        {% for item in tags %}
+	    <div class="tag-container">
+            <div id ="t_{{ item['id'] }}" data="{{ item['id'] }}" class="interestedBox">{{ item['name'] }}</div>
+	    </div>
+        {% end %}
+    </div>
+</div>
+<script>
+$(function(){
+    var pop_tag = function(){
+        var self = this;   
+
+        self.pop_max_tag = 3;
+        self.tradeListTag = [];
+
+        self.open = function(){
+            // open
+            $('#show-side-list-tag').click(function(){
+                if(!$('.side-trade-list-tag').hasClass('trade-in')){
+                    $('.side-trade-list-tag').addClass('trade-in');
+                }else{
+                    $('.side-trade-list-tag').removeClass('trade-in');
+                }
+
+            });
+        }
+
+        self.close = function(){
+            $('#tag-close').click(function(){
+                $('.side-trade-list-tag').removeClass('trade-in');
+            });
+        }
+
+        self.select = function(){
+            $('.tag-container .interestedBox').click(function(e){
+                var ss = e.target.innerHTML;
+                var sid = $(e.target).attr('data');
+
+                if(getListNum(self.tradeListTag,sid)==-1){
+                    if(self.tradeListTag.length>=self.pop_max_tag){
+                        showTipsBox('alert','最多只可以选择' + self.pop_max_tag + '个需求类型');
+                        return;
+                    }
+                    
+                    self.tradeListTag.push(sid);
+                    $(e.target).addClass('picked');
+                    var obj = document.createElement('div');
+                    var ooo2 = document.createElement('span');
+                    ooo2.innerHTML = '删除';
+                    ooo2.className = 'deleteBtn';
+                    obj.innerHTML = ss;
+                    obj.className = 'interestedBox';
+                    obj.id = 'inner'+sid;
+                    //obj.data = sid;
+                    $(obj).attr('data',sid);
+                    $('#trade-container-tag').prepend(obj);
+                    $('#inner' + sid).append(ooo2).click(function(e){
+                        var sa = $(this).attr('data');
+                         self.tradeListTag.splice(getListNum(self.tradeListTag,sa), 1);
+                          $(this).remove();
+                        $('#t_'+sa).removeClass('picked');
+                        $('input[name="tag_list"]').val(self.tradeListTag.join(','));
+                    });
+                    
+                }else{
+                    $(e.target).removeClass('picked');
+                    self.tradeListTag.splice(getListNum(self.tradeListTag,sid),1);
+                     $('#inner' + sid).remove();
+                }
+                $('input[name="tag_list"]').val(self.tradeListTag.join(','));
+            });
+            $('#i-box').hide();
+        }
+
+        self.run = function(){
+            self.open();
+            self.close();
+            self.select()
+        }();
+    }();
+});
+
+
+
+function getListNum(list,key){
+    var tt = -1;
+    var len = list.length;
+    for(var i=0;i<len;i++){
+        if(key==list[i]){
+            tt = i;
+            return tt;
+        }
+    }
+    return tt;
+}
+</script>

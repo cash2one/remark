@@ -1,0 +1,278 @@
+{% extends '../public/main.html' %}
+{% block title %}一道自媒体平台{% end %}
+{% block body %}
+<link href="{{ static_url('index_v2/css/home.css') }}" type="text/css" rel="stylesheet">
+
+<div class="banner crossbanenr">
+    <ul class="bannerL">
+        {% for item in banner %}
+            <li style="background: {{ item['bg_color'] }}" data="{{ item['bg_color'] }}"><a href="{{ item['link'] }}" target="_blank"><img src="{{ item['image'] }}" alt="{{ item['title'] }}"></a></li>
+        {% end %}
+    </ul>
+</div>
+
+<div class="notice">
+    <h4>系统公告</h4>
+    <ul>
+        {% for item in notice %}
+            <li><b class="ydi yd-dot"></b><a href="{{ item['link'] }}" target="_blank">{{ item['title'] }} - {{ item['type'] }}</a> <strong>新</strong><span>{{ item['last_update_time'] }}</span></li>
+        {% end %}
+    </ul>
+</div>
+
+<div class="guide clearfix">
+    <div class="advertiser">
+        <img src="{{ static_url('images/icon-target.png') }}" alt="广告主">
+        <h2>我是广告主</h2>
+        <a href="javascript:onlink('/user?a=demand_form')"><span>发布广告需求</span><span class="ydi yd-right"></span></a>
+    </div>
+    <div class="media">
+        <img src="{{ static_url('images/icon-rainbow.png') }}" alt="自媒体">
+        <h2>我是自媒体</h2>
+        <a href="javascript:onlink('/user?a=media_create')"><span>免费入驻</span><span class="ydi yd-right"></span></a>
+    </div>
+</div>
+
+<!-- banner & notice js -->
+<script type="text/javascript">
+    var picIndex = 0;
+    var curPicIndex=0;
+    var cscs;
+    $(function(){
+        $('.bannerL li').hide();
+        $($('.bannerL').children()[picIndex]).show();
+        $('.bannerL').css('background',$($('.bannerL').children()[picIndex]).attr('data'));
+
+        var len = $('.bannerL li').length;
+        var bb = $('<ul></ul>');
+        bb.addClass('bannerS');
+        for(var i=0;i<len;i++){
+            var cycle = $('<li></li>');
+            cycle.attr('name',i);
+            bb.append(cycle);
+            if(i==0)cycle.addClass('current');
+            cycle.bind('mouseover',function(){
+                if(parseInt($(this).attr('name'))==picIndex)return;
+                clearTimeout(cscs);
+                changePics($(this).attr('name'));
+            })
+        }
+        $('.bannerL').append(bb);
+        bb.css('margin-left',bb.width()/2*-1);
+        cscs = setTimeout(changePics,6000);
+
+        // 公告
+        /*var notice = function() {
+            var self = this;
+
+            this.show = function(){
+                $('#noticePopup').css('display', 'block');
+            }
+
+            this.hide = function(){
+                $('#noticePopup').css('display', 'none');
+            }
+
+            this.listen = function(){
+                // 监听显示
+                $("#notice").click(function () {
+                    self.show();
+                });
+
+                // 监听关闭
+                $('.notice_close').click(function(){
+                    self.hide();
+                });
+            }
+
+            this.listen();
+        }();*/
+        // media
+        $("#pagi1").click(function() {
+            console.log(this)
+            $(".hotMedia .current").removeClass("current")
+            $("#pagi1").addClass("current");
+            $(".mediaList").css("margin-left","-20px")
+        });
+        $("#pagi2").click(function() {
+            $(".hotMedia .current").removeClass("current")
+            $("#pagi2").addClass("current");
+            $(".mediaList").css("margin-left","-1220px")
+        });
+        $("#pagi3").click(function() {
+            $(".hotMedia .current").removeClass("current")
+            $("#pagi3").addClass("current");
+            $(".mediaList").css("margin-left","-2420px")
+        });
+        $("#pagi4").click(function() {
+            $(".hotMedia .current").removeClass("current")
+            $("#pagi4").addClass("current");
+            $(".mediaList").css("margin-left","-3620px")
+        });
+    });
+
+    function changePics(ss){
+        $($('.bannerL').children()[picIndex]).fadeOut();
+        $($('.bannerS li')[picIndex]).removeClass('current');
+        picIndex = ss?parseInt(ss):(picIndex+1)%($('.bannerL').children().length-1);
+        $($('.bannerL').children()[picIndex]).fadeIn();
+        $('.bannerL').css('background',$($('.bannerL').children()[picIndex]).attr('data'));
+        $($('.bannerS li')[picIndex]).addClass('current');
+        cscs = setTimeout(changePics,6000);
+        curPicIndex = picIndex;
+    }
+</script>
+<!-- banner & notice js end -->
+
+<div class="task">
+    <div class="title">
+        <hr>
+        <h2>广告需求专区</h2>
+        <div class="more"><a href="/list" target="_blank">更多需求</a><span class="ydi yd-right"></span></div>
+        <div class="homeBtn"><a href="javascript:onlink('/user?a=demand_form')" class="btn">发布</a></div>
+    </div>
+    <div class="content">
+        <ul class="taskList clearfix">
+            {% for item in demand %}
+            <li>
+                <div class="taskCategory">{{ item['demand_form']}}</div>
+                <div class="taskTitle"><a href="/demand?a=view&id={{ item['demand_id'] }}">{{ item['title'] }}</a></div>
+                <div class="taskDate"><strong>{{ item['time_begin'] }}</strong> 至 <strong>{{ item['time_end'] }}</strong></div>
+                <div class="taskStatus">
+                    <em>{{ item['view_count'] }}</em> 人气
+                    / <em>{{ len(item['take_order']) }}</em> 接单
+                </div>
+                <div class="budget">预算<span>¥<strong>{{ item['money'] }}</strong></span></div>
+                <div class="media clearfix">
+                    {% if len(item['take_order']) > 0 %}
+                        {% for media_take_order in item['take_order'][0:5] %}
+                            <img src="{{ media_take_order['avatar'] }}" alt="{{ media_take_order['name'] }}">
+                        {% end %}
+                        <a href="/demand?a=view&id={{ item['demand_id'] }}" class="detail">接单</a>
+                    {% else  %}
+                        <a href="/demand?a=view&id={{ item['demand_id'] }}">立即接单</a>
+                    {% end %}
+                </div>
+            </li>
+            {% end %}
+        </ul>
+    </div>
+</div>
+<div class="hotMedia">
+    <div class="title">
+        <hr>
+        <h2>优质自媒体</h2>
+        <div class="more"><a href="/media" target="_blank">更多自媒体</a><span class="ydi yd-right"></span></div>
+        <div class="homeBtn"><a href="javascript:onlink('/user?a=media_create')" class="btn">我要入驻</a></div>
+    </div>
+    <div class="content">
+        <ul class="mediaList clearfix" style="margin-left:-20px;">
+            {% for item in media %}
+            <li>
+                <div class="avatar"><a href="/media?a=view&id={{ item['media_id'] }}" target="_blank"><img src="{{ item['avatar'] }}" alt="{{ item['name'] }}"></a></div>
+                <div class="name">
+                    <a href="/media?a=view&id={{ item['media_id'] }}" target="_blank">{{ item['name'] }}</a>
+                    {% if item['original'] == 1 %}
+                    <span class="original">原创</span>
+                    {% end %}
+                </div>
+                <div>综合级别：<span class="rank">{{ item['value_level'] }}</span></div>
+                <div class="mediaCategory">
+                    <span>{{ item['category_name'] }}</span>
+                </div>
+                <div class="mediaTag">
+                    {% for tag in item['tag_name'] %}
+                        <span data="">{{tag}}</span>
+                    {% end %}
+                </div>
+                <div>阅读数：<em>{{ item['top_avg_read_num'] }}</em> </div>
+                <div class="customer">广告客户：
+                    <a href="{{item['ad_url_1']}}" target="_blank">{{item['ad_name_1']}}&nbsp;</a>
+                    <a href="{{item['ad_url_2']}}" target="_blank">{{item['ad_name_2']}}&nbsp;</a>
+                    <a href="{{item['ad_url_3']}}" target="_blank">{{item['ad_name_3']}}&nbsp;</a>
+                </div>
+            </li>
+            {% end %}
+        </ul>
+        <div class="pagination">
+            <ol>
+                <li id="pagi1" class="current">1</li>
+                <li id="pagi2" >2</li>
+                <li id="pagi3">3</li>
+                <!--<li id="pagi4">4</li>-->
+            </ol>
+        </div>
+    </div>
+</div>
+<div class="mediaShow"><div class="clearfix">
+    <div class="starMedia">
+        <div class="title">
+            <hr>
+            <h2>明星自媒体</h2>
+        </div>
+        {% if media_star %}
+        <div class="content">
+            <div class="articleTitle"><a href="{{media_star['url']}}" target="_blank">{{media_star['title']}}</a></div>
+            <p class="articleSummary">{{media_star['brief']}}</p>
+            <div class="media">
+                <div class="avatar"><a href="/media?a=view&id={{ str(media_star['media_id']) }}" target="_blank"><img src="{{ str(media_star['avatar']) }}" alt="{{media_star['name']}}"></a></div>
+                <div class="name">
+                    <a href="/media?a=view&id={{ str(media_star['media_id']) }}" target="_blank">{{ media_star['name'] }}</a>
+                    {% if media_star['original'] == 1 %}
+                        <span class="original">原创</span>
+                    {% end %}
+                </div>
+                <div>综合级别：<span class="rank">{{ media_star['value_level'] }}</span>阅读数：<em>{{ media_star['top_avg_read_num'] }}</em></div>
+                <div>特征：<em>{{media_star['feature']}}</em></div>
+                </a>
+            </div>
+        </div>
+        {% end %}
+    </div>
+    <div class="topMedia">
+        <div class="title">
+            <hr>
+            <h2>热销榜</h2>
+        </div>
+        <div class="content">
+            <ul class="topList clearfix">
+                {% for item in media_revenue_top %}
+                <li>
+                    <div class="avatar"><a href="/media?a=view&id={{ str(item['media_id']) }}" target="_blank"><img src="{{ str(item['avatar']) }}" alt="{{item['name']}}"></a></div>
+                    <div class="name"><a href="/media?a=view&id={{ str(item['media_id']) }}" target="_blank">{{item['name']}}</a></div>
+                    <div>接单数：<em>{{item['order_num']}}</em></div>
+                    <div class="customer">广告客户：<a href="{{item['ad_url_1']}}" target="_blank">{{item['ad_name_1']}}</a></div>
+                </li>
+                {% end %}
+            </ul>
+        </div>
+    </div>
+</div></div>
+<div class="case">
+    <div class="title">
+        <hr>
+        <h2>成功案例</h2>
+    </div>
+    <div class="content">
+        <ul class="caseList clearfix">
+            <li><img src="{{ static_url('index_v2/images/case-a.jpg') }}" alt="原创自媒体有福音，互联网金融新贵携手一道媒介管家"></li>
+            <li><img src="{{ static_url('index_v2/images/case-b.jpg') }}" alt="高端定制？气质文艺？一道总能找到你想要的"></li>
+            <li><img src="{{ static_url('index_v2/images/case-c.jpg') }}" alt="长期合作自媒体，何须大海捞针"></li>
+            <!--
+            {% for item in yidao_case %}
+                <li><a href="" target="_blank" title="原创自媒体有福音，互联网金融新贵携手一道媒介管家"><img src="{{ static_url('index_v2/images/case-a.jpg') }}" alt="原创自媒体有福音，互联网金融新贵携手一道媒介管家"></a></li>
+            {% end %}
+            -->
+        </ul>
+    </div>
+</div>
+
+<div class="partner clearfix">
+    <h4>友情链接</h4>
+    <ul>
+        {% for item in friendlink %}
+        <li><a href="{{ item['link'] }}" target="_blank">{{ item['title'] }}</a></li>
+        {% end %}
+    </ul>
+</div>
+{% end %}

@@ -1,0 +1,104 @@
+{% extends '../../public/main.html' %}
+
+{% block body %}
+<script type="text/javascript">
+    function on_metadata_create(){
+        var name = document.getElementById('name').value;
+        if (name == "") {
+            alert("名称不能为空！");
+            return false;
+        }
+        document.getElementById('metadata_form').submit();
+    }
+    function on_metadata_update(obj){
+        var id = obj.name;
+        var form_id = 'metadata_form' + id;
+        var name = document.getElementById('name'+id).value;
+        if (name == "") {
+            alert("名称不能为空！");
+            return false;
+        }
+        document.getElementById(form_id).submit();
+    }
+</script>
+<div class="status_title">
+    <ol class="breadcrumb">
+        <li><a href="">元数据维护</a></li> 
+        <li><a href="/metadata/category">行业元数据</a></li>
+    </ol>
+</div>
+<div class="result_filter" id="result_filter">
+    <form class="form-inline" action='/metadata/category' method="get">
+        <label for="search">行业</label>
+        <input class="form-control" type="text" name="search" />
+        <input type="submit" value="搜索" class="form-control btn btn-default" />
+    </form>
+    <button data-target="#metadata_dialog" data-toggle="modal" class="btn btnAdd">+ 行业</button>
+</div>
+<div>
+    <div id="metadata_dialog" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">X</button>
+                    <h4 id="metadata_create_title">新增行业</h4>
+                </div>
+                <div class="modal-body">
+                    <form id="metadata_form" name="metadata_form" method="post" action="/metadata/category?a=create">
+                        行业名称
+                        <input type="text" id="name" name="name" value=""><br /><br />
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-success" onclick="on_metadata_create()">新建</button>
+                    <button class="btn" data-dismiss="modal" aria-hidden="true">取消</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<table class="table table-bordered table-hover vert-align">
+    <thead>
+        <tr class="res_tbl_title">
+            <td>序号</td>
+            <td>名称</td>
+            <td>操作</td>
+        </tr>
+    </thead>
+    {% for item in index_info %}
+    <tbody>
+        <tr>
+            <td>{{ item['idx'] }}</td>
+            <td>{{ item['name'] }}</td>
+            <td>
+                <a class="btn btnColor btn-info" data-target="#metadata_dialog{{ item['id'] }}" data-toggle="modal">变更</a>
+                <div id="metadata_dialog{{ item['id'] }}" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">X</button>
+                                <h4 id="metadata_update_title{{ item['id'] }}">编辑行业</h4>
+                            </div>
+                            <div class="modal-body">
+                                <form id="metadata_form{{ item['id'] }}" name="metadata_form" method="post" action="/metadata/category?a=update&id={{ item['id'] }}">
+                                    行业名称
+                                    <input type="text" id="name{{ item['id'] }}" name="name" value="{{ item['name'] }}"><br /><br />
+                                </form>
+                            </div>
+                            <div class="modal-footer">
+                                <button class="btn btn-success" name="{{ item['id'] }}" onclick="on_metadata_update(this)">保存</button>
+                                <button class="btn btn-default" data-dismiss="modal" aria-hidden="true">取消</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <a class="btn btnColor btn-danger" href="/metadata/category?a=delete&id={{ item['id'] }}" onclick="return confirm('确认删除?');">删除</a>
+            </td>
+        </tr>
+    </tbody>
+    {% end %}
+</table>
+<div>
+    {% raw page_html %}
+</div>
+{% end %}

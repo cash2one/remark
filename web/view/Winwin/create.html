@@ -1,0 +1,74 @@
+{% extends '../public/main.html' %}
+{% block title %}组织互推{% end %}
+{% block body %}
+<link href="{{ static_url('style/winwin.css') }}" type="text/css" rel="stylesheet">
+
+<form action="#" method="post" target="_self" class="create-form">
+  <div class="edit">
+    <div class="cap">
+      <h2>发起互推</h2>
+    </div>
+    <div class="form">
+      <div class="item clearfix">
+        <div class="prop">时间</div>
+        <div class="val"><input id="date" class="text" type="text" name="start_date" data-check="date" extraCheck="true" onfocusx="WdatePicker({doubleCalendar:true,dateFmt:'yyyy/MM/dd'})"/ ></div>
+        <div class="alert">互推的时间，格式：2014/12/17</div>
+      </div>
+      <div class="item clearfix">
+        <div class="prop">名额</div>
+        <div class="val"><input class="text" type="text" name="officialaccounts_limit" reg="^(([2-9]{0,1})|(1[0-5]))$" errorText="名额范围允许2-15人"></div>
+        <div class="alert">参与互推名额，允许范围：2-15</div>
+      </div>
+      <div class="item clearfix">
+        <div class="prop">说明</div>
+        <div class="val"><textarea class="text" name="description"></textarea></div>
+        <div class="alert">注明其它注意事项</div>
+      </div>
+      <div class="btn-box"><input class="btn" type="button" value="立即发起" onClick="checkForm(this,'lb1',othersCheck);"></div>
+      <div class="form-alert"></div>
+    </div>
+  </div>
+  <!--弹层-->
+  <div id="lb1" class="light-cover" style="display:none;">
+    <div class="light-bot">
+      <div class="close"><span class="icon-close" onClick="lightbox('lb1');"></span></div>
+      <div class="con">
+        <h4>确认发起互推</h4>
+        <p>确认后互推要求不可更改</p>
+        <div class="btn-box">
+          <input class="btn btn-sure" type="submit" value="确认">
+          <a class="btn btn-cancel" href="javascript:void(0);" target="_self" onClick="lightbox('lb1');">取消</a>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!--弹层 end-->
+</form>
+<!--<iframe style="width: 0;height: 0" name="hiddenform" id="hiddenform" onload="iframeLoaded(this)"></iframe>-->
+<script src="{{ static_url('script/jquery.nanoscroller.min.js') }}"></script>
+<script src="{{ static_url('script/jquery.cookie.js') }}"></script>
+<script src="{{ static_url('script/common.js') }}"></script>
+<script>
+    $('.nano').nanoScroller();
+    var href = location.href;
+    if(href.match(/\/history$/)){
+        $("#win-nav").find("li").eq(1).addClass("now").siblings().removeClass("now");
+    }
+    function othersCheck(item){
+        var numMax = parseInt($("#numMax").val(),10),
+                numMin = parseInt($("#numMin").val(),10),
+                nowDate = Date.parse(new Date()),
+                setDate = Date.parse($("#date").val());
+        var isNumCheck = $(item).attr("id") === "numMax" ? true : false;
+        var isDateCheck = $(item).attr("id") === "date" ? true : false;
+
+        if(isNumCheck && numMax <= numMin){
+            return "用户数区间有误";
+        }
+        if(isDateCheck && nowDate - setDate > 0){
+            return "为保证互推成功，请调整时间为明天或更远时间";
+        }
+        return true;
+    }
+</script>
+{% end %}

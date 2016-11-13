@@ -1,0 +1,40 @@
+.demandInfo{width:1180px;margin:0 auto;padding-top:20px;}
+.demandInfo .demandCategory{display:inline-block;width:auto;margin-top:4px;padding:0 4px;border-radius:2px;background-color:#b4bec8;color:#fff;font-size:14px;line-height:18px;}
+.demandInfo a{display:inline-block;font-size:16px;line-height:18px;}
+
+.cartContainer{width:1180px;margin:20px auto;}
+
+.title{height:50px;padding:0 19px;border-top:1px solid #ddd;border-right:1px solid #ddd;border-left:1px solid #ddd;background-color:#f6f6f6;line-height:50px;}
+.title h3{float:left;font-weight:700;font-size:16px;line-height:50px;}
+.title .contact{float:right;font-size:18px;}
+.title .contact .ydi{float:left;margin-right:2px;color:#aaa;font-size:20px;line-height:50px;}
+.title .contact .phone{float:left;}
+.content{padding:0 19px;border:1px solid #ddd;background-color:#fff;}
+.action{height:30px;margin-top:-1px;padding:20px;border-right:1px solid #ddd;border-bottom:1px solid #ddd;border-left:1px solid #ddd;background-color:#fff;text-align:right;}
+.action .totalPrice{display:inline-block;height:30px;line-height:30px;}
+.action .totalPrice span{float:left;color:#666;font-size:14px;}
+.action .totalPrice small{float:left;padding-right:2px;padding-left:10px;color:#ec4339;font-size:12px;}
+.action .totalPrice strong{float:left;color:#ec4339;font-weight:400;font-size:24px;}
+.action .btnOk{float:right;margin-left:20px;}
+.action .btnNormal{float:left;}
+
+.cartContainer .title div{color:#999;font-size:14px;}
+.cartContainer .itemInfo{float:left;width:380px;}
+.cartContainer .itemAttribute{float:left;width:280px;margin-left:20px;}
+.cartContainer .itemContact{float:left;width:200px;margin-left:20px;}
+.cartContainer .itemPrice{float:left;width:140px;margin-left:20px;}
+.cartContainer .itemStatus{float:right;width:80px;}
+
+.itemBox{padding:20px 0;border-bottom:1px solid #ddd;}
+.itemBox .itemInfo a:hover{text-decoration:none;}
+.itemBox .itemInfo img{width:40px;height:40px;border-radius:20%;border:1px solid rgba(0,0,0,.1);transition:all 0.2s;}
+.itemBox .itemInfo a span{display:inline-block;height:18px;margin-top:12px;margin-left:10px;border-bottom:1px solid transparent;font-size:16px;line-height:18px;transition:all 0.2s;}
+.itemBox .itemInfo a:hover span{border-color:#0066C2;text-decoration:none;}
+.itemBox .itemAttribute{font-size:16px;line-height:40px;}
+.itemBox .itemContact{font-size:16px;line-height:40px;}
+.itemBox .itemPrice{font-size:16px;color:#ec4339;line-height:40px;}
+.itemBox .itemPrice small{float:left;padding-right:2px;font-size:12px;}
+.itemBox .itemPrice strong{float:left;font-weight:400;font-size:20px;}
+.itemBox .itemStatus{margin-top:-13px;margin-bottom:-7px;text-align:right;}
+.itemBox .itemStatus .btnNext{float:right;margin-top:6px;}
+.itemBox .itemStatus span{float:right;margin-top:6px;}

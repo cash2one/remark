@@ -1,0 +1,118 @@
+{% extends '../../public/main.html' %}
+
+{% block body %}
+<script type="text/javascript">
+    function on_notice_commit(){
+        var a = document.getElementById('type').value;
+        var b = document.getElementById('title').value;
+        var c = document.getElementById('link').value;
+        if (a == "" || c == "" || b == "") {
+            alert("公告参数不能为空");
+            return false;
+        }
+        document.getElementById('form').submit();
+    }
+    
+    function update_notice(obj){
+        var id = obj.name;
+        var form_id = 'form' + id;
+        var a = document.getElementById('title'+id).value;
+        var c = document.getElementById('type'+id).value;
+        var d = document.getElementById('link'+id).value;
+        if (a == "" || c == "" || d == "") {
+            alert("公告参数不能为空");
+            return false;
+        }
+        document.getElementById(form_id).submit();
+    }
+</script>
+<div class="result_filter" id="result_filter">
+    <button class="btnAdd" data-target="#notice_dialog" data-toggle="modal">新增公告</button>
+</div>
+<div>
+    <div id="notice_dialog" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">X</button>
+                    <h4 id="banner_create_title">新增公告</h4>
+                </div>
+                <div class="modal-body">
+                    <form id="form" name="form" method="post" action="/index_op/notice?a=create">
+                        类型
+                        <input type="text" id="type" name="type" value=""><br /><br />
+                        标题
+                        <input type="text" id="title" name="title" value=""><br /><br />
+                        公告链接
+                        <input type="text" id="link" name="link" value=""><br /><br />
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-success" onclick="on_notice_commit()">保存</button>
+                    <button class="btn btn-default" data-dismiss="modal" aria-hidden="true">取消</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<table class="table table-bordered table-hover vert-align">
+    <thead>
+        <tr class="res_tbl_title">
+            <td>序号</td>
+            <td>类型</td>
+            <td>标题</td>
+            <td>公告链接</td>
+            <td>最后更新时间</td>
+            <td>操作</td>
+        </tr>
+    </thead>
+    {% for item in index_notice %}
+    <tbody>
+        <tr>
+            <td>{{item['id']}}</td>
+            <td>{{item['type']}}</td>
+            <td>{{item['title']}}</td>
+            <td>{{item['link']}}</td>
+            <td>{{item['last_update_time']}}</td>
+            <td>
+                <div>
+                    <a class="btn btnThin" data-target="#dialog{{ item['id'] }}" data-toggle="modal">编辑</a>
+                    <div id="dialog{{ item['id'] }}" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">X</button>
+                                    <h4 id="update_title{{ item['id'] }}">编辑公告</h4>
+                                </div>
+                                <div class="modal-body">
+                                    <form id="form{{ item['id'] }}" name="form" method="post" action="/index_op/notice?a=update">
+                                        <input type="hidden" id="id{{ item['id'] }}" name="id" value="{{ item['id'] }}">
+                                        标题
+                                        <input type="text" id="title{{ item['id'] }}" name="title" value="{{ item['title'] }}"><br /><br />
+                                        类型
+                                        <input type="text" id="type{{ item['id'] }}" name="type" value="{{ item['type'] }}"><br /><br />
+                                        公告链接
+                                        <input type="text" id="link{{ item['id'] }}" name="link" value="{{ item['link'] }}"/><br /><br />
+
+                                    </form>
+                                </div>
+                                <div class="modal-footer">
+                                    <button class="btn btn-success" name="{{ item['id'] }}" onclick="update_notice(this)">保存</button>
+                                    <button class="btn btn-default" data-dismiss="modal" aria-hidden="true">取消</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <a class="btn btnThin" href="/index_op/notice?a=delete&id={{ item['id'] }}" onclick="return confirm('确认删除?');">删除</a>
+                </div>
+            </td>
+        </tr>
+    </tbody>
+    {% end %}
+</table>
+<div>
+    {% raw page_html %}
+</div>
+{% end %}
+
+

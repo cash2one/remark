@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ title }}</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="{{ static_url('style/bootstrap.min.css') }}" />
+    <link rel="stylesheet" href="{{ static_url('style/common.css') }}" />
+    <link rel="stylesheet" type="text/css" href="{{ static_url('style/admin.css') }}" />
+    <script type="text/javascript" src="{{ static_url('script/jquery.min.js') }}"></script>
+    <script type="text/javascript" src="{{ static_url('script/bootstrap.min.js') }}"></script>
+    <script type="text/javascript" src="{{ static_url('script/global.js') }}"></script>
+    <script type="text/javascript" src="{{ static_url('script/jquery.cookie.js') }}"></script>
+
+    <link rel="stylesheet" href="{{ static_url('ueditor/themes/default/css/umeditor.css') }}" />
+    <script type="text/javascript" src="{{ static_url('ueditor/umeditor.config.js') }}"></script>
+    <script type="text/javascript" src="{{ static_url('ueditor/umeditor.js') }}"></script>
+    <script type="text/javascript" src="{{ static_url('ueditor/umeditor.min.js') }}"></script>
+    <script type="text/javascript" src="{{ static_url('ueditor/lang/zh-cn/zh-cn.js') }}"></script>
+
+</head>
+<script type="text/javascript">
+    function class_fun(obj) {
+        var aname = obj.name;
+        //$("#main_menu li").removeClass("current");
+        //$("li[name=" + aname + "]").addClass('current');
+        $.ajax({
+            type: "post",
+            dataType: "json",
+            url: "/admin_user/module_manager?a=module",
+            data: {'userModule': aname}
+        })
+    }
+</script>
+
+<body>
+    <div class="header">
+        <div class="header_logo left">一道后台管理</div>
+        <div class="header_user right">
+            <span>{{ login_user['name'] }}</span>
+            <a href="/admin_user/center">个人设置</a>
+            <a href="/login?a=logout">退出</a>
+        </div>
+    </div>
+    <div class="main">
+        <table class="table table_container" >
+            <tr>
+                <td class="menu">
+                    <div id="main_menu" ></div>
+                </td>
+                <td>
+                    <div class="content">
+                        <div class="in_content">
+                        {% block body %}{% end %}
+                        </div>
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </div>
+</body>
+<script type="text/javascript">
+    $(document).ready(function() {
+    var accesslist = "{{ login_user['accessMenu'] }}";
+    var userAccess = "{{ login_user['accesslist'] }}";
+    var accesslist = accesslist.replace(/\&quot;/g,'"');
+    var userAccess = userAccess.replace(/\&quot;/g,'"');
+    var listKey = JSON.parse(accesslist);
+    var userAccess = JSON.parse(Array(userAccess)) ;
+
+    var ul_str = access_func(listKey, userAccess);
+    document.getElementById('main_menu').innerHTML = ul_str;
+
+    function child_access_fun(data_list){
+        var str = ""
+        for (var i in data_list) {
+            if (!!data_list[i]['child'] ) {
+                str += "<ul>";
+                str += "<span>"+data_list[i]['label']+"</span>";
+                str += child_access_fun(data_list[i]['child']);
+                str += "</ul>";
+		    }
+            else{
+                var name = data_list[i]['name'].split(".").pop();
+                str += "<li class='' name=";
+                str += name;
+                str += "><a href=" + data_list[i]['menu_route'];
+                str += " onclick='class_fun(this)' name="+name+">" + data_list[i]['label'] + "</a></li>"
+            }
+        }
+        return str
+    }
+
+    function access_func(accesslist, userAccess) {
+        var str = "<ul>";
+        for (var i in accesslist) {
+            for (var j in userAccess){
+                if (!!accesslist[i][userAccess[j]] ){
+                    if (accesslist[i][userAccess[j]]['child']) {
+                        str += "<li>";
+                        str += "<ul>";
+                        if (accesslist[i][userAccess[j]]['name'] !="profile"){
+                            str += "<span>"+accesslist[i][userAccess[j]]['label']+"</span>"}
+                        str += child_access_fun(accesslist[i][userAccess[j]]['child']);
+                        str += "</ul>";
+                        str+="</li>"
+                    }else{
+                        var name = accesslist[i][userAccess[j]]['name'].split(".").pop();
+                        str += "<li class='' name=";
+                        str += name;
+                        str += "><a href="+accesslist[i][userAccess[j]]['menu_route'];
+                        str += " onclick='class_fun(this)' name= "+ name+">"+accesslist[i][userAccess[j]]['label']+"</a></li>"
+                    }
+                }
+            }
+        }
+        str += "</ul>";
+        return str;
+    }
+     $.ajax({
+            type: "post",
+            dataType: "json",
+            url: "/admin_user/module_manager?a=getModule",
+            success: function (d) {
+                if (d){
+                    var userModule = d['data']['userModule'];
+                    $("#main_menu li").removeClass("current");
+                    $("li[name=" + userModule + "]").addClass('current');
+                    //console.log("d"+JSON.stringify(d));
+                    //console.log("d = "+d['data']['userModule']);
+                }
+            }
+        })
+})
+</script>
+</html>

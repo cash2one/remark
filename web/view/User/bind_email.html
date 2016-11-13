@@ -1,0 +1,108 @@
+{% extends '../public/main.html' %}
+{% block title%}绑定邮箱{% end %}
+{% block body %}
+<link href="{{ static_url('style/uc.css') }}" type="text/css" rel="stylesheet">
+
+{% include 'my_top.html' %}
+<div class="ucContainer clearfix">
+{% include 'my_menu.html' %}
+<div class="ucMain userinfo-body">
+    <div class="title">
+        <hr>
+        <h3>绑定邮箱</h3>
+    </div>
+    <div class="content-box">
+        <div class="mj-row">
+            <div class="mj-left">邮箱</div>
+            <div class="mj-middle">
+                <input type="text" name="email" id="email" value="" maxlength="32"></div>
+            <div class="mj-right">请输入您要绑定的邮箱</div>
+        </div>
+        <div class="mj-row">
+            <div class="mj-left">密码</div>
+            <div class="mj-middle">
+                <input type="password" style="display:none;">
+                <input type="password" id="password" name="pwd" value="" maxlength="32"></div>
+            <div class="mj-right">请输入您的一道平台登录密码</div>
+        </div>
+        <div class="mj-row">
+            <div class="mj-middle">
+                <div class="save-btn btn-with-blueBg-and-addBtn" onclick="bdEmail()">确定</div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+<script type="text/javascript">
+    var isSending = false;
+
+    function bdEmail()
+    {
+        if(!checkInput()){
+            alert(1111);
+            return;
+        }
+        //alert(222);
+        $.ajax({
+            url:'/user?a=bind_email',
+            type:'post',
+            dataType:'json',
+            data: {
+                'email': $.trim($('#email').val()),
+                'password': $.trim($('#password').val())
+            },
+            success:function(d){
+                if(d.status == 200){
+                    alert('请前往绑定邮箱验证')
+                    location.href = '/user?a=bind';
+                    return;
+                }
+                showTipsBox('alert', '操作失败，请刷新重试');
+            }
+        });
+    }
+
+    function saveMsg(){
+        $('form[name="bd"] input[name="wx"]').val(location.href.split('=')[1]);
+        $('form[name="bd"]')[0].submit();
+    }
+
+    function checkInput(){
+    	
+        var needToReturn = true;
+        $('form[name="bd"] input').each(function(){
+            if(!needToReturn) return;
+            console.log($(this).val());
+            console.log($(this).attr('name'));
+            //alert(($(this).val()=='' && $(this).attr('name')!='code'));
+            
+            if($(this).val()=='' && $(this).attr('name')!='wx'){
+                var wrongMsg = '';
+                switch ($(this).attr('name')){
+                    case 'email':
+                        wrongMsg = '请输入邮箱地址';
+                        break;
+                    case 'pwd':
+                        wrongMsg = '请输入密码';
+                        break;
+                }
+                alertBox(this,wrongMsg);
+                needToReturn = false;
+            }
+        });
+        
+        return needToReturn;
+    }
+
+    function alertBox(tf, textDetail){
+        $(tf).addClass('alertBox').focus(function(){
+            $(this).removeClass('alertBox');
+            $(tf).parents('.mj-row').children('.mj-right').removeClass('alertWord').text(startWord)
+        });
+        var ttf = $($(tf).parent().next()).text();
+        console.log(textDetail);
+        startWord = ttf=="！" + textDetail?startWord:ttf;
+        $(tf).parents('.mj-row').children('.mj-right').addClass('alertWord').text("！" + textDetail)
+    }
+</script>
+{% end %}

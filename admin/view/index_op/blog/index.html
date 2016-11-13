@@ -1,0 +1,43 @@
+{% extends '../../public/main.html' %}
+
+{% block body %}
+{% include  '../../public/operation_menu.html' %}
+</div>
+<div class="result_filter">
+    <form action='/index_op/blog' method="get">
+        标题
+        <input type="text" name="search" />
+        <input type="submit" value="搜索"/>
+    </form>
+</div>
+<table class="table table-bordered table-hover vert-align">
+    <thead>
+        <tr class="res_tbl_title">
+            <td>序号</td>
+            <td>博客标题</td>
+            <td>时间</td>
+            <td>作者</td>
+            <td>摘要</td>
+            <td>操作</td>
+        </tr>
+    </thead>
+    {% for item in index_info %}
+    <tbody>
+        <tr>
+            <td>{{ item['idx'] }}</td>
+            <td>{{ item['title'] }}</td>
+            <td>{{ item['update_at'] }}</td>
+            <td>{{ item['author'] }}</td>
+            <td>{{ item['summary'] }}</td>
+            <td>
+                <a href="/index_op/blog?a=top&id={{ item['id'] }}" onclick="return confirm('确认置顶?');">置顶</a> |
+                <a href="/index_op/blog?a=delete&id={{ item['id'] }}" onclick="return confirm('确认删除?');">删除</a>
+            </td>
+        </tr>
+    </tbody>
+    {% end %}
+</table>
+<div>
+    {% raw page_html %}
+</div>
+{% end %}

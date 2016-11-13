@@ -1,0 +1,188 @@
+
+<script type="text/javascript">
+    var objectList;
+    var source;
+    var _html
+    var jsdemandId=
+
+        //demandId = 31;
+        //clearAllMsg();
+        //getGamerList(objectList);
+
+        $.ajax({
+            type:'get',
+            url:"http://123.57.29.208:6625/sort?a=view&id={{demandId}}",
+            dataType: 'jsonp',
+            jsonp:"callback",
+            success: function(res){
+                reco = res
+                console.log(reco)
+                var oa_num=0
+                for(var a=0;a<reco.length;a++){
+                    oa_num+=reco[a].length-1
+                }
+                _html='<div class="title"><div class="has-accepted">其他<span class="number">'+oa_num+'</span>个接单的自媒体</div></div>';
+                _html+='<div class="self-media-main case-more-box clear-border" id="other">'
+                    for(var i = 0; i<reco.length;i++){
+                        _html +='<div class="self-media-main">'+
+                                    '<div class="self-msg">'+
+                                        '<img src="'+reco[i][0]['avatar']+'" width="40" height="40">'+
+                                        '<a href="/u?id='+reco[i][0]['user_id']+'">'+reco[i][0]['nickname']+'</a>'+
+                                    '</div>'+
+                                    '<div class="container">'
+                                        for(var n=0;n<reco[i].length-1;n++){
+                                            _html+= '<div class="media-box">'+
+                                                        '<div class="media-head">'+
+                                                            '<a href="/media?a=view&id='+reco[i][n+1][0]['id']+'">'+
+                                                                '<img src="'+reco[i][n+1][0]['avatar']+'" style="width:100px;height:100px;" />'+
+                                                            '</a>'+
+                                                        '</div>'+
+                                                        '<input type="hidden" value="" />'+
+                                                        '<div class="media-main am-page">'+
+                                                            '<div class="media-title">'+
+                                                            '<a href="/media?a=view&id='+reco[i][n+1][0]['id']+'">'+
+                                                                reco[i][n+1][0]['name']+
+                                                            '</a>'+
+                                                        '</div>'+
+                                                        '<div class="media-title-letters">微信号：'+reco[i][n+1][1][0]['wechat_id']+'</div>'+
+                                                        '<p>'+reco[i][n+1][0]['breif']+'</p>'+
+                                                        '<div class="intrested-container">'
+                                                            for(var m=0;m<reco[i][n+1][2].length;m++){
+                                                                _html+= '<div class="interestedBox">'+reco[i][n+1][2][m]['name']+'</div>'
+                                                            }
+                                                        _html+='</div>'
+                                                        _html+='</div>'
+                                            _html+='</div>'
+                                        }
+                                    _html+='</div>'
+                        _html+='</div>'
+                    }
+                _html+='</div>'
+                $(".choose-sm-others-box").prepend(_html)
+
+
+
+            },
+            error:function(res){
+                alert("fail")
+            }
+
+
+    });
+
+    function getGamerList(str){
+        var dataOjb= {did:demandId};
+        if(str)dataOjb.type = str;
+        $.ajax({
+            url:'/demand?a=jiedan_list',
+            method:'get',
+            dataType:'json',
+            data:dataOjb,
+            success:showGamerList
+        })
+    }
+
+    function showHideDetail(){
+        if($('.case-page-detail').hasClass('mini-page')){
+            $('.case-page-detail').removeClass('mini-page');
+            $('#up-down').addClass('btn-rotate');
+        }else{
+            $('.case-page-detail').addClass('mini-page');
+            $('#up-down').removeClass('btn-rotate');
+        }
+        checkFootLocation();
+    }
+
+    //function showGamerList(data){
+    //    var list = data;
+    //    var len = list.length;
+    //    for(var i=0;i<len;i++){
+    //        var obj = list[i];
+    //        var f1 = $('<div></div>');
+    //        f1.addClass('self-media-main');
+    //        f1.append('<div class="self-msg"><img src="' + obj.user.avatar_url + '" width="40" height="40">'+ decodeURIComponent(obj.user.name) + '</div>');
+    //        var f2 = $('<div></div>');
+    //        f2.addClass('container');
+    //        f1.append(f2);
+    //        var list2 = list[i].list;
+    //        var len2 = list2.length;
+    //        for(var t=0;t<len2;t++){
+    //            var f3 = $('<div></div>');
+    //            f3.addClass('media-box');
+    //            f3.append('<div class="media-head"><a href="/media/' + list2[t].oa.id + '"><img src="' + list2[t].oa.logo_url + '" width="100" height="100"></a></div>');
+    //            f3.append('<input value="' + list2[t].oa.id + '" style="display:none;">');
+    //            f2.append(f3);
+    //            var f4 = $('<div></div>');
+    //            f4.addClass('media-main am-page');
+    //            f3.append(f4);
+    //            f4.append('<div class="media-title"><a href="/media/' + list2[t].oa.id + '">' + decodeURIComponent(list2[t].oa.name) + '</a></div>');
+    //            f4.append('<div class="media-title-letters">微信号：' + list2[t].oa.wechat_id + '</div>');
+    //            f4.append('<p>' + list2[t].oa.features + '</p>');
+    //            var f5 = $('<div></div>');
+    //            f5.addClass('intrested-container');
+    //            f4.append(f5);
+    //            var list3 = list2[t].categorys;
+    //            var len3 = list3.length;
+    //            for(var k=0;k<len3;k++){
+    //                f5.append('<div class="interestedBox">' + decodeURIComponent(list3[k].name) + '</div>');
+    //            }
+    //        }
+    //        if(objectList){
+    //            $('#' + objectList).prepend(f1);
+    //        }else{
+    //            $('.case-more-box').prepend(f1);
+    //        }
+    //    }
+    //    checkFootLocation();
+    //    if(objectList=="my"){
+    //        objectList = 'other';
+    //        //getGamerList(objectList);
+    //    }else if(objectList=='other'){
+    //        //$('.has-accepted .number').text(len.toString());
+    //        //startTrackingStatus();
+    //    }
+    //}
+    function clearAllMsg(){
+        $('.case-more-box .self-media-main').remove();
+    }
+</script>
+
+<!--<div class="title"><div class="has-accepted">其他<span class="number">{{ jiedan_other_num }}</span>个接单的自媒体</div></div>
+<div class="self-media-main case-more-box clear-border" id="other">
+    {% for key in jiedan_other %}
+    <div class="self-media-main">
+        <div class="self-msg">
+            <img src="{{ jiedan_other[key]['info']['avatar'] }}" width="40" height="40">
+            <a href="/u?id={{ jiedan_other[key]['info']['user_id'] }}">
+            {{ jiedan_other[key]['info']['nickname'] }}
+            </a>
+        </div>
+        <div class="container">
+            {% for value in jiedan_other[key]['official'] %}
+            <div class="media-box">
+                <div class="media-head">
+                    <a href="/media?a=view&id={{ value['oa_id'] }}">
+                        <img src="{{ value['avatar'] }}" style="width:100px;height:100px;" />
+                    </a>
+                </div>
+                <input type="hidden" value="" />
+                <div class="media-main am-page">
+                    <div class="media-title">
+                    <a href="/media?a=view&id={{ value['oa_id'] }}">
+                    {{ value['name'] }}
+                    </a>
+                    </div>
+                    <div class="media-title-letters">微信号：{{ value['wechat_id'] }}</div>
+                    <p>{{ value['features'] }}</p>
+                    <div class="intrested-container">
+                        {% for val in value['category'] %}
+                        <div class="interestedBox">{{ val['name'] }}</div>
+                        {% end %}
+                    </div>
+                </div>
+            </div>
+            {% end %}
+        </div>
+    </div>
+    {% end %}
+</div>

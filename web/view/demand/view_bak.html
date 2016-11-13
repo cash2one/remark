@@ -1,0 +1,214 @@
+{% extends '../public/main.html' %}
+{% block title %}{{ demand['title'] }}{% end %}
+{% block body %}
+<link href="{{ static_url('style/self_media.css') }}" type="text/css" rel="stylesheet" >
+<link href="{{ static_url('style/demand_case.css') }}" type="text/css" rel="stylesheet" >
+<link href="{{ static_url('style/jquery.mCustomScrollbar.min.css')}}" type="text/css" rel="stylesheet">
+<link href="{{ static_url('style/common_v3.css')}}" type="text/css" rel="stylesheet">
+<script src="{{ static_url('script/jquery.mCustomScrollbar.concat.min.js') }}" type="text/javascript"></script>
+
+{% if owner %}
+<div class="kf">
+    <img src="/static/images/kf.png" alt="" style="float:left;margin-right: 15px;"/>
+    <span><a href="http://wpa.qq.com/msgrd?v=1&uin=413959299&site=qq&menu=yes" target="_blank">QQ：413959299</a></span><br>
+    <span>Tel：13681951057</span><br>
+    <span><a href="mailto:simon@rangedigit.com" target="_blank">Email：simon@rangedigit.com</a></span>
+</div>
+{% end %}
+
+<!--
+{% if not owner %}
+<div class="case-title-mini"></div>
+{% else %}
+<div class="case-title">
+    <div class="main-box current-page" id="status0">
+        自媒体接单
+        <div class="riangle-right"></div>
+    </div>
+
+    <div class="main-box box-middle {% if len(take_order) > 0 %}current-page{% end %}" id="status1">
+        广告主选择自媒体并付款
+        <div class="riangle-left"></div>
+        <div class="riangle-right"></div>
+    </div>
+
+    <div class="main-box box-right" id="status2">
+            投放结果反馈
+        <div class="riangle-left"></div>
+    </div>
+</div>
+{% end %}
+-->
+
+<div class="case-page-detail">
+    <div class="general">
+        <div class="title"><span>{% if demand['form'] in demand['demand_form_info'].keys() %}{{ demand['demand_form_info'][demand['form']]['name'] }}{% end %}</span>{{ demand['title'] }}</div>
+        <div class="time-box">
+            <div class="title">投放时间</div>
+            <div class="date-detail">{{ demand['time_begin'] }}<small> 至 </small>{{ demand['time_end'] }}</div>
+        </div>
+        <div class="intrested-container">
+            <div class="interestedBox">{{ demand['category']['name'] }}</div>
+        </div>
+        <div class="static-word">预算总额：</div>
+        <div>
+            <span class="cost"><small>¥ </small>{{ demand['money'] }}</span>
+            <!--
+            <span class="static-word"><img src="{{ static_url('images/need-invoice.png') }}"/><small> 需要发票</small></span>
+            -->
+        </div>
+    </div>
+    <div class="static-word">具体执行要求：</div>
+    <p>{% raw demand['marketing'] %}</p>
+    <div class="deal-content">广告主指定内容预览
+        <div class="up-btn" onclick="showHideDetail()">查看
+            <img id="up-down" class="" src="{{ static_url('images/navLitPointer.png') }}"/>
+        </div>
+    </div>
+    {% if demand['artical_title'] %}
+    <div style="height:auto;border-top:solid 1px #ddd;padding-top:20px;" id="demand_detail">
+		<h3 style="margin:10px 0;">{{ demand['artical_title'] }}</h3>{{ demand['artical_author'] }}<br>
+        {% raw demand['artical_body'] %}
+        {% if demand['origin_link'] %}
+        <br><a href="{{ demand['origin_link'] }}" style="font-size:14px;">阅读原文</a>
+        {% end %}
+    </div>
+    {% end %}
+    {% if owner and demand['status'] < 2 and demand['status'] >= 0 %}
+    <div class="cancle-btn" onclick="linkToTarget()">撤销需求</div>
+    {% end %}
+</div>
+<div id="v3_take_order">
+    <p style="padding:20px;">正在加载中...</p>
+</div>
+
+<script type="text/javascript">
+    $(function(){
+        // 加载接单
+        var takeOrder = function(){
+            var demandId = '{{ demand['id'] }}';
+            var demandStatus = '{{ demand['status'] }}';
+            var isOwner = '{{ owner }}';
+            var isLogined = '{{ current_user["user_id"] }}';
+            var isOrder = '';
+            var url = '';
+
+            // 判断加载地址
+            // 是否广告主
+            if(isOwner == 'False'){
+                // 不是广告主
+                switch(demandStatus){
+                    case '1':
+                        $('#v3_take_order').html('<div class="v3_demand_wait">审核中</div>');
+                        break;
+                    case '2':
+                        $('#v3_take_order').html('<div class="v3_demand_cancel">审核不通过</div>');
+                        break;
+                    case '3':
+                        if(isOrder){
+                            $('#v3_take_order').html('<div class="v3_demand_cancel">进行中</div>');
+                        }else{
+                            url = '/demand?a=get_media_other';
+                        }
+                        break;
+                    case 4:
+                        $('#v3_take_order').html('流单');
+                }
+            }else{
+                // 是广告主
+                switch(demandStatus){
+                    case '1':
+                        $('#v3_take_order').html('<div class="v3_demand_wait">审核中</div>');
+                        break;
+                    case '2':
+                        $('#v3_take_order').html('<div class="v3_demand_cancel">审核不通过</div>');
+                        break;
+                    case '3':
+                        if(isOrder){
+                            $('#v3_take_order').html('<div class="v3_demand_cancel">进行中</div>');
+                        }else{
+                            url = '/demand?a=get_media_owner';
+                        }
+                        break;
+                }
+            }
+
+            if(url){
+                $.ajax({
+                    url: url,
+                    type: 'post',
+                    dataType: 'json',
+                    data: {
+                        'id': demandId
+                    }
+                });
+            }
+        }();
+    });
+    var currentPage = 0;
+    var demandId = {{ demand['id'] }};
+    var jiedan_num = {% if take_order_num %}{{ take_order_num }}{% else %}0{% end %};
+    if(currentPage==-1){
+        showAcceptBox('该订单不存在','该订单已经被撤销',false,function(){location.href = '/list'});
+    }else{
+        $('#status'+currentPage).addClass('current-page');
+        while(currentPage>0){
+            $('#status'+(--currentPage)).addClass('past-page');
+        }
+    }
+
+    startTrackingStatus();
+    function linkToTarget(){
+        showBoxDefineEverything('确认撤销订单','请再次确认您要撤销该订单','确认','取消', function(){
+            $.ajax({
+                url: '/demand?a=cancel',
+                type: 'POST',
+                dataType: 'JSON',
+                data: {
+                    'id': '{{ demand["id"] }}',
+                }
+            }).then(function(d){
+                if(d.status != 200) {
+                    alert('操作失败，请刷新重试');
+                    return false;
+                }
+                alert('操作成功');
+                location.reload();
+            });
+        }, function(){
+            lightbox('accetpBox');
+        });
+    }
+    function showHideDetail(){
+        var obj = $('#demand_detail');
+        if(obj.is(':hidden')){
+            obj.show();
+            $('#up-down').removeClass('btn-rotate');
+        }else{
+            obj.hide();
+            $('#up-down').addClass('btn-rotate');
+        }
+        checkFootLocation();
+    }
+
+    function startTrackingStatus(){
+        $.ajax({
+            url:'/demand?a=demand_monitor',
+            dataType:'json',
+            type:'post',
+            data: {
+                'demand_id': '{{ demand["id"] }}',
+                'jiedan_num': jiedan_num,
+                'status': '{{ demand["status"] }}'
+            },
+            success:function(d){
+                if(d.status == 202){
+                    setTimeout(startTrackingStatus,5*1000);
+                }else if(d.status == 201){
+                    showAcceptBox('页面状态已改变','请点击确认刷新页面',false,function(){location.reload();})
+                }
+            }
+        });
+    }
+</script>
+{% end %}

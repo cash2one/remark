@@ -1,0 +1,48 @@
+{% extends '../../public/main.html' %}
+
+{% block body %}
+<link rel="stylesheet" type="text/css" href="{{ static_url('style/bootstrap-datetimepicker.css') }}" />
+<script type="text/javascript" src="{{ static_url('script/bootstrap-datetimepicker.js') }}"></script>
+<script type="text/javascript" src="{{ static_url('script/admin_user/advertiser_follow/update.js') }}"></script>
+
+
+<div id="ad_id" ad-id="{{ id }}" stlye="display: none"></div>
+
+<div class="nav">
+    <a href="javascript :;" onClick="javascript :history.back(-1);">返回上页</a>
+</div>
+<div>
+    <form id="advertiser_main_form" name="advertiser_main_form" method="post" >
+        <input type="hidden" id="advertiser_main_id" name="id" value="">
+        <div>
+            <strong>公司全称</strong>
+            <input type="text" id="advertiser_company" name="advertiser_company" value="" width="100px">
+        </div><br>
+
+        <div>
+            <strong>需求</strong>
+            <textarea id="advertiser_requirement" name="advertiser_requirement" ></textarea>
+        </div><br>
+
+        <div>
+            <strong>广告主跟踪</strong>
+            <textarea id="advertiser_progress" name="advertiser_progress" ></textarea>
+        </div><br>
+        <div>
+            <strong>产品分析</strong>
+            <textarea id="advertiser_product_info" name="advertiser_product_info" ></textarea>
+        </div><br>
+        <div>
+            <strong>受众分析</strong>
+            <textarea id="advertiser_audience_info" name="advertiser_audience_info" ></textarea>
+        </div><br>
+        <div>
+            <strong>备注</strong>
+            <textarea id="advertiser_remark" name="advertiser_remark" ></textarea>
+        </div><br>
+    </form>
+        <button id="on_advertiser_text_commit" class="btnNormal" name="follow_basic_btn">确定</button>
+        <a href="/admin_user/advertiser_follow?a=detail&id={{ id }}&type=look"><button class="btnNormal" data-dismiss="modal" aria-hidden="true">取消</button></a>
+</div>
+
+{% end %}

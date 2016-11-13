@@ -1,0 +1,34 @@
+{% extends '../public/main.html' %}
+
+{% block body %}
+<script type="text/javascript">
+    $(document).ready(function(){
+        $.ajax({
+            url: "/media?a=get_content",
+            method: "post",
+            dataType:'json',
+            data: '',
+            success: function (result) {
+                var obj = result;
+                var content_module='';
+                for(var i=0; i<obj.data.length; i++){
+                    content_module += '<div class="article block untagged mb15" id="media_'+ obj.data[i].id+'">';
+                    content_module += '<div class="author clearfix">';
+                    content_module += '<a target="_blank" title="'+obj.data[i].name+'" ><h4>'+obj.data[i].name+'</h4></a>';
+                    content_module += ' <a target="_blank" ><h4>'+obj.data[i].title+'</h4></a></div>';
+                    content_module += '<div class="content">'+obj.data[i].content+'</div>';
+
+                    content_module += '</div>';
+                }
+                $("#v2_change").append(content_module);
+
+            }
+        });
+    });
+</script>
+<div id="content-left" class="col1">
+    <div class="v2_change clearfix" id="v2_change">
+    </div>
+</div>
+
+{% end %}

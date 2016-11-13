@@ -1,0 +1,142 @@
+{% extends '../public/main.html' %}
+
+{% block body %}
+<link rel="stylesheet" type="text/css" href="{{ static_url('style/bootstrap-responsive.css') }}" />
+<link rel="stylesheet" type="text/css" href="{{ static_url('style/bootstrap-datetimepicker.css') }}" />
+<script type="text/javascript" src="{{ static_url('script/bootstrap-datetimepicker.js') }}"></script>
+<script type="text/javascript">
+    function onSubmitReason(demand_id) {
+        var text = document.getElementById('reason' + demand_id).value;
+        if (text == "") {
+            alert("理由不能为空");
+            return false;
+        }
+        document.getElementById('reason_form' + demand_id).submit();
+    }
+</script>
+<div class="status_title">
+    <ol class="breadcrumb">
+        <li><a href="#"></a>需求单管理</li>
+        <li><a href="/demand?status=10">全部</a></li> 
+        <li><a href="/demand?status=1">待审核</a></li> 
+        <!--<li><a href="/demand?status=3">进行中</a></li> -->
+        <!--<li><a href="/demand?status=0">交易完成</a></li> -->
+        <li><a href="/demand?status=5">审核未通过</a></li> 
+        <li><a href="/demand?status=2">接单中</a></li> 
+        <li><a href="/demand?status=3">营销中</a></li> 
+        <li><a href="/demand?status=4">已结束</a></li> 
+        <li><a href="/demand?status=6">流单</a></li> 
+        <li><a href="/demand?status=7">已撤销</a></li> 
+        <!--<li><a href="/demand?status=4">流单</a></li>-->
+    </ol>
+</div>
+<div class="result_filter">
+    <form action='/demand' method="get">
+        <input type="hidden" name="status" value="{{ status }}" />
+        日期
+        <input size="16" type="text" readonly class="form_datetime form-control dateInput" name="start">
+        <span>&nbsp;至&nbsp;</span>
+        <input size="16" type="text" readonly class="form_datetime form-control dateInput" name="end">
+        <span>&nbsp;&nbsp;主题</span>
+        <input type="text" name="search" class="form-control dateInput" />
+        <input type="submit" value="筛选" class="btn btn-default" />
+    </form>
+    <script type="text/javascript">
+        $(".form_datetime").datetimepicker({
+            format: 'yyyy-mm-dd',
+            minView: 'month',
+            autoclose: true
+        });
+    </script>
+</div>
+<div>
+    <table class="table table-bordered table-hover vert-align">
+        <thead>
+            <tr class="res_tbl_title">
+                <td>序号</td>
+                <td>需求状态</td>
+                {% if status == '3' or status == '0' %}
+                <td>细分进度</td>
+                {% end %}
+                <td>投放平台</td>
+                <td>营销形式</td>
+                <td>营销主题</td>
+                <td>预算总额</td>
+                <td>提交时间</td>
+                <td>广告主</td>
+                <td>操作</td>
+            </tr>
+        </thead>
+        {% for item in index_info %}
+        <tbody>
+            <tr>
+                <td>{{ item['idx'] }}</td>
+                <td>{{ item['status_tag'] }}</td>
+                {% if status == '3' or status == '0' %}
+                <td>
+                    {% if item['process'].get('take_order') %}
+                    ><a class="btn btnThin" href="/demand?a=takeOrder&id={{ item['id'] }}">接单</a>
+                    {% end %}
+                    {% if item['process'].get('order') %}
+                    ><a class="btn btnThin" href="/demand?a=order&id={{ item['id'] }}">下单</a>
+                    {% end %}
+                    {% if item['process'].get('feedback') %}
+                    ><a class="btn btnThin" href="/demand?a=feedback&id={{ item['id'] }}">反馈</a>
+                    {% end %}
+                    {% if item['process'].get('appeal') %}
+                    ><a class="btn btnThin" href="/demand?a=appeal&id={{ item['id'] }}">申诉</a>
+                    {% end %}
+                </td>
+                {% end %}
+                <td>{{ item['platform_tag'] }}</td>
+                <td>{{ item['demand_form'] }}</td>
+                <td><a href="/demand?a=detail&id={{ item['id'] }}">{{ item['title'] }}</a></td>
+                <td>{{ item['money'] }}</td>
+                <td>{{ item['create_time'] }}</td>
+                <td>
+                    {% if item['nickname'] %}
+                    <a href="/user?a=detail&id={{ item['user_id'] }}">{{ item['nickname'] }}</a>
+                    {% else %}
+                    -
+                    {% end %}
+                </td>
+                <td>
+                    {% if item['status'] == 1 %}
+                    <a class="btn btnThin" href="/demand?a=allow&status={{ item['status'] }}&id={{ item['id'] }}" onclick="return confirm('确认通过?');">通过</a>
+                    <a class="btn btnThin" data-target="#reason_dialog{{ item['id'] }}" data-toggle="modal">不通过</a>
+                    <div id="reason_dialog{{ item['id'] }}" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">X</button> 
+                                    <h4 id="reason_title">提示</h4>
+                                </div>
+                                <div class="modal-body">
+                                    <form id="reason_form{{ item['id'] }}" name="reason_form" method="post" action="/demand?a=disallow&status={{ item['status'] }}&id={{ item['id'] }}">
+                                        请输入审核不通过的理由:
+                                        <br />
+                                        <textarea id="reason{{ item['id'] }}" name="reason" rows="5" cols="70"></textarea>
+                                        <br />
+                                        广告主将收到理由提醒!
+                                    </form>
+                                </div>
+                                <div class="modal-footer">
+                                    <button class="btn" onclick="onSubmitReason({{ item['id'] }})">确定</button>
+                                    <button class="btn" data-dismiss="modal" aria-hidden="true">取消</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% else %}
+                    {% end %}
+                    <!--<a href="/demand?a=delete&status={{ item['status'] }}&id={{ item['id'] }}" onclick="return confirm('确认删除?');">删除</a>-->
+                </td>
+            </tr>
+        </tbody>
+        {% end %}
+    </table>
+</div>
+<div>
+    {% raw page_html %}
+</div>
+{% end %}

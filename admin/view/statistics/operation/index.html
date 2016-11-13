@@ -1,0 +1,218 @@
+{% extends '../../public/main.html' %}
+
+{% block body %}
+<link rel="stylesheet" type="text/css" href="{{ static_url('style/bootstrap-responsive.css') }}" />
+<link rel="stylesheet" type="text/css" href="{{ static_url('style/bootstrap-datetimepicker.css') }}" />
+<script type="text/javascript" src="{{ static_url('script/bootstrap-datetimepicker.js') }}"></script>
+<script type="text/javascript">
+    function formatDay(dayDelta){
+        var now = new Date();
+        now.setDate(now.getDate() + dayDelta); //获取dayDelta天后的日期
+        var y = now.getFullYear();
+        var m = now.getMonth()+1; //获取当前月份的日期
+        var d = now.getDate();
+        m = m < 10 ? "0"+m : m; //补0
+        d = d < 10 ? "0"+d : d; //补0
+        return y + "-" + m + "-" + d;
+    }
+    function onLastWeek(){
+        document.getElementById('last_week_start').value = formatDay(-7);
+        document.getElementById('last_week_end').value = formatDay(0);
+        document.getElementById('last_week_form').submit();
+    }
+    function onLastMonth(){
+        document.getElementById('last_month_start').value = formatDay(-30);
+        document.getElementById('last_month_end').value = formatDay(0);
+        document.getElementById('last_month_form').submit();
+    }
+</script>
+<!--<div class="status_title">-->
+    <!--<div>-->
+        <!--<li><a href="#">数据统计</a></li>-->
+        <!--<li><a href="/statistics/web"> 实时动态</a></li>-->
+        <!--<li><a href="/statistics/business"> 业务统计</a></li>-->
+        <!--<li><a href="/statistics/operation"> 运行统计</a></li>-->
+        <!--<li><a href="/statistics/media"> 媒体库统计</a></li>-->
+   <!--</div>-->
+<!--</div>-->
+<div class="status_title">
+    <ol class="breadcrumb">
+        <li><a href="#"></a>数据统计</li>
+        <li><a href="/statistics/operation"> 运行统计</a></li>
+   </ol>
+</div>
+<div class="result_filter" id="result_filter">
+    <form id="last_week_form" action='/statistics/operation' method="get">
+        <input type="hidden" id="last_week_start" name="start" >
+        <input type="hidden" id="last_week_end" name="end">
+        <button class="btn btn-default" onclick="onLastWeek()">最近七天</button>
+    </form>
+    <form id="last_month_form" action='/statistics/operation' method="get">
+        <input type="hidden" id="last_month_start" name="start">
+        <input type="hidden" id="last_month_end" name="end">
+        <button class="btn btn-default" onclick="onLastMonth()">最近三十天</button>
+    </form>
+    <form class="form-inline" action='/statistics/operation' method="get">
+        日期
+        <input class="form_datetime form-control dateInput" size="16" type="text" readonly class="form_datetime" name="start">
+        至
+        <input class="form_datetime form-control dateInput" size="16" type="text" readonly class="form_datetime" name="end">
+        <button class="form-control btn btn-default" type="submit">筛选</button>
+    </form>
+    <script type="text/javascript">
+        $(".form_datetime").datetimepicker({
+            format: 'yyyy-mm-dd',
+            minView: 'month',
+            autoclose: true
+        });
+    </script>
+</div>
+
+<div id="echarts" style="height:400px">
+    <script type="text/javascript" src=" http://echarts.baidu.com/build/dist/echarts.js"> </script>
+    <script type="text/javascript">
+
+        var temp='{{operation}}'
+        var c = document.createElement('div');
+        c.innerHTML = temp;
+        temp = c.innerText || c.textContent;
+        c = null;
+        var index = eval(temp)
+        //alert(index)
+        //alert(console.log(index))
+
+
+
+        var chart_date = new Array();
+        var chart_index_uv = new Array();
+        var chart_index_pv = new Array();
+        var chart_index_ip = new Array();
+        var chart_stat_uv = new Array();
+        var chart_stat_pv = new Array();
+        var chart_stat_ip = new Array();
+        var chart_stat_user = new Array();
+        for(var i= 0;i<index.length;i++){
+            chart_date[i]=index[i][0]
+            chart_index_uv[i]=index[i][1].index_uv_day
+            chart_index_pv[i]=index[i][1].index_pv_day
+            chart_index_ip[i]=index[i][1].index_ip_day
+            chart_stat_uv[i]=index[i][1].stat_uv_day
+            chart_stat_pv[i]=index[i][1].stat_pv_day
+            chart_stat_ip[i]=index[i][1].stat_ip_day
+            chart_stat_user[i]=index[i][1].stat_user_day
+        }
+
+        //alert(chart_index_pv)
+        require.config({
+            paths:{
+                echarts:'http://echarts.baidu.com/build/dist'
+            }
+        });
+        require(
+            [
+                'echarts',
+                'echarts/chart/line'
+            ],
+            function(ec){
+
+                var mychart=ec.init(document.getElementById('echarts'));
+
+                var option={
+                    tooltip:{
+                        show:true
+                    },
+                    legend:{
+                        data:['首页pv','首页uv','首页ip','全站pv','全站uv','全站ip',]
+                    },
+                    xAxis:[
+                        {
+                            type:'category',
+                            data:chart_date
+                        }
+                    ],
+                    yAxis:[
+                        {
+                            type:'value'
+                        }
+                    ],
+                    series:[
+                        {
+                            "name":'首页pv',
+                            "type":"line",
+                            "data":chart_index_pv
+                        },
+                        {
+                            "name":'首页uv',
+                            "type":"line",
+                            "data":chart_index_uv
+                        },
+                        {
+                            "name":'首页ip',
+                            "type":"line",
+                            "data":chart_index_ip
+                        },
+                        {
+                            "name":'全站ip',
+                            "type":"line",
+                            "data":chart_stat_ip
+                        },
+                        {
+                            "name":'全站pv',
+                            "type":"line",
+                            "data":chart_stat_pv
+                        },
+                        {
+                            "name":'全站uv',
+                            "type":"line",
+                            "data":chart_stat_uv
+                        },
+//                        {
+//                            "name":'登陆用户',
+//                            "type":"line",
+//                            "data":chart_stat_user
+//                        },
+                    ]
+                };
+
+                mychart.setOption(option);
+            }
+        );
+    </script>
+</div>
+<div>
+
+    <table class="table table-bordered table-hover vert-align" id="operation_table">
+    <thead>
+        <tr class="res_tbl_title">
+            <td>数据指标</td>
+            <td>全站pv</td>
+            <td>全站uv</td>
+            <!--<td>联盟</td>-->
+            <td>全站ip</td>
+            <td>首页pv</td>
+            <td>首页uv</td>
+            <td>首页ip</td>
+
+
+        </tr>
+    </thead>
+    {% for day in index_info %}
+    <tbody>
+        <tr>
+            <td>{{ day[0] }}</td>
+            <td>{{ day[2]['stat_pv_day'] }}</td>
+            <td>{{ day[2]['stat_uv_day'] }}</td>
+            <td>{{ day[2]['stat_ip_day'] }}</td>
+            <td>{{ day[3]['index_pv_day'] }}</td>
+            <td>{{ day[3]['index_uv_day'] }}</td>
+            <td>{{ day[3]['index_ip_day'] }}</td>
+        </tr>
+    </tbody>
+    {% end %}
+</table>
+
+</div>
+<div>
+    {% raw page_html %}
+</div>
+{% end %}

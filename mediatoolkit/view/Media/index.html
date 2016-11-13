@@ -1,0 +1,56 @@
+{% extends '../public/main.html' %}
+
+{% block body %}
+<script type="text/javascript">
+$(function() {
+    Uediter('content');
+});
+
+function content_save(){
+    var title = $('#title').val();
+    var content = $('#content').val();
+    if(title=='' || title<5 ){
+        alert("你的标题也太短了吧！");
+        return false;
+    }
+    dicArgs = {
+        'title': title,
+        'content': content
+    };
+    $.ajax({
+        url: "/media?a=create",
+        method: "post",
+        dataType:'json',
+        data: dicArgs,
+        success: function (result) {
+            //console.log("result = "+result);
+            if(result.status ==200) {
+//                location.reload();
+                window.location.href="/";
+            }else if (result.status ==403) {
+                alert("用户无创建权限！");
+            }else{
+                alert("更新用户失败请重新操作！");
+            }
+        }
+    });
+}
+</script>
+
+<div>
+    <form id="media_form" name="media_form" action='' method="post">
+        <div>
+            <strong>标题</strong>
+            <input type="text" id="title" name="title" style="width:200px" class="form-control">
+        </div>
+
+        <div>
+            <textarea id="content" name="content" ></textarea>
+        </div>
+
+        <button class="btn btn-success" onclick="content_save()">保存</button>
+        <button class="btn btn-default" data-dismiss="modal" aria-hidden="true">取消</button>
+    </form>
+</div>
+
+{% end %}

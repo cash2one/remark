@@ -1,0 +1,236 @@
+{% extends 'view_public.html' %}
+
+{% block master_cancel %}
+<button type="button" class="btnNext" onclick="demandCancel()">撤销需求</button>
+{% end%}
+
+{% block master_contact %}
+<div class="kf">
+    <img src="/static/images/kf.png" alt="在线客服"/>
+    <span>QQ：<a href="http://wpa.qq.com/msgrd?v=1&uin=413959299&site=qq&menu=yes" target="_blank"><strong>413959299</strong></a></span><br>
+    <span>Tel：<strong>13681951057</strong></span><br>
+    <span>Email：<strong>simon@rangedigit.com</strong></span>
+</div>
+{% end %}
+
+{% block nav_title %}
+{% end %}
+
+
+{% block list %}
+{% if demand['status'] == 5 %}
+<div class="demandStatus">
+    <div class="title">
+        <h3>未通过审核原因</h3>
+    </div>
+    <div class="content">
+        <p class="resultTip">
+            {{demand['check_info']}}
+        </p>
+    </div>
+</div>
+{% end %}
+{% if demand['status'] not in [5,7] %}
+<div class="mediaList">
+
+</div>
+
+<!--如果广告主预选单不为空显示-->
+{% if (demand['cart_count']>0) and(demand['status']==2)  %}
+<div class="demandCart">
+    <div class="cartMediaNumber">请选择您需要的自媒体广告位加入预选单</div>
+    <!--
+    <div class="cartPrice"><span class="ydi yd-money"></span><strong>2000</strong></div>
+    -->
+    <a href="/demand?a=cart&id={{demand['id']}}"><span class="ydi yd-list"></span>预选单<strong>{{demand['cart_count']}}</strong><span class="ydi yd-right"></span></a>
+</div>
+{% end %}
+<script type="text/javascript">
+    var total_cost
+    var _html;
+
+    $.ajax({
+        type:'get',
+        url:"{{ RECO_HOST }}/demand_take_order_rank?id={{demand['id']}}",
+        dataType: 'jsonp',
+        jsonp:"callback",
+        success: function(medias){
+            _html = '<div class="title"><h3>已有<strong>'+medias.length+'</strong>个自媒体接单</h3></div>';
+            _html += '<ul class="content">';
+            for(k in medias)
+            {
+                media = medias[k][1];
+                //console.log(media);
+                _html+='<li class="bidderBox">';
+                _html += '<div class="userBox">' +
+                        '<a href="/u?id=' + media['user_id'] + '" target="_blank">' +
+                            '<img src="' + media['user']['avatar'] + '" alt="' + media['user']['nickname'] + '">' +
+                            '<span class="userName">' + media['user']['nickname'] + '</span>' +
+                        '</a>' +
+                        '<div class="contact">' +
+                            '<span class="ydi yd-user"></span>' +
+                            '<span class="phone">' + media['phone'] + '</span>' +
+                        '</div>'+
+                    '</div>';
+                _html += '<div class="mediaBox">' +
+                            '<div class="mediaAvatar">' +
+                                '<a href="/media?a=view&id=' + media['media_id'] + '" target="_blank">' +
+                                    '<img src=' + media['avatar'] + ' alt=' + media['name'] + '>' +
+                                '</a>' +
+                            '</div>'+
+                            '<div class="mediaInfo">'+
+                                '<div class="mediaTitle">'+
+                                    '<span class="mediaName"><a href="/media?a=view&id=' + media['media_id'] + '" target="_blank">' + media['name'] + '</a></span>';
+                                    if (media['original'] === '原创')
+                                        _html+= '<span class="original">原创</span>';
+                                    if (media['identify'] != '')
+                                        _html+='<span class="wechatVerify ydi yd-checked" title="微信认证">已认证</span>';
+                                    _html+='<span class="level" title="综合级别">级别<strong>'+media['value_level']+'</strong></span>'+
+                                            '<span class="qrcode"><img src="/static/images/qr-mini.png" alt="二维码"><img src='+media['qrcode']+' alt="'+media['name']+'二维码" class="codeL"></span>'+
+                                '</div>'+
+                                '<div class="mediaCategory">'+
+                                    '<span>'+media['media_category']['name']+'</span>'+
+                                '</div>'+
+                                '<div class="mediaTag">';
+                                for(j in media['media_tag'])
+                                {
+                                    tag = media['media_tag'][j];
+                                    _html+= ' <span data="">' + tag['name'] + '</span>';
+                                }
+                                _html+='</div>'+
+                                '<dl class="mediaAudience">'+
+                                    '<dt>针对地域：</dt><dd>'+media['area']+'</dd><dt>针对性别：</dt><dd>'+media['audience_gender']+'</dd>'+
+                                '</dl>'+
+                            '</div>'
+                            //alert('{{demand['status']}}')
+                            if('{{demand['status']}}'==2)
+                            {
+                                if(media['exist_in_cart']!=1) {
+                                    //alert(1)
+                                    _html += '<div class="advertising">' +
+                                            '<div><strong>选择投放广告位</strong></div>' +
+                                            '<ul>';
+                                    for (j in media['media_price']) {
+                                        price = media['media_price'][j];
+                                        _html += '<li id="' + price['id'] + '" media_id="' + media['media_id'] + '" onclick="chooseThisPosition(this)" value="' + price['price'] + '">' + price['attr_value_info'] + '</li>'
+                                    }
+                                    _html += '</ul>' +
+                                            '</div>' +
+                                            '<div hidden class="more" id="' + media['media_id'] + '">' +
+                                            '<span type="hidden" id="price_id' + media['media_id'] + '"></span>' +
+                                            '<span class="price" id="price' + media['media_id'] + '"><small>¥</small><strong></strong></span>' +
+                                            '<input type="hidden" id="media_id' + media['media_id'] + '" value="' + media['media_id'] + '" />' +
+                                            '<input type="hidden" id="user_id' + media['media_id'] + '" value="' + media['user_id'] + '" />' +
+                                            '<a onclick="cart_create(' + media['media_id'] + ')" class="btnNext">加入预选</a>' +
+                                            '</div>'
+                                }
+                                else{
+                                    _html +=    '<div class="more">'+
+                                                    '<span class="statusReady">已加入预选单</span>'+
+                                                '</div>'
+                                }
+                            };
+                        _html+= '</div>';
+                _html+='</li>';
+            }
+            _html+='</ul>';
+            $(".mediaList").html(_html)
+        },
+        error:function(res){
+            alert("fail")
+        },
+    });
+
+    function chooseThisPosition(obj){
+        //console.log($(obj).parent().parent().next().children().children()[1])
+        $(obj).parent().children().removeClass("current")
+        $(obj).addClass("current");
+        price=($(obj).attr('value'));
+        media_id=($(obj).attr('media_id'));
+        price_id=($(obj).attr('id'));
+
+        $('#' + media_id).show();
+        $('#price_id' + media_id).attr('value', price_id)
+        $('#price' + media_id).attr('value', price)
+        $('#price' + media_id).html(price)
+    };
+
+    function cart_create(media_id)
+    {
+        var params = {'id': {{ demand['id'] }},
+                       'media_id': media_id,
+                       'user_id' : $('#user_id' + media_id).attr('value'),
+                       'price_id': $('#price_id' + media_id).attr('value'),
+                       'price'   : $('#price' + media_id).attr('value')};
+        $.ajax({
+            type: "POST",
+            url: "/demand?a=cart_create",
+            dataType: "JSON",
+            data: $.param(params),
+            success: function(ret){
+                //showTipsBox('alert', dicStatusMsg['signup'][ret.status]);
+                if(ret.status == 200) {
+//                    alert('加入预选单成功，可以在用户中心，在我的发布需求列表中看到预选单');
+                    location.href = "/demand?a=view&id={{ demand['id'] }}";
+                }
+                else
+                    showTipsBox('alert', '加入预选单不成功');
+            }
+        });
+    }
+
+    function demandCancel()
+    {
+        var demandCancelVar = function demandCancelCallFn()
+        {
+            location.href = "/demand?a=cancel&id={{demand['id']}}";
+        };
+        showAcceptBox('撤销广告需求','撤销后广告需求将不可用，自媒体将不可再接单。','撤销','取消',demandCancelVar);
+    }
+
+</script>
+{% end %}
+{% if demand['status'] == 2 %}
+<div class="recommendedBox">
+    <div class="title">
+        <h3>推荐自媒体</h3>
+    </div>
+    <div class="content">
+        <ul class="recommendedMediaBox clearfix">
+        </ul>
+    </div>
+</div>
+<script type="text/javascript">
+$(function(){
+    $.ajax({
+        type: 'get',
+        url: "{{ RECO_HOST }}/demand_media_reco?id={{demand['id']}}",
+        dataType: 'jsonp',
+        jsonp: "callback",
+        success: function (res) {
+            simi = res
+            //alert("success")
+            simi_html= ''
+            for(k in simi)
+            {
+                media = simi[k][1]
+                simi_html += '<li class="mediaBox">' +
+                        '<a href="/media?a=view&id=' + media['id'] + '"><img src="' + media['avatar'] + '" alt="' + media['name'] + '">' +
+                        '<span class="mediaName">' + media['name'] + '</span></a>' + '</li>'
+                //'<div class="mediaTag">'
+                //for (var m = 0; m < simi[i]['tagname'].length; m++) {
+                //    simi_html += '<div class="interestedBox">' + simi[i]['tagname'][m]['name'] + '</div>'
+                //}
+                //simi_html += '</div>'
+            }
+            //alert(simi_html)
+            $(".recommendedMediaBox").append(simi_html)
+        },
+        error: function (res) {
+
+        }
+    })
+})
+</script>
+{% end %}
+{% end %}

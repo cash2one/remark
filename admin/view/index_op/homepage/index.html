@@ -1,0 +1,62 @@
+{% extends '../../public/main.html' %}
+
+{% block body %}
+<script type="text/javascript">
+    function update_media_top(obj){
+        var id = obj.name;
+        var form_id = 'media_top_form' + id;
+        document.getElementById(form_id).submit();
+    }
+</script>
+<table class="table table-bordered table-hover vert-align">
+    <thead>
+        <tr class="res_tbl_title">
+            <td>序号</td>
+            <td>名称</td>
+            <td>位置</td>
+            <td>操作</td>
+        </tr>
+    </thead>
+    {% for item in index_info %}
+    <tbody>
+        <tr>
+            <td>{{ item['idx'] }}</td>
+            <td>
+                <a href="/yidao/media?a=detail&id={{ item['oa_id'] }}">{{ item['name'] }}</a>
+            </td>
+            <td>{{ item['status'] }}</td>
+            <td>
+                <a class="btn btnThin" data-target="#media_top_dialog{{ item['id'] }}" data-toggle="modal">变更</a>
+                <div id="media_top_dialog{{ item['id'] }}" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">X</button>
+                                <h4>变更首页位</h4>
+                            </div>
+                            <div class="modal-body">
+                                <form id="media_top_form{{ item['id'] }}" name="media_top_form" method="post" action="/operation/homepage?a=updateMediaTop">
+                                    请选择自媒体:
+                                    <input type="hidden" name="media_top_status" value="{{ item['status'] }}">
+                                    <select name="media_top">
+                                        {% for media in media_candidate %}
+                                        <option>
+                                            {{ media['oa_id'] }}: {{ media['name'] }}
+                                        </option>
+                                        {% end %}
+                                    </select>
+                                </form>
+                            </div>
+                            <div class="modal-footer">
+                                <button class="btn btn-success" name="{{ item['id'] }}" onclick="update_media_top(this)">保存</button>
+                                <button class="btn btn-default" data-dismiss="modal" aria-hidden="true">取消</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </td>
+        </tr>
+    </tbody>
+    {% end %}
+</table>
+{% end %}

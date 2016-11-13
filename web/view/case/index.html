@@ -1,0 +1,51 @@
+{% extends '../public/main.html' %}
+{% block title %}成功案例{% end %}
+{% block body %}
+<link href="/static/style/case.css" type="text/css" rel="stylesheet">
+<div class="caseTop">
+	<h2>成功案例</h2>
+	<div class="caseCount">共<strong>{{case_num}}</strong>个成功案例</div>
+	<div class="more">
+		<a href="javascript:onlink('/user?a=demand_form')" class="btnMore">发布广告需求</a>
+		<a href="javascript:onlink('/user?a=media_create')" class="btnMore">自媒体入驻</a>
+	</div>
+</div>
+<div class="caseContainer">
+	<ul class="caseList clearfix">
+		{% for item in list %}
+			<li>
+            <div class="caseTitle">
+                <span class="demandType">{{item['form_name']}}</span>
+                <a href="/case?a=detail&id={{item['id']}}" target="_blank">{{item['title']}}</a>
+            </div>
+            <div class="caseResult">
+            	<dl class="resultMedia">
+            		<dt>成交自媒体</dt>
+            		<dd><strong>{{item['media_num']}}</strong></dd>
+            	</dl>
+            	<dl class="resultReadNumber">
+            		<dt>阅读总数</dt>
+            		<dd><strong></strong></dd>
+            	</dl>
+            	<dl class="resultPrice">
+            		<dt>成交金额</dt>
+            		<dd><strong>{{item['total_price']}}</strong></dd>
+            	</dl>
+            </div>
+            <!--
+            <div class="caseMedia">
+				{% for media in item['media_info'] %}
+            		<img src="{{media['avatar']}}" alt="{{media['name']}}">
+				{% end %}
+            	<a href="/case?a=detail&id={{item['id']}}" title="查看案例详情"><span class="ydi yd-more"></span></a>
+            </div>
+            -->
+        	</li>
+		{% end %}
+
+	</ul>
+</div>
+<div class="listPagenation">
+	<div>{% raw page %}</div>
+</div>
+{% end %}

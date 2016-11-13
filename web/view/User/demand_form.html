@@ -1,0 +1,676 @@
+{% extends '../public/main.html' %}
+{% block title%}发布广告需求{% end %}
+{% block body %}
+<script src="{{ static_url('script/jquery-ui.js') }}" type="text/javascript"></script>
+<script src="{{ static_url('script/uDialog.js') }}" type="text/javascript"></script>
+<script src="{{ static_url('script/xheditor-1.1.14-zh-cn.min.js') }}" type="text/javascript"></script>
+<link href="{{ static_url('style/jquery-ui.css') }}" type="text/css" rel="stylesheet">
+<link href="{{ static_url('style/common_v3.css') }}" type="text/css" rel="stylesheet">
+<div class="v3_demand">
+    <div class="v3_demand_nav">
+        <div class="v3_demand_nav_bg_line"></div>
+        <div class="v3_demand_nav_bg_line_light"></div>
+        <div class="v3_demand_nav_step v3_demand_nav_step1 v3_demand_nav_step_selected" id="v3_demand_nav_step1">1</div>
+        <div class="v3_demand_nav_step v3_demand_nav_step2" id="v3_demand_nav_step2">2</div>
+        <div class="v3_demand_nav_step v3_demand_nav_step3" id="v3_demand_nav_step3">3</div>
+        <div class="v3_demand_nav_step_text v3_demand_nav_step_text1">基本信息</div>
+        <div class="v3_demand_nav_step_text v3_demand_nav_step_text2">具体描述</div>
+        <div class="v3_demand_nav_step_text v3_demand_nav_step_text3">提交审核</div>
+    </div>
+    <div class="v3_demand_tips">*友情提示：如您的需求填写越详细，将会吸引更多的自媒体接单</div>
+    {% include "demand_form_step1.html" %}
+    {% include "demand_form_step2.html" %}
+    {% include "demand_form_step3.html" %}
+    <div class="v3_demand_contact">
+        <h2>有问题请咨询客服</h2>
+        <h3>客服电话</h3>
+        <p>136 8195 1057</p>
+        <h3>客服 QQ</h3>
+        <p>413959299</p>
+        <a href="http://wpa.qq.com/msgrd?v=1&uin=413959299&site=qq&menu=yes">在线咨询客服</a>
+        <h3>客服邮箱</h3>
+        <p>simon@rangedigit.com</p>
+    </div>
+</div>
+<script>
+    function iframeLoaded(iframe) {
+        var doc = iframe.contentWindow.window;
+        var html = doc.document.body.innerHTML;
+        var len = html.length;
+        if (len > 0) {
+            var obj = JSON.parse(html);
+            if (obj.status == 200) {
+                var doc_path = obj.data.doc_path;
+                console.log(obj.data);
+                $('#doc_path').attr('value', doc_path)
+            }
+        }
+    }
+    function on_submit_content() {
+        var cf = document.getElementById('content_file');
+        var fn = cf.value;
+        var ext = fn.slice(fn.lastIndexOf(".")+1).toLowerCase();
+        var file_size = cf.files[0].size;
+        if (file_size > 10000000) {
+            showTipsBox('alert', "上传文件大于10M");
+            cf.value = "";
+            return;
+        }
+        if (ext!= "pdf" && ext != "doc" && ext != "docx") {
+            showTipsBox('alert', "请上传pdf、doc或docx格式的文件.");
+            cf.value = "";
+            return;
+        }
+        document.getElementById('upload_form').submit();
+    }
+</script>
+<script type="text/javascript">
+$(function(){
+
+    var basic_url = '/area?a=get_list';
+    var cityList = [-1,-1,-1];
+    var change_parent;
+    var isAuto = false;
+    
+    var phone = '{{ user["phone"] }}';
+    
+    $("#original").click(function(){
+        if($('#original').val() === '1')
+            $("#original").attr("value", '0');
+        else
+            $("#original").attr("value", '1');
+    })
+
+    var demand_form = function(){
+        var self = this;
+
+        self.stepNum = 1;
+
+        // 导航背景条长度
+        self.bgLen = 0;
+
+        // 记录选择行业
+        var categorys = [];
+        // 记录选择标签
+        var tags = [];
+
+        // 表单
+        var postData = {
+            'media_paltform_id': '',
+            'form': '',
+            'title': '',
+            'timeBegin': '',
+            'timeEnd': '',
+            'money': '',
+            'phone': '',
+            'audienceGender': '',
+            'audienceProvinceId': '',
+            'audienceCityId': '',
+            'audienceCountyId': '',
+            'audience_num': '',
+            'view': '',
+            'marketing': '',
+            'articalTitle': '',
+            'articalAuthor': '',
+            'articalBody': '',
+            'originLink': '',
+        }
+
+        /**
+         * 验证表单
+         */
+        self.vForm = {
+            '2': function(){
+                var returnStatus = true;
+                postData['media_platform_id'] = $.trim($('#media_platform_id').val());
+                postData['form'] = $.trim($('#form').val());
+                postData['title'] = $.trim($('#title').val());
+                postData['timeBegin'] = $.trim($('#time_begin').val());
+                postData['timeEnd'] = $.trim($('#time_end').val());
+                postData['money'] = $.trim($('#money').val());
+                postData['phone'] = $.trim($('#phone').val());
+                if(postData['title'] == ''){
+                    uPop.show($('#title'), 10001, '不能为空', 'error');
+                    returnStatus = false;
+                }else{
+                    uPop.hide(10001);
+                }
+
+                if(postData['timeBegin'] == '' || postData['timeEnd'] == ''){
+                    uPop.show($('#time_end'), 10002, '不能为空', 'error');
+                    returnStatus = false;
+                }else if(postData['timeBegin'].localeCompare(postData['timeEnd']) > 0){
+                    uPop.show($('#time_end'), 10002, '开始时间晚于结束时间', 'error');
+                    returnStatus = false;
+                }else{
+                    uPop.hide(10002);
+                }
+
+                if(postData['money'] == ''){
+                    uPop.show($('#money'), 10003, '不能为空', 'error');
+                    returnStatus = false;
+                }if(postData['money'] == 0){
+                    uPop.show($('#money'), 10003, '预算不能为0', 'error');
+                    returnStatus = false;
+                }else{
+                    uPop.hide(10003);
+                }
+
+                var reg = /^0?1[3|4|5|8][0-9]\d{8}$/;
+                if(!reg.test(postData['phone'])){
+                    uPop.show($('#phone'), 10004, '请输入正确的手机号', 'error');
+                    returnStatus = false;
+                }else{
+                    uPop.hide(10004);
+                }
+
+                return returnStatus;
+            },
+            '3': function(){
+                var returnStatus = true;
+                postData['audienceGender'] = $('.audience_gender:checked').val();
+                postData['audienceProvinceId'] = $('.audience_province_id:checked').val();
+                if(postData['audienceProvinceId'] == 1){
+                    postData['audienceProvinceId'] = $('#province').val();
+                }
+                postData['audienceCityId'] = $('#city').val();
+                postData['audienceCountyId'] = $('#county').val();
+                postData['category'] = $('#category').val();
+                postData['tag'] = $('#tag').val();
+                postData['audienceNum'] = $.trim($('#audience_num').val());
+                postData['view'] = $.trim($('#view').val());
+                postData['num'] = $.trim($('#num').val());
+                postData['marketing'] = $.trim($('#marketing').val());
+                postData['original'] = $('#original').val();
+
+                if(postData['category'] == ''){
+                    uPop.show($('#v3_category_select'), 10013, '不能为空', 'error');
+                    returnStatus = false;
+                }else{
+                    uPop.hide(10013);
+                }
+
+                if(postData['tag'] == ''){
+                    uPop.show($('#v3_tag_select'), 10014, '不能为空', 'error');
+                    returnStatus = false;
+                }else{
+                    uPop.hide(10014);
+                }
+
+                if(postData['audienceNum'] == ''){
+                    uPop.show($('#audience_num'), 10005, '不能为空', 'error');
+                    returnStatus = false;
+                }else{
+                    uPop.hide(10005);
+                }
+
+                if(postData['view'] == ''){
+                    uPop.show($('#view'), 10006, '不能为空', 'error');
+                    returnStatus = false;
+                }else{
+                    uPop.hide(10006);
+                }
+                if(postData['num'] == ''){
+                    uPop.show($('#num'), 10106, '不能为空', 'error');
+                    returnStatus = false;
+                }else{
+                    uPop.hide(10106);
+                }
+                if(postData['marketing'] == ''){
+                    uPop.show($('#marketing'), 10007, '不能为空', 'error');
+                    returnStatus = false;
+                }else{
+                    uPop.hide(10007);
+                }
+
+                return returnStatus;
+            },
+            '4': function(){
+                var returnStatus = true;
+                postData['articleStatus'] = $('.article_status:checked').val();
+
+//                postData['articalTitle'] = $.trim($('#artical_title').val());
+//                postData['articalAuthor'] = $.trim($('#artical_author').val());
+//                postData['articalBody'] = $.trim($('#artical_body').val());
+                postData['originLink'] = $.trim($('#origin_link').val());
+                postData['docPath'] = $('#doc_path').val();
+//                if(postData['articalTitle'] == ''){
+//                    uPop.show($('#artical_title'), 10008, '不能为空', 'error');
+//                    returnStatus = false;
+//                }else{
+//                    uPop.hide(10008);
+//                }
+//
+//                if(postData['articalAuthor'] == ''){
+//                    uPop.show($('#artical_author'), 10009, '不能为空', 'error');
+//                    returnStatus = false;
+//                }else{
+//                    uPop.hide(10009);
+//                }
+//
+//                if(postData['articalBody'] == ''){
+//                    uPop.show($('#xhe0_container'), 10010, '不能为空', 'error');
+//                    returnStatus = false;
+//                }else{
+//                    uPop.hide(10010);
+//                }
+
+                if(postData['articleStatus'] == 1 && postData['originLink'] == ''){
+                    uPop.show($('#origin_link'), 10011, '不能为空', 'error');
+                    returnStatus = false;
+                }else if(postData['articleStatus'] == 1 && postData['originLink'].indexOf("http://mp.weixin.qq.com/", 0) == -1){
+                    uPop.show($('#origin_link'), 10011, '请填写正确的微信图文链接', 'error');
+                    returnStatus = false;
+                }else{
+                    uPop.hide(10011);
+                }
+                if(postData['articleStatus'] == 2 && postData['docPath'] == ''){
+                    uPop.show($('#content_file'), 10012, '不能为空', 'error');
+                    returnStatus = false;
+                }else{
+                    uPop.hide(10012);
+                }
+
+                return returnStatus;
+            }
+        }
+
+        /**
+         * 切换表单
+         */
+        self.changeStep = function(nextId){
+            // 重置样式
+            $('.v3_demand_step').css('display', 'none');
+
+            // 设置当前样式
+            $('#v3_demand_step' + nextId).css('display', 'block');
+
+            // 设置条子长度
+            var width = (nextId - 1) * 50;
+            if(width < bgLen){
+                var preId = (parseInt(nextId) + 1);
+                $('#v3_demand_nav_step' + preId).removeClass('v3_demand_nav_step_selected');
+            }
+            $('.v3_demand_nav_bg_line_light').stop();
+            $('.v3_demand_nav_bg_line_light').animate({'width': width + '%'}, 'normal', function(){
+                $('#v3_demand_nav_step' + nextId).addClass('v3_demand_nav_step_selected');
+                self.bgLen = width;
+            });
+        }
+
+        /**
+         * 监听事件
+         */
+        self.listen = function(){
+            // 监听下一步
+            $('.v3_step_next').click(function(){
+                var nextId = $(this).attr('data-next');
+                if(!nextId){
+                    return false;
+                }
+
+                if(nextId > self.stepNum){
+                    if(!vForm[nextId]()){
+                        return false;
+                    }
+                }else{
+                    uPop.clear();
+                }
+                self.stepNum = nextId;
+                self.changeStep(nextId);
+            });
+
+            // 监听地域选择
+            $('.audience_province_id').click(function(){
+                var value = $(this).val();
+                if(value == 0){
+                    $('#v3_demand_audience_area').hide();
+                }else{
+                    $('#v3_demand_audience_area').show();
+                }
+            });
+
+            // 监听行业和标签点击
+            $('.v3_button_select').click(function(){
+                var type = $(this).attr('data-type');
+                if(!type){
+                    return false;
+                }
+                if(type == 'category'){
+                    self.category();
+                }
+                if(type == 'tag'){
+                    self.tag();
+                }
+            });
+
+            // 监听文案内容提供类型的选择
+            $('.article_status').click(function(){
+                var value = $(this).val();
+                if (value == 1){
+                    $('#origin_link').show();
+                    $('#content_file').hide();
+                } else if (value == 2) {
+                    $('#origin_link').hide();
+                    $('#content_file').show();
+                } else {
+                    $('#origin_link').hide();
+                    $('#content_file').hide();
+                }
+            });
+
+//            // 监听上传
+//            $('#upload').click(function(){
+//                $.ajax({
+//                    url: "/user?a=on_upload",
+//                    type: "POST",
+//                    cache: false,
+//                    dataType: "JSON",
+//                    data: new FormData($('#upload_form')[0]),
+//                    processData: false,
+//                    contentType: false,
+//                    success: function(ret){
+//                        if(ret.status == 200) {
+//                            $('#doc_path').val(ret.data['doc_path']);
+//                            showTipsBox('message', '上传成功');
+//                            location.reload()
+//                        } else {
+//                            showTipsBox('alert', '上传失败');
+//                            location.reload()
+//                        }
+//                    }
+//                });
+//            });
+
+            // 监听提交
+            $('#v3_submit').click(function(){
+                if(!vForm['4']()){
+                    return false;
+                }
+
+                var _this = $(this);
+
+                loadingButton.show(_this);
+
+                $.ajax({
+                    url: '/user?a=demand_create',
+                    type: 'post',
+                    dataType: 'json',
+                    data: postData
+                }).then(function(d){
+                    loadingButton.hide(_this);
+                    if(d.status == 200){
+                        uPop.show(_this, 10012, '发布成功', 'error');
+                        location.href = '/demand?a=view&id=' + d.data['demand_id'];
+                    }else{
+                        uPop.show(_this, 10013, '发布失败', 'error');
+                    }
+                });
+            });
+
+            // 加载地域选择
+            getSelectList(0,'main');
+            // 显示编辑器
+            $('#artical_body').xheditor({tools:'simple',skin:'default'});
+        }
+
+        /**
+         * 执行标签选择
+         */
+        self.tag = function(){
+            uDialog.show({
+                'title': '选择标签',
+                'content': '正在加载中...',
+                'onload': function(obj){
+                    $.ajax({
+                        url: '/user?a=get_tag',
+                        type: 'post',
+                        dataType: 'json',
+                    }).then(function(d){
+                        if(d.status == 200){
+                            // 输出到界面
+                            var _html = '';
+                            for(var k in d.data){
+                                var className = tags.indexOf(''+ d['data'][k]['id'] +'') != -1 ? "v3_tag_item v3_tag_item_selected" : "v3_tag_item";
+                                _html += '<button class="'+ className +'" data-id="'+ d['data'][k]['id'] +'">'+ d['data'][k]['name'] +'</button>';
+                            }
+                            obj.html(_html);
+                            // 监听点击
+                            $('.v3_tag_item').click(function(){
+
+
+                                uPop.hide(10014);
+                                var id = $(this).attr('data-id');
+                                var name = $(this).text();
+                                // 检查数据是否有值
+                                var hasSelected = false;
+                                for(var i in tags){
+                                    if(id == tags[i]){
+                                        tags.splice(i, 1);
+                                        hasSelected = true;
+                                    }
+                                }
+                                if(hasSelected){
+                                    $('#v3_tag_selected_item_' + id).remove();
+                                    $(this).removeClass('v3_tag_item_selected');
+                                }else{
+                                    if(tags.length >= 5)
+                                {
+                                    alert('最多选5个标签');
+                                    return
+                                }
+                                    tags.push(id);
+                                    $(this).addClass('v3_tag_item_selected');
+                                    $('#v3_demand_tag').append('<span class="v3_tag_selected_item" data-id="'+ id +'" id="v3_tag_selected_item_'+ id +'">'+ name +'</span>');
+                                    // 监听移除
+                                    $('.v3_tag_selected_item').unbind('click').click(function(){
+                                        var id = $(this).attr('data-id');
+                                        $(this).fadeOut(function(){
+                                            $(this).remove();
+                                            for(var i in tags){
+                                                if(id == tags[i]){
+                                                    tags.splice(i, 1);
+                                                }
+                                            }
+                                            $('#tag').val(tags.join(','));
+                                        });
+                                    });
+                                }
+                                $('#tag').val(tags.join(','));
+                            });
+                        }
+                    });
+                }
+            });
+        }
+
+        /**
+         * 执行行业选择
+         */
+        self.category = function(){
+            uDialog.show({
+                'title': '选择行业类型',
+                'content': '正在加载中...',
+                'onload': function(obj){
+                    $.ajax({
+                        url: '/user?a=get_category',
+                        type: 'post',
+                        dataType: 'json',
+                    }).then(function(d){
+                        if(d.status == 200){
+                            // 输出到界面
+                            var _html = '';
+                            for(var k in d.data){
+                                var className = categorys.indexOf(''+ d['data'][k]['id'] +'') != -1 ? "v3_category_item v3_category_item_selected" : "v3_category_item";
+                                _html += '<button class="'+ className +'" data-id="'+ d['data'][k]['id'] +'">'+ d['data'][k]['name'] +'</button>';
+                            }
+                            obj.html(_html);
+                            // 监听点击
+                            $('.v3_category_item').click(function(){
+
+
+                                uPop.hide(10013);
+                                var id = $(this).attr('data-id');
+                                var name = $(this).text();
+                                // 检查数据是否有值
+                                var hasSelected = false;
+                                for(var i in categorys){
+                                    if(id == categorys[i]){
+                                        categorys.splice(i, 1);
+                                        hasSelected = true;
+                                    }
+                                }
+
+                                if(hasSelected){
+                                    $('#v3_category_selected_item_' + id).remove();
+                                    $(this).removeClass('v3_category_item_selected');
+                                }else{
+                                    if(categorys.length === 3)
+                                {
+                                    alert('最多选3个行业');
+                                    return
+                                }
+                                    categorys.push(id);
+                                    $(this).addClass('v3_category_item_selected');
+                                    $('#v3_demand_category').append('<span class="v3_category_selected_item" data-id="'+ id +'" id="v3_category_selected_item_'+ id +'">'+ name +'</span>');
+                                    // 监听移除
+                                    $('.v3_category_selected_item').unbind('click').click(function(){
+                                        var id = $(this).attr('data-id');
+                                        $(this).fadeOut(function(){
+                                            $(this).remove();
+                                            for(var i in categorys){
+                                                if(id == categorys[i]){
+                                                    categorys.splice(i, 1);
+                                                }
+                                            }
+                                            $('#category').val(categorys.join(','));
+                                        });
+                                    });
+                                }
+                                $('#category').val(categorys.join(','));
+                            });
+                        }
+                    });
+                }
+            });
+        }
+
+        /**
+         * 营销时间
+         */
+        self.run = function(){
+            $('.time_picker').datepicker({//添加日期选择功能
+                numberOfMonths:1,//显示几个月
+                showButtonPanel:true,//是否显示按钮面板
+                dateFormat: 'yy-mm-dd',//日期格式
+                clearText:"清除",//清除日期的按钮名称
+                closeText:"关闭",//关闭选择框的按钮名称
+                yearSuffix: '年', //年的后缀
+                showMonthAfterYear:true,//是否把月放在年的后面
+                defaultDate:new Date(),//默认日期
+                minDate:new Date(),//最小日期
+                maxDate:'2020-03-20',//最大日期
+                monthNames: ['一月','二月','三月','四月','五月','六月','七月','八月','九月','十月','十一月','十二月'],
+                dayNames: ['星期日','星期一','星期二','星期三','星期四','星期五','星期六'],
+                dayNamesShort: ['周日','周一','周二','周三','周四','周五','周六'],
+                dayNamesMin: ['日','一','二','三','四','五','六'],
+                onSelect: function(selectedDate) {//选择日期后执行的操作
+                        //alert(selectedDate);
+                    }
+                });
+
+            self.listen();
+        }();
+    }();
+
+    $('select').change(function(){
+        var target = $(this).attr('name');
+        // 去掉广告形式
+        if(target === 'form') {
+            return;
+        }
+        var id = $(this).val();
+        if(id==''){
+            if(target=='province'){
+                $('#city').empty().append('<option value="">城市</option>');
+                $('#county').empty().append('<option value="">区县</option>');
+                cityList = [-1,-1,-1];
+            }else if(target=='city'){
+                $('#county').empty().append('<option value="">区县</option>');
+                cityList[1] = cityList[2] = -1;
+            }else{
+                cityList[2] = -1;
+            }
+            return;
+        }
+        if(target!='county'){
+            getSelectList(id,target);
+            if(target=='province'){
+                cityList[0] = id;
+            }else{
+                cityList[1] = id;
+            }
+        }else{
+            cityList[2] = id;
+        }
+    });
+
+    function getSelectList(id,idfrom){
+        change_parent = idfrom;
+        var obj = {};
+        obj.method='get';
+        obj.url = basic_url + '&parent_id='+id;
+        obj.dataType = 'json';
+        obj.success = function(data){
+            var target;
+            var tarWord;
+            var tarId;
+            var tar2 = '';
+            switch (change_parent){
+                case 'province':
+                    target = 'city';
+                    tarWord = '城市';
+                    tarId = cityList[1];
+                    tar2 = 'county';
+                    break;
+                case 'city':
+                    target = 'county';
+                    tarWord = '区县';
+                    tarId = cityList[2];
+                    break;
+                case 'main':
+                    target = 'province';
+                    tarWord = '省份';
+                    tarId = cityList[0];
+                    break;
+            }
+            var main = $('#' + target);
+            main.empty();
+            main.append('<option value="">' + tarWord + '</option>');
+            if(!isAuto && target=='city')cityList[1]=-1;
+            if(tar2!=''){
+                $('#' + tar2).empty().append('<option value="">区县</option>');
+                if(isAuto){
+                    isAuto = !isAuto;
+                }else{
+                    cityList[2] = -1;
+                }
+            }
+
+            var list = data.data;
+            for(var i=0;i<list.length;i++){
+                main.append('<option value="' + list[i].id + '">' + decodeURIComponent(list[i].name) + '</option>');
+            }
+            if(tarId!=-1){
+                main.val(tarId);
+            }
+            if(change_parent!='city' && main.val()!=''){
+                getSelectList(main.val(),target);
+            }
+
+        };
+        $.ajax(obj)
+    }
+})
+</script>
+{% end  %}

@@ -1,0 +1,510 @@
+{% extends '../../public/main.html' %}
+
+{% block body %}
+<script type="text/javascript">
+    function create(){
+        var a = document.getElementById('zhihu_name').value;
+        if (a == "") {
+            alert("名称不能为空");
+            return false;
+        }
+        document.getElementById('zhihu_form').submit();
+    }
+</script>
+<div class="nav">
+    <a class="btnAdd" name="zhihu_create" data-target="#zhihu_create_dialog" data-toggle="modal">增加知乎</a>
+    <div id="zhihu_create_dialog" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" id="zhihu_create_close" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 id="zhihu_create_title">增加知乎</h4>
+                </div>
+                <div class="modal-body form-group">
+                        <input class="form-control" id="zhihu_url"> 
+                        <i class="comment">知乎主链接，如：https://www.zhihu.com/people/chenbailing</i>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-success" name="zhihu_create" id="zhihu_create">保存</button>
+                    <button class="btn btn-default" data-dismiss="modal" aria-hidden="true">取消</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="result_filter funnel">
+    <form method="get" class="form-inline" action="/media/zhihu" id="search_form">
+        <div class="searchBox form-group">
+            <select class="form-control" title="搜索项" id="field" name="field">
+                <option id="field_1" name="field" value="1">名称</option>
+                <option id="field_4" name="field" value="4">简介</option>
+                <option id="field_5" name="field" value="5">联系手机</option>
+                <option id="field_6" name="field" value="6">联系 QQ</option>
+                <option id="field_7" name="field" value="7">联系微信</option>
+                <option id="field_8" name="field" value="8">备注</option>
+            </select>
+            <input class="form-control" title="搜索内容" type="text" id="query" name="query" value="{{condition['query']}}" class="typeText">
+            <button type="button" id="search" class="form-control btn btn-default">搜索</button>
+            <button type="button" id="more" class="form-control btn btn-default">高级搜索</button>
+        </div>
+        <div id="more_condition">
+            <div class="colleft">
+                <div class="valueInfo1">
+                    <div>
+                        <strong>行业</strong>
+                        <div id="category_condition">
+                            <a id="all_category">不限</a>
+                        </div>
+                    </div>
+                    <div>
+                        <strong>标签</strong>
+                        <div id="tag_condition">
+                            <a id="all_tag">不限</a>
+                        </div>
+                    </div>
+                </div>
+                <hr>
+                <div class="valueInfo2">
+                    <div>
+                        <strong>性质</strong>
+                        <div id="role_condition">
+                            <select title="性质" name="role">
+                                <option name="role_op" value="-1">不限</option>
+                                <option name="role_op" value="1">企业</option>
+                                <option name="role_op" value="2">个人</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div>
+                        <strong>是否接黑稿</strong>
+                        <div id="black_pr_condition">
+                            <select title="是否接黑稿" name="black_pr">
+                                <option name="black_pr_op" value="-1">不限</option>
+                                <option name="black_pr_op" value="1">是</option>
+                                <option name="black_pr_op" value="2">否</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div>
+                        <strong>可以文案</strong>
+                        <div id="can_afford_article_condition">
+                            <select title="可以文案" name="can_afford_article">
+                                <option name="can_afford_article_op" value="-1">不限</option>
+                                <option name="can_afford_article_op" value="1">是</option>
+                                <option name="can_afford_article_op" value="2">否</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div>
+                        <strong>KOL</strong>
+                        <div id="kol_condition">
+                            <select title="KOL" name="kol">
+                                <option name="kol_op" value="-1">不限</option>
+                                <option name="kol_op" value="1">是</option>
+                                <option name="kol_op" value="2">否</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="valueInfo3">
+                    <div>
+                        <strong>接广告</strong>
+                        <div id="ad_condition">
+                            <select title="接广告" name="ad">
+                                <option name="ad_op" value="-1">不限</option>
+                                <option name="ad_op" value="1">是</option>
+                                <option name="ad_op" value="2">否</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div>
+                        <strong>广告类型</strong>
+                        <div id="ad_type_condition">
+                            <select title="广告类型" name="ad_type">
+                                <option name="ad_type_op" value="-1">不限</option>
+                                <option name="ad_type_op" value="1">软广</option>
+                                <option name="ad_type_op" value="2">硬广</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div>
+                        <strong>入驻意愿</strong>
+                        <div id="station_condition">
+                            <select title="入驻意愿" name="station">
+                                <option name="station_op" value="-1">不限</option>
+                                <option name="station_op" value="1">是</option>
+                                <option name="station_op" value="2">否</option>
+                            </select>
+                        </div>
+                    </div>
+                     <div>
+                        <strong>刷单程度</strong>
+                        <div id="farm_level_condition">
+                            <select title="刷单程度" name="farm_level">
+                                <option name="farm_level_op" value="-1">不限</option>
+                                <option name="farm_level_op" value="1">无</option>
+                                <option name="farm_level_op" value="2">轻度</option>
+                                <option name="farm_level_op" value="3">严重</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div>
+                        <strong>投放价值</strong>
+                        <div id="worth_condition">
+                            <select title="投放价值" name="worth">
+                                <option name="worth_op" value="-1">不限</option>
+                                <option name="worth_op" value="1">是</option>
+                                <option name="worth_op" value="2">否</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="colright">
+                <div class="valueInfo4">
+                    <div>
+                        <strong>粉丝数</strong>
+                        <div id="fans_num_condition">
+                            <input title="下限" type="text" name="fans_num" value="{{ condition['fans_num'].split(',')[0] if 'fans_num' in condition and condition['fans_num'] else '' }}"> -
+                            <input title="上限" type="text" name="fans_num" value="{{ condition['fans_num'].split(',')[1] if 'fans_num' in condition and condition['fans_num'] else '' }}">
+                        </div>
+                    </div>
+                    <div>
+                        <strong>提问数</strong>
+                        <div id="total_ask_num_condition">
+                            <input title="下限" type="text" name="total_ask_num" value="{{ condition['total_ask_num'].split(',')[0] if 'total_ask_num' in condition and condition['total_ask_num'] else '' }}"> -
+                            <input title="上限" type="text" name="total_ask_num" value="{{ condition['total_ask_num'].split(',')[1] if 'total_ask_num' in condition and condition['total_ask_num'] else '' }}">
+                        </div>
+                    </div>
+                    <div>
+                        <strong>回答数</strong>
+                        <div id="total_answer_num_condition">
+                            <input title="下限" type="text" name="total_answer_num" value="{{ condition['total_answer_num'].split(',')[0] if 'total_answer_num' in condition and condition['total_answer_num'] else '' }}"> -
+                            <input title="上限" type="text" name="total_answer_num" value="{{ condition['total_answer_num'].split(',')[1] if 'total_answer_num' in condition and condition['total_answer_num'] else '' }}">
+                        </div>
+                    </div>
+                    <div>
+                        <strong>赞同数</strong>
+                        <div id="total_like_num_condition">
+                            <input title="下限" type="text" name="total_like_num" value="{{ condition['total_like_num'].split(',')[0] if 'total_like_num' in condition and condition['total_like_num'] else '' }}"> -
+                            <input title="上限" type="text" name="total_like_num" value="{{ condition['total_like_num'].split(',')[1] if 'total_like_num' in condition and condition['total_like_num'] else '' }}">
+                        </div>
+                    </div>
+                    <div>
+                        <strong>感谢数</strong>
+                        <div id="total_thank_num_condition">
+                            <input title="下限" type="text" name="total_thank_num" value="{{ condition['total_thank_num'].split(',')[0] if 'total_thank_num' in condition and condition['total_thank_num'] else '' }}"> -
+                            <input title="上限" type="text" name="total_thank_num" value="{{ condition['total_thank_num'].split(',')[1] if 'total_thank_num' in condition and condition['total_thank_num'] else '' }}">
+                        </div>
+                    </div>
+                    <div>
+                        <strong>收藏数</strong>
+                        <div id="total_favorite_num_condition">
+                            <input title="下限" type="text" name="total_favorite_num" value="{{ condition['total_favorite_num'].split(',')[0] if 'total_favorite_num' in condition and condition['total_favorite_num'] else '' }}"> -
+                            <input title="上限" type="text" name="total_favorite_num" value="{{ condition['total_favorite_num'].split(',')[1] if 'total_favorite_num' in condition and condition['total_favorite_num'] else '' }}">
+                        </div>
+                    </div>
+                    <div>
+                        <strong>分享数</strong>
+                        <div id="total_share_num_condition">
+                            <input title="下限" type="text" name="total_share_num" value="{{ condition['total_share_num'].split(',')[0] if 'total_share_num' in condition and condition['total_share_num'] else '' }}"> -
+                            <input title="上限" type="text" name="total_share_num" value="{{ condition['total_share_num'].split(',')[1] if 'total_share_num' in condition and condition['total_share_num'] else '' }}">
+                        </div>
+                    </div>
+                    <div>
+                        <strong>公共编辑数</strong>
+                        <div id="total_record_num_condition">
+                            <input title="下限" type="text" name="total_record_num" value="{{ condition['total_record_num'].split(',')[0] if 'total_record_num' in condition and condition['total_record_num'] else '' }}"> -
+                            <input title="上限" type="text" name="total_record_num" value="{{ condition['total_record_num'].split(',')[1] if 'total_record_num' in condition and condition['total_record_num'] else '' }}">
+                        </div>
+                    </div>
+                    <div>
+                        <strong>主页浏览数</strong>
+                        <div id="total_view_num_condition">
+                            <input title="下限" type="text" name="total_view_num" value="{{ condition['total_view_num'].split(',')[0] if 'total_view_num' in condition and condition['total_view_num'] else '' }}"> -
+                            <input title="上限" type="text" name="total_view_num" value="{{ condition['total_view_num'].split(',')[1] if 'total_view_num' in condition and condition['total_view_num'] else '' }}">
+                        </div>
+                    </div>
+                </div>
+                <hr>
+                <div class="audienceInfo">
+                    <div>
+                        <strong>性别</strong>
+                        <div id="audience_gender_condition">
+                            <select title="性别" name="audience_gender">
+                                <option name="audience_gender_op" value="-1">不限</option>
+                                <option name="audience_gender_op" value="1">偏女性</option>
+                                <option name="audience_gender_op" value="2">偏男性</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div>
+                        <strong>年龄</strong>
+                        <div id="audience_age_condition">
+                            <label><input type="checkbox" name="audience_age" value="1">70后</label>
+                            <label><input type="checkbox" name="audience_age" value="2">80后</label>
+                            <label><input type="checkbox" name="audience_age" value="3">85后</label>
+                            <label><input type="checkbox" name="audience_age" value="4">90后</label>
+                            <label><input type="checkbox" name="audience_age" value="5">95后</label>
+                            <label><input type="checkbox" name="audience_age" value="6">其它</label>
+                        </div>
+                    </div>
+                    <div>
+                        <strong>职业</strong>
+                        <div id="career_condition">
+                            <label><input type="checkbox" name="audience_career" value="1">工薪阶层</label>
+                            <label><input type="checkbox" name="audience_career" value="2">白领</label>
+                            <label><input type="checkbox" name="audience_career" value="3">高管</label>
+                            <label><input type="checkbox" name="audience_career" value="4">创业者</label>
+                            <label><input type="checkbox" name="audience_career" value="5">企事业单位</label>
+                            <label><input type="checkbox" name="audience_career" value="6">国企</label>
+                            <label><input type="checkbox" name="audience_career" value="7">公职人员</label>
+                            <label><input type="checkbox" name="audience_career" value="8">自由职业者</label>
+                        </div>
+                    </div>
+                </div>
+                <hr>
+                <div class="advertisingInfo">
+                    <div>
+                        <strong>提问报价</strong>
+                        <div id="ask_condition">
+                            <input title="下限" type="text" name="ask_price" value="{{ condition['ask_price'].split(',')[0] if 'ask_price' in condition and condition['ask_price'] else '' }}"> -
+                            <input title="上限" type="text" name="ask_price" value="{{ condition['ask_price'].split(',')[1] if 'ask_price' in condition and condition['ask_price'] else '' }}">
+                        </div>
+                    </div>
+                    <div>
+                        <strong>回答报价</strong>
+                        <div id="answer_condition">
+                            <input title="下限" type="text" name="answer_price" value="{{ condition['answer_price'].split(',')[0] if 'answer_price' in condition and condition['answer_price'] else '' }}"> -
+                            <input title="上限" type="text" name="answer_price" value="{{ condition['answer_price'].split(',')[1] if 'answer_price' in condition and condition['answer_price'] else '' }}">
+                        </div>
+                    </div>
+                    <div>
+                        <strong>其他报价</strong>
+                        <div id="other_price_condition">
+                            <input title="下限" type="text" name="other_price" value="{{ condition['other_price'].split(',')[0] if 'other_price' in condition and condition['other_price'] else '' }}"> -
+                            <input title="上限" type="text" name="other_price" value="{{ condition['other_price'].split(',')[1] if 'other_price' in condition and condition['other_price'] else '' }}">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+<div>
+    <table class="table table-bordered table-hover vert-align">
+        <thead>
+            <tr class="res_tbl_title">
+                <td>ID</td>
+                <td>自媒体名称</td>
+                <td>粉丝数</td>
+                <td>提问数</td>
+                <td>回答数</td>
+                <td>赞同数</td>
+                <td>感谢数</td>
+                <td>提问报价</td>
+                <td>回答报价</td>
+                <td>备注</td>
+                <td>更新时间</td>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in zhihu %}
+            <tr>
+                <td>{{ item['id'] }}</td>
+                <td>
+                    <a href="/media/zhihu?a=detail&id={{item['id']}}" title="简介：{{ item['brief'] }}">{{ item['name'] }}</a>
+                </td>
+                <td>{{ item['fans_num'] if item['fans_num'] else '-'}}</td>
+                <td>{{ item['total_ask_num'] if item['total_ask_num'] else '-'}}</td>
+                <td>{{ item['total_answer_num'] if item['total_answer_num'] else '-'}}</td>
+                <td>{{ item['total_like_num'] if item['total_like_num'] else '-'}}</td>
+                <td>{{ item['total_thank_num'] if item['total_thank_num'] else '-'}}</td>
+                <td>{{ item['ask_price'] if item['ask_price'] else '-'}}</td>
+                <td>{{ item['answer_price'] if item['answer_price'] else '-'}}</td>
+                <td><div style="overflow:hidden;display:inline-block;max-width:500px;white-space:nowrap;text-overflow:ellipsis;">{% raw item['remark'] if item['remark'] else '' %}</div></td>
+                <td>{{ item['last_update_time'] }}</td>
+            </tr>
+            {% end %}
+        </tbody>
+    </table>
+</div>
+<div>
+    {% raw page_html %}
+</div>
+<iframe frameborder="0" name='hidden_form' style="width:0;height: 0;" onload="iframeLoaded(this)"></iframe>
+<script type="text/javascript">
+$(document).ready(function(){
+    $("body").keyup(function () {
+        if (event.which == 13){
+            $("#search").trigger("click");
+        }
+    }); 
+    // 分类
+    $.ajax({
+        type: "get",
+        contentType: "application/json",
+        url: "/media/common?a=get_category_media",
+        success: function (result) {
+            var obj = JSON.parse(result);
+            var cb = "";
+            for (var i = 0; i < obj.data.length; i++) {
+                cb += '<label>';
+                cb += '<input type="checkbox" name="category" value=' + obj.data[i].id + '>';
+                cb += obj.data[i].name;
+                cb += '</label>';
+                }
+            $("#category_condition").append(cb);
+            // 行业不限
+            $('#all_category').click(function(){
+                $("input[name=category]").each(function(){
+                    $(this).attr("checked", false);
+                })
+            });
+            // 回显
+            $("input[name=category]").each(function(){
+                if ($.inArray($(this).val(), '{{ condition["category"] }}'.split(',')) != -1) {
+                    $(this).attr("checked", true);
+                }
+            });
+        }
+    });
+    // 标签
+    $.ajax({
+        type: "get",
+        contentType: "application/json",
+        url: "/media/common?a=get_tag",
+        success: function (result) {
+            var obj = JSON.parse(result);
+            var cb = "";
+            for (var i = 0; i < obj.data.length; i++) {
+                cb += '<label>';
+                cb += '<input type="checkbox" name="tag" value=' + obj.data[i].id + '>';
+                cb += obj.data[i].name;
+                cb += '</label>';
+            }
+            $("#tag_condition").append(cb);
+            // 标签不限
+            $('#all_tag').click(function(){
+                $("input[name=tag]").each(function(){
+                    $(this).attr("checked", false);
+                })
+            });
+            // 回显
+            $("input[name=tag]").each(function(){
+                if ($.inArray($(this).val(), '{{ condition["tag"] }}'.split(',')) != -1) {
+                    $(this).attr("checked", true);
+                }
+            });
+        }
+    });
+    $('#more').click(function(){
+        $("#more_condition").toggle();
+        if ($("#more_condition").is(":visible")){
+            $(".searchBox").addClass("searchBoxMore");
+        }else{
+            $(".searchBox").removeClass("searchBoxMore");
+        };
+    });
+    // 提交搜索
+    $('#search').click(function(){
+        $('#search_form').submit();
+    });
+    var field = "{{ condition['field']}}";
+    var role = "{{ condition['role'] }}";
+    var black_pr = "{{ condition['black_pr'] }}";
+    var can_afford_article = "{{ condition['can_afford_article'] }}";
+    var comment = "{{ condition['comment'] }}";
+    var award = "{{ condition['award'] }}";
+    var kol = "{{ condition['kol'] }}";
+    var ad = "{{ condition['ad'] }}";
+    var ad_type = "{{ condition['ad_type'] }}";
+    var station = "{{ condition['station'] }}";
+    var worth = "{{ condition['worth'] }}";
+    var gender = "{{ condition['audience_gender'] }}";
+    var farm_level = "{{ condition['farm_level'] }}";
+    if (field != ""){
+        $("option[name=field][value=" + field + "]").attr("selected", true);
+    }
+    if (role != "") {
+        $("option[name=role_op][value=" + role + "]").attr("selected", true);
+    }
+    if (black_pr != "") {
+        $("option[name=black_pr_op][value=" + black_pr + "]").attr("selected", true);
+    }
+    if (can_afford_article != "") {
+        $("option[name=can_afford_article_op][value=" + can_afford_article + "]").attr("selected", true);
+    }
+    if (comment != "") {
+        $("option[name=comment_op][value=" + comment + "]").attr("selected", true);
+    }
+    if (award != "") {
+        $("option[name=award_op][value=" + award + "]").attr("selected", true);
+    }
+    if (kol != "") {
+        $("option[name=kol_op][value=" + kol + "]").attr("selected", true);
+    }
+    if (ad != "") {
+        $("option[name=ad_op][value=" + ad + "]").attr("selected", true);
+    }
+    if (ad_type != "") {
+        $("option[name=ad_type_op][value=" + ad_type + "]").attr("selected", true);
+    }
+    if (station != "") {
+        $("option[name=station_op][value=" + station + "]").attr("selected", true);
+    }
+    if (worth != "") {
+        $("option[name=worth_op][value=" + worth + "]").attr("selected", true);
+    }
+    if (gender != "") {
+        $("option[name=audience_gender_op][value=" + gender + "]").attr("selected", true);
+    }
+    if (farm_level != "") {
+        $("option[name=farm_level_op][value=" + farm_level + "]").attr("selected", true);
+    }
+
+    $("input[name=audience_age]").each(function(){
+        if ($.inArray($(this).val(), '{{ condition["audience_age"] }}'.split(',')) != -1) {
+            $(this).attr("checked", true);
+        }
+    });
+    $("input[name=audience_career]").each(function(){
+        if ($.inArray($(this).val(), '{{ condition["audience_career"] }}'.split(',')) != -1) {
+            $(this).attr("checked", true);
+        }
+    });
+    $('#zhihu_create').click(function(){
+        var url = $("#zhihu_url").val();
+        console.log(url);
+        if (url == ''){
+            alert('地址不能为空');
+            return;
+        }
+        // 使保存按钮失效
+        $('#zhihu_create').attr("disabled", true);
+        $.ajax({
+            type: "post",
+            dataType: "json",
+            url: "/media/zhihu?a=create",
+            data: {'url': url},
+            success: function (d) {
+                // 使保存按钮失效
+                $('#zhihu_create').attr("disabled", false);
+                if(d.status==200){
+                    $("#zhihu_create_close").click();
+                    alert('添加成功');
+                    location.reload();
+                } else if (d.status==601) {
+                    alert('该知乎用户已存在')
+                } else if (d.status==401) {
+                    alert('无效的知乎链接')
+                } else {
+                    alert('出错啦。。。')
+                }
+
+            }
+        })
+    });
+});
+</script>
+{% end %}

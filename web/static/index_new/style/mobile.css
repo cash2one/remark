@@ -1,0 +1,32 @@
+body{width:1242px;overflow-x: hidden;font-family: Tahoma, Helvetica, Arial, "Microsoft Yahei", "微软雅黑", sans-serif;padding: 0;margin:0;}
+div{position: absolute;}
+
+.title{height:190px;width:1242px;background: #2891eb;color:#fff;position: fixed;z-index: 99;}
+.title .logo{background: url("/static/images/mobile-logo.png") no-repeat;width:119px;height:70px;top:60px;left:60px;}
+.title .change-btn{width:262px;height:112px;border:solid 1px #44a2f3;background: #1878cb;color:#fff;font-size:48px;text-align: center;line-height: 110px;}
+.title .change-btn-right{border-radius: 0 14px 14px 0;top:39px;left:50%;}
+.title .change-btn-left{border-radius: 14px 0 0 14px;top:39px;left:50%;margin-left:-262px;}
+.title .current-page{background: #67b9ff;}
+
+.foot{left:0;bottom: 0;width:100%;position: fixed;height:205px;}
+
+.container{width:100%;height:auto;top:190px;left:0;margin-bottom: 205px;overflow-y: auto;overflow-x: hidden;}
+.container .content{height:auto;width:1242px;}
+.container .line-box{width:100%;height:337px;border-bottom: solid 1px #ddd;background: #fff;color:#555;position: relative;}
+.container .line-box img{width:223px;height:223px;border:solid 1px #ddd;border-radius: 20%;top:50px;left:42px;position: absolute;}
+.container .line-box .word-main{width:auto;height:auto;top:0;left:265px;padding: 60px 0 0 45px;}
+.container .line-box .word-main .detail-title{font-size:54px;width:800px;}
+.container .line-box .word-main .date{font-size:36px;top:146px;width:800px;}
+.container .line-box .word-main .date small{font-size:28px;}
+.container .line-box .word-main .interested-container{position: relative;top:150px;margin-left:-7px;width:890px;}
+.container .line-box .word-main .interested-container .interested-box{font-size:32px;line-height:52px;height:54px;padding:0 23px;border:solid 1px #777;border-radius: 27px;margin:0 7px;color:#555;float:left;position: relative;}
+.container .line-box .word-main .costs{color:#ec4339;font-size:92px;top:68px;right:80px;}
+.container .line-box .word-main .costs small{font-size:41px;}
+
+.back-color{background: rgba(0,0,0,0.5);position: fixed;z-index: 100;width:100%;height:100%;top:0;left:0;display: none;}
+.tips{width:890px;height:700px;top:50%;left:50%;margin:-400px 0 0 -445px;background: url("/static/images/mobile-tips.png") no-repeat;}
+
+
+.container .line-box .reset-left{left:0;width:1242px;}
+
+#selfmedia {left:1242px;display: none;}

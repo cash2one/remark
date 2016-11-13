@@ -1,0 +1,107 @@
+/*create page*/
+
+input[type='text'],textarea{border:solid 1px #ddd;background: #f0f0f0;resize: none;padding-left: 10px;width:100%;font-size:16px;}
+textarea{line-height: 18px;}
+
+.union_create_container{width:950px;min-height:580px;margin:100px auto;border:solid 1px #ddd;border-radius: 4px;background: #fff;}
+.union_create_container .title{background: #2891eb;width:100%;height:60px;text-align: center;color:#fff;font-size:18px;line-height: 60px;}
+.union_create_container .container{width:100%;height:auto;padding: 15px;}
+.container .mj-row{min-height: 35px;width:950px;line-height: 35px;margin:10px auto;}
+.container .mj-middle{width:315px;text-align: left;display: inline-block;margin:0 5px;}
+.container .mj-left{text-align: right;font-size:16px;color:#333;width:290px;display: inline-block;vertical-align: top;}
+.container .mj-right{text-align: left;font-size:12px;color:#777;width:180px;display: inline-block;vertical-align: top;line-height: 14px;padding-top:10px;}
+.container .mj-middle textarea{height: 82px;font-size:14px;color:#555;padding:5px 5px;}
+.container .pick-btn {line-height: 12px;width:auto;border-radius: 8px;height: auto;padding: 3px 12px 3px 8px;text-align: center;float: left;margin:7px 0 8px 0;cursor: pointer;font-size: 12px;white-space: nowrap;}
+.container .pick-btn:hover{color: #fff;}
+.container .pick-btn span{font-size: 15px;vertical-align: middle;float:left;margin-top:-1px;line-height: 13px;}
+.container .deleteBtn{width:100%;height: 100%;z-index:10;background: #f00;display: none;position: absolute;top:0;left:0;line-height: 20px;color: #fff;}
+.container .interestedBox:hover .deleteBtn{display: block;}
+.container .interestedBox:hover {border: solid 1px #f00;}
+.container .alertBox{border:solid 1px #f00;}
+.container .alertWord{color:#f00;font-size:14px;}
+.container .build{text-align: center;margin-top:20px;font-size:16px;letter-spacing: 2px;cursor: pointer;width:315px;}
+.container .draw-underline{border-bottom: solid 1px #ddd;width:670px;margin:0 auto 15px auto;}
+.container .create_head{width:150px;height:100px;border:solid 1px #ddd;background: #f0f0f0;border-radius: 2px;overflow: hidden;position: relative;cursor: pointer;}
+.container .create_head .changeBtn{z-index:10;width:100%;height:20px;font-size:14px;line-height:18px;color:#fff;background: #000;text-align: center;position: absolute;bottom: 0;}
+.container .b_head{width:100px;}
+
+.side-trade-list{width:326px;height: 652px;background: #fff;border-radius: 4px 0 0 4px;border: solid 1px #ddd;position: fixed;right: -326px;top:100px;transition: all 0.5s;z-index: 999;}
+.side-trade-list .trade-list-title{width:100%;height: 38px;padding-left: 10px;line-height: 36px;font-size: 16px;font-weight: 400;border-bottom: solid 1px #ddd}
+.side-trade-list .icon-close{position: absolute;top:10px;right:10px;cursor: pointer;}
+.side-trade-list .type-container{width:300px;height: auto;margin:10px;float:left;}
+.side-trade-list .type-container .title{font-size: 16px;color:#555;border-bottom: solid 1px #ddd;line-height: 30px;margin-bottom: 4px;}
+.side-trade-list .type-container .interestedBox{background: #eee;border-color: #ccc;display: inline-block;white-space: nowrap;}
+.side-trade-list .type-container .picked{background: #fff;}
+.side-content{height:90%;margin-top:5px;}
+
+.trade-in{right:-5px;}
+/*end of create page*/
+/*show page*/
+.union_show_detail{width:950px;min-height:150px;padding:25px 20px;border:solid 1px #ddd;border-radius: 2px;background: #fff;margin:100px auto 0 auto;position: relative;}
+.union_show_detail .head_img{width:150px;height:100px;margin-right:30px;border:solid 1px #ddd;overflow: hidden;float:left;}
+.union_show_detail .all_msg{color:#555;font-size:12px;width:575px;margin-left:180px;margin-top:5px;height:auto;}
+.union_show_detail .all_msg .head-detail{font-size:18px;line-height: 20px;}
+.union_show_detail .all_msg .builder{margin:4px 0;}
+.union_show_detail .all_msg .interested-container{margin-left:-4px;}
+.union_show_detail .all_msg .interested-container .interestedBox{margin:5px 4px;cursor: default;display: inline-block;overflow: hidden;float:none;}
+.union_show_detail .join-btn{width:105px;height: 32px;color:#fff;text-align: center;font-size:14px;position: absolute;top:60px;left:800px;line-height: 28px;cursor: pointer;}
+
+.union_show_member{width:950px;height: auto;margin:30px auto;background: #fff;border:solid 1px #ddd;border-radius: 2px;min-height: 150px;}
+.union_show_member .title{width:100%;height:60px;border-bottom: solid 1px #ddd;background: #f8f9fa;padding:17px 32px;color:#555;font-size:18px;}
+.union_show_member .title .member_detail{font-size:14px;line-height: 18px;margin-left:30px;}
+.union_show_member .container{position: relative;padding:25px 30px;}
+.union_show_member .container .member{height:150px;width:200px;position: relative;display: inline-block;margin:0 10px;overflow: hidden;}
+.union_show_member .container .member .head_pic{border:solid 1px #ddd;border-radius: 50%;position: absolute;top:0;left:10px;overflow: hidden;}
+.union_show_member .container .member .sm_box{width:200px;height: 120px;border:solid 1px #ddd;border-radius: 2px;background: #fbfbfb;margin-top:30px;}
+.union_show_member .container .member .sm_box .uname{font-size:14px;color:#333;margin-left:95px;line-height: 34px;}
+.union_show_member .container .member .sm_box .sm_container{margin-top:20px;padding:0 6px;line-height: 40px;font-size:14px;vertical-align: top;min-height: 20px;}
+.union_show_member .container .member .sm_box .sm_container .sm{width:40px;height:40px;margin:0 1px 0 6px;display: inline-block;position: relative;}
+.union_show_member .container .member .sm_box .sm_container .sm img{border: solid 1px #ddd;border-radius: 4px;overflow: hidden;}
+.union_show_member .container .member .sm_box .sm_container .sm .light{background: #45b034;border:solid 1px #45b034;border-radius: 50%;position: absolute;bottom:-4px;right:-4px;width:12px;height:12px;}
+.union_show_member .container .member .sm_box .sm_container .total-count{border:solid 1px #ddd;border-radius: 50%;background: #ddd;font-size:12px;color:#777;width:24px;height: 24px;line-height: 22px;text-align: center;margin:auto;display: inline-block;}
+/*end of show page*/
+/*union admin*/
+.union_admin_title{width:950px;height: 70px;background: #fff;border:solid 1px #ddd;border-radius: 2px;margin:100px auto 0 auto;font-size:18px;color:#555;line-height: 45px;position: relative;}
+.union_admin_title .info{position: absolute;top:15px;left:10px;}
+.union_admin_title .info a{display: block;}
+.union_admin_title .info .back-btn{margin-right: 10px;display: inline-block;background: url("../images/union_back.png")no-repeat;width: 10px;height: 16px;cursor: pointer;}
+.union_admin_title .info img{width:60px;height: 40px;border:solid 1px #ddd;overflow: hidden;margin-right:10px;}
+.union_admin_title .dissolve{width:104px;height: 30px;text-align: center;font-size:14px;color:#fff;background: #999;position: absolute;top:20px;right:30px;line-height: 28px;border:solid 1px #999;border-radius: 4px;cursor: pointer;transition: all 0.3s;}
+.union_admin_title .dissolve:hover{background: #777;border-color: #777;}
+
+.union_admin_detail{width:950px;min-height: 600px;background: #fff;border:solid 1px #ddd;border-radius: 2px;margin:20px auto;position: relative;}
+.union_admin_detail .title{width:100%;height: 60px;border-bottom: solid 1px #ddd;background: #f8f9fa;}
+.union_admin_detail .title .choice{width:150px;height: 59px;background: #f8f9fa;line-height: 60px;text-align: center;font-size:16px;font-weight: 600;font-family: "bold 微软雅黑";display: inline-block;cursor: pointer;position: absolute;}
+.union_admin_detail .title .choose{color:#2891EB;height: 60px;background: #fff;}
+.union_admin_detail .title .border{border-left:solid 1px #ddd;border-right:solid 1px #ddd;}
+.union_admin_detail .title .apply{width:107px;height:32px;line-height: 30px;font-size:14px;border:solid 1px #2891EB;border-radius: 4px;color:#2891EB;position: absolute;top:14px;right:30px;text-align: center;cursor: pointer;transition: all 0.3s;}
+.union_admin_detail .title .apply:hover{border-color:#0066c2;color:#0066C2;}
+.union_admin_detail .title .apply .app-num{border:solid 1px #2891EB;border-radius: 50%;color:#fff;font-size:10px;width:20px;height:20px;background: #2891EB;position: absolute;top:-9px;right:-9px;line-height: 20px;text-align: center;}
+.union_admin_detail .invite-line{position:relative;height: 47px;border-bottom: solid 1px #ddd;background: #fff;padding-left:40px;font-size:14px;color:#555;line-height: 45px;}
+.union_admin_detail .invite-line .invite-btn{position: absolute;height:32px;top:7px;right:30px;width:96px;padding:0 8px;font-size:14px;line-height: 28px;cursor: pointer; }
+.union_admin_detail .invite-line .invite-btn b{font-size:32px;font-weight: 100;vertical-align: middle;margin-top:0;}
+.union_admin_detail .members{width:100%;padding: 20px 30px;}
+
+.union_admin_detail .members .member-box{width:245px;height: 100px;padding: 10px;color:#555;font-size:12px;display: inline-block;vertical-align: top;}
+.union_admin_detail .members .member-box a{font-size:18px;}
+.union_admin_detail .members .member-box img{border:solid 1px #ddd;border-radius: 50%;overflow: hidden;width:80px;height:80px;}
+.union_admin_detail .members .member-box .info{display: inline-block;margin-left:15px;margin-top:18px;}
+
+.union_admin_detail .members .admin{position: relative;}
+.union_admin_detail .members .admin:hover{border:solid 1px #ddd;background: #f0f0f0;margin:-1px;width:247px;height: 102px;}
+.union_admin_detail .members .admin .close-btn{background: #959595;border:solid 3px #fff;border-radius: 50%;width:30px;height: 30px;position: absolute;top:3px;right:3px;color:#fff;line-height: 24px;font-weight: 600;text-align: center;font-size:14px;font-family: Verdana;cursor: pointer;display: none;transition: all 0.3s;}
+.union_admin_detail .members .admin:hover .close-btn{display: block;}
+.union_admin_detail .members .close-btn:hover {background: #777;}
+
+.union_admin_detail .members .approve{position: relative;width:255px;}
+.union_admin_detail .members .approve .info{margin-top:0;}
+.union_admin_detail .members .approve .agree-btn{width:60px;height: 24px;font-size:12px;border:solid 1px #2891EB;background: #2891EB;border-radius: 4px;margin-right:5px;display: inline-block;color:#fff;text-align: center;line-height: 22px;cursor: pointer;margin-top:5px;transition: all 0.3s;}
+.union_admin_detail .members .approve .agree-btn:hover{background: #0066C2;border-color: #0066C2;}
+.union_admin_detail .members .approve .disagree{background: #a9a9a9;border-color: #a9a9a9;}
+.union_admin_detail .members .approve .disagree:hover{background: #777;border-color: #777;}
+
+.union_admin_detail .container{width:100%;height: auto;padding: 20px 30px;}
+.union_admin_detail .container .mj-left{font-weight: 600;font-family: "bold 微软雅黑";font-size:14px;}
+
+
+/*end of union admin*/

@@ -1,0 +1,341 @@
+{% extends '../../public/main.html' %}
+
+{% block body %}
+<link rel="stylesheet" type="text/css" href="{{ static_url('style/bootstrap-datetimepicker.css') }}" />
+<link rel="stylesheet" type="text/css" href="{{ static_url('style/loading.css') }}" />
+<script type="text/javascript" src="{{ static_url('script/bootstrap-datetimepicker.js') }}"></script>
+<script type="text/javascript" src="{{ static_url('script/admin_user/advertiser_follow/detail.js')}}"></script>
+
+<div id="ad_id" ad-id="{{id}}" stlye="display: none"></div>
+
+<div class="nav">
+    <a href="javascript :;" onClick="javascript :history.back(-1);">返回上页</a>
+</div>
+
+<div id="container-fluid">
+    <div class="row">
+        <!-- 表格1 公司信息 -->
+        <div class="detail-info col-md-6">
+            <div class="table-info">
+                <table class="table table-bordered table-hover vert-align">
+                    <thead>
+                        <tr class="res_tbl_title">
+                            <th>公司信息</th>
+                            <th>属性</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- 基本信息内容 -->
+                    </tbody>
+                </table>
+                <div class="opc">
+                    <a class="btnNormal" id="advertiser_basic_revise" name="advertiser_btu" data-target="#advertiser_follow_dialog" data-toggle="modal">修改基本信息 </a>
+                </div>
+                <!-- 表格1 修改基本信息 -->
+                <div id="advertiser_follow_dialog" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" id="advertiser_follow_close" class="close" data-dismiss="modal" aria-hidden="true">X</button>
+                                <h4 id="advertiser_follow_title"></h4>
+                            </div>
+                            <div class="modal-body brickWall">
+                                <form id="advertiser_basic_form" name="advertiser_basic_form" method="post" >
+                                    <input type="hidden" id="advertiser_id" name="id" value="{{ id }}">
+                                    <div>
+                                        <strong>公司全称</strong>
+                                        <input type="text" id="advertiser_company" name="advertiser_company" value="" > 公司全称
+                                    </div>
+                                    <div>
+                                        <strong>公司简称</strong>
+                                        <input type="text" id="advertiser_company_short" name="advertiser_company_short" value=""> 公司简称，如：壤歌
+                                    </div>
+                                    <div class="uediter">
+                                        <strong>公司介绍</strong>
+                                        <textarea id="advertiser_brief" name="advertiser_brief"></textarea>
+                                    </div>
+                                    <div>
+                                        <strong>官网信息</strong>
+                                        <input type="text" id="advertiser_link" name="advertiser_link" value=""> 官网
+                                    </div>
+                                    <div>
+                                        <strong>行业信息</strong>
+                                        <input type="text" id="advertiser_category" name="advertiser_category" value=""> 行业
+                                    </div>
+                                    <div>
+                                        <strong>地区信息</strong>
+                                        <input type="text" id="advertiser_area" name="advertiser_area" value=""> 地区
+                                    </div>
+                                    <!-- <div>
+                                        <strong>负责人</strong>
+                                        <span id="advertiser_follower" name="advertiser_follower"></span>
+                                    </div> -->
+                                    <div>
+                                        <strong>状态</strong>
+                                        <select id="advertiser_status" name="advertiser_status" onchange="process(this)">
+                                            <option value="1">1 销售线索</option>
+                                            <option value="2">2 接触中</option>
+                                            <option value="3">3 意向客户</option>
+                                            <option value="4">4 成交客户</option>
+                                            <!--<option value="5">5 维护中</option>-->
+                                        </select>&nbsp;&nbsp;广告主状态
+                                    </div>
+                                    <div id="status">
+                                        <strong>二级状态</strong>
+                                        <select id="sub_status" name="sub_status" >
+                                            <option value="1">稳定客户</option>
+                                            <option value="2">短期客户</option>
+                                        </select>&nbsp;&nbsp;附属状态
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="modal-footer">
+                                <button id="on_advertiser_basic_commit" class="btn btn-success" name="follow_basic_btn">确定</button>
+                                <button class="btn" data-dismiss="modal" aria-hidden="true">取消</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- 表格2 联系方式 -->
+        <div class="detail-info col-md-6">
+            <div class="table-info">
+                <table class="table table-bordered table-hover vert-align ">
+                    <thead>
+                        <tr class="res_tbl_title">
+                            <th colspan="9" style="text-align: center;">联系方式</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- 联系方式内容 -->
+                    </tbody>
+                </table>
+            </div>
+            <!-- 添加联系人 -->
+            <div id="add_contact" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button"  class="close" data-dismiss="modal" aria-hidden="true">X</button>
+                            <h4 id="">添加联系人</h4>
+                        </div>
+                        <div class="modal-body brickWall">
+                            <form id="" name="add_advertiser_phone_form" method="post" >
+                                <input type="hidden" id="advertiser_phone_id" name="id" value="{{ id }}">
+                                <div>
+                                    <strong>联系人</strong>
+                                    <input type="text" id="add_contact_person" name="add_contact_person" value="" width="30px"> <i>公司负责人</i>
+                                </div>
+                                <div>
+                                    <strong>职位</strong>
+                                    <input type="text" id="add_contact_position" name="add_contact_position" value=""> <i>公司职位</i>
+                                </div>
+                                <div>
+                                    <strong>手机</strong>
+                                    <input type="text" id="add_contact_phone" name="add_contact_phone" value=""> <i>手机号</i>
+                                </div>
+                                <div>
+                                    <strong>座机</strong>
+                                    <input type="text" id="add_contact_tel" name="add_contact_tel" value=""> <i>如021-1000000</i>
+                                </div>
+                                <div>
+                                    <strong>微信</strong>
+                                    <input type="text" id="add_contact_wechat" name="add_contact_wechat" value="">
+                                </div>
+                                <div>
+                                    <strong>QQ</strong>
+                                    <input type="text" id="add_contact_qq" name="add_contact_qq" value="">
+                                </div>
+                                <div>
+                                    <strong>邮件</strong>
+                                    <input type="text" id="add_contact_email" name="add_contact_email" value=""> <i>电子邮箱</i>
+                                </div>
+                                <div>
+                                    <strong>其它</strong>
+                                    <input type="text" id="add_contact_other" name="add_contact_other" value=""> <i>除以上信息外的其它重要信息</i>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="modal-footer">
+                            <button id="add_contact_btn" class="btn btn-success" name="follow_btn">确定</button>
+                            <button class="btn" data-dismiss="modal" aria-hidden="true">取消</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--表格2 修改联系方式 -->
+            <div id="advertiser_contact_revise" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button"  class="close" data-dismiss="modal" aria-hidden="true">X</button>
+                            <h4 id="advertiser_phone_follow_title">联系方式</h4>
+                        </div>
+                        <div class="modal-body brickWall">
+                            <form id="advertiser_phone_form" name="advertiser_phone_form" method="post" >
+                                <input type="hidden" id="advertiser_phone_id" name="id" value="{{ id }}">
+                                <div>
+                                    <strong>联系人</strong>
+                                    <input type="text" id="advertiser_contact_person" name="advertiser_contact_person" value="" width="30px"> <i>公司负责人</i>
+                                </div>
+                                <div>
+                                    <strong>职位</strong>
+                                    <input type="text" id="advertiser_contact_position" name="advertiser_contact_position" value=""> <i>公司职位</i>
+                                </div>
+                                <div>
+                                    <strong>手机</strong>
+                                    <input type="text" id="advertiser_contact_phone" name="advertiser_contact_phone" value=""> <i>手机号</i>
+                                </div>
+                                <div>
+                                    <strong>座机</strong>
+                                    <input type="text" id="advertiser_contact_tel" name="advertiser_contact_tel" value=""> <i>如021-1000000</i>
+                                </div>
+                                <div>
+                                    <strong>微信</strong>
+                                    <input type="text" id="advertiser_contact_wechat" name="advertiser_contact_wechat" value="">
+                                </div>
+                                <div>
+                                    <strong>QQ</strong>
+                                    <input type="text" id="advertiser_contact_qq" name="advertiser_contact_qq" value="">
+                                </div>
+                                <div>
+                                    <strong>邮件</strong>
+                                    <input type="text" id="advertiser_contact_email" name="advertiser_contact_email" value=""> <i>电子邮箱</i>
+                                </div>
+                                <div>
+                                    <strong>其它</strong>
+                                    <input type="text" id="advertiser_contact_other" name="advertiser_contact_other" value=""> <i>除以上信息外的其它重要信息</i>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="modal-footer">
+                            <button id="update_contact" class="btn btn-success" name="follow_btn">确定</button>
+                            <button class="btn" data-dismiss="modal" aria-hidden="true">取消</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="opc" style="margin: 20px 0">
+                <button class="btnNormal" id="" data-target="#add_contact" data-toggle="modal">添加联系人</button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="loading">
+        <div class="spinner">
+            <div class="bounce1"></div>
+            <div class="bounce2"></div>
+            <div class="bounce3"></div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- 表格3 广告主 -->
+        <div class="detail-info col-md-6">
+            <div class="table-info">
+                <table class="table table-bordered table-hover vert-align">
+                    <thead>
+                    <tr class="res_tbl_title">
+                        <th>公司信息</th>
+                        <th>属性</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                        
+                    </tbody>
+                </table>
+                <div class="opc">
+                    <a href="/admin_user/advertiser_follow?a=detail&id={{ id }}&type=modifty"><button class="btnNormal" data-toggle="modal">修改广告主</button></a>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    
+    <div style="clear: both;"></div>
+</div>
+
+
+
+<hr>
+<div class="opa">
+    <button type="button" data-target="#plan_dialog" data-toggle="modal" class="btnAdd">增加投放计划</button>
+</div>
+
+<div>
+    <div id="plan_dialog" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">X</button>
+                    <h4 id="plan_create_title">增加投放计划</h4>
+                </div>
+                <div class="modal-body brickWall">
+                    <form id="plan_form" name="plan_form" method="post" >
+                        <input type="hidden" id="plan_advertiser_id" name="plan_advertiser_id" value="{{id}}">
+                        <div>
+                            <strong>计划标题</strong>
+                            <input type="text" id="plan_title" name="plan_title" value=""> <b>*</b> <i>投放计划标题</i>
+                        </div>
+                        <div class="uediter">
+                            <strong>计划简介</strong>
+                            <textarea id="plan_brief" name="plan_brief"></textarea><i>投放计划简要描述</i>
+                        </div>
+                        <div>
+                            <strong>投放时间</strong>
+                            <input size="16" type="text" readonly class="form_datetime" id="plan_time_begin" name="plan_time_begin" onChange="start_end_add_compare()">
+                            <span>&nbsp;至&nbsp;</span>
+                            <input size="16" type="text" readonly class="form_datetime" id="plan_time_end" name="plan_time_end" onChange="start_end_add_compare()"> <b>*</b> <i>投放时间区间</i>
+                        </div>
+                        <div>
+                            <strong>预算总额</strong>
+                            <input type="text" id="plan_money" name="plan_money"> <b>*</b> <i>计划总预算金额，只可填写整数</i>
+                        </div>
+                    </form>
+                    <script type="text/javascript">
+                        $(".form_datetime").datetimepicker({
+                            format: 'yyyy-mm-dd',
+                            minView: 'month',
+                            autoclose: true
+                        });
+                    </script>
+                </div>
+                <div class="modal-footer">
+                    <button id="add_plan" class="btn btn-success">保存</button>
+                    <button class="btn btn-default" data-dismiss="modal" aria-hidden="true">取消</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+ {% if plan %}
+<!-- 增加的投放计划 -->
+<div class="table-info">
+    <table class="table table-bordered table-hover vert-align">
+        <thead>
+            <tr class="res_tbl_title">
+                <td>投放计划</td>
+                <td>简介</td>
+                <td>投放时间</td>
+                <td>预算总额</td>
+                <td>投放状态</td>
+            </tr>
+        </thead>
+        <tbody>
+             {% for item in plan %}
+            <tr>
+                <td width="10%"><div class="contentDisplay"><a title="{{item['title']}}" href="/project/plan?a=detail&id={{ item['id'] }}">{{ item['title'] }}</a></div></td>
+                <td><div class="tabDisplay">{% raw item['brief'] if item['brief'] else '-' %}</div></td>
+                <td width="13%">{{ item['time_begin'] }} - {{ item['time_end']}}</td>
+                <td width="5%">{{ item['money'] }}</td>
+                <td width="5%">{% if item['status'] == 1 %}准备中{% elif item['status'] == 2 %}进行中{% else %}已结束{% end %}</td>
+            </tr>
+             {% end %}
+        </tbody>
+         {% end %}
+    </table>
+</div>
+
+
+{% end %}

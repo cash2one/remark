@@ -1,0 +1,356 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>一道自媒体营销平台</title>
+<meta name="keywords" content="一道,一道网,自媒体,自媒体营销,自媒体交易,微信自媒体,自媒体变现,微信公众号,微信互推,自媒体维权,阅读数,自媒体平台,自媒体广告">
+<meta name="description" content="一道自媒体营销平台">
+<link href="css/home.css" type="text/css" rel="stylesheet">
+<link href="css/fonts.css" rel="stylesheet" rel="stylesheet">
+<script type="text/javascript" src="js/jquery.min.js"></script>
+<link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+<base target="_self">
+</head>
+<body>
+<div class="header">
+    <h1 class="font-icon" title="一道自媒体营销平台">一道</h1>
+    <div class="siteNav">
+        <div class="yidaoService">
+            <div class="qq"><img src="images/qq.png" alt="官方QQ群"> 官方QQ群
+                <div class="tip"><img src="images/qqqrcode.jpg" alt="一道官方QQ群"></div>
+            </div>
+            <div class="wechat"><img src="images/wechat.png" alt="官方微信公众号"> 官方微信公众号
+                <div class="tip"><img src="images/wechatqrcode.jpg" alt="一道官方微信公众号"></div>
+            </div>
+        </div>
+        <div class="account">
+            <a href="###">请登录</a>
+            <a href="###">注册</a>
+        </div>
+    </div>
+    <div class="menu">
+        <ul>
+            <li><a href="###">首页</a></li>
+            <li class="pList"><a href="###">我的</a>▾
+                <ul>
+                    <li><a href="###">我的自媒体</a></li>
+                    <li><a href="###">我的营销需求</a></li>
+                </ul>
+            </li>
+            <li><a href="###">营销需求</a></li>
+            <li><a href="###">自媒体</a></li>
+        </ul>
+    </div>
+</div>
+<div class="banner">
+    <ul class="bannerL">
+        <li style="background: #0077cb" data="#0077cb"><a href="###" target="_blank"><img src="images/task-l.png" alt="一道自媒体交易平台"></a></li>
+        <li style="background: #d10041" data="#d10041"><a href="###" target="_blank"><img src="images/winwin-l.png" alt="一道微信互推助手"></a></li>
+        <li style="background: #33ccff" data="#33ccff"><a href="###" target="_blank"><img src="images/what-l.png" alt="一道是做什么的"></a></li>
+        <li style="background: #2891eb" data="#2891eb"><a href="###" target="_blank"><img src="images/guide-l.png" alt="一道新手指南"></a></li>
+    </ul>
+</div>
+
+<!-- banner js -->
+<script type="text/javascript">
+    var picIndex = 0;
+    var curPicIndex=0;
+    var cscs;
+    $(function(){
+        $('.bannerL li').hide();
+        $($('.bannerL').children()[picIndex]).show();
+        $('.bannerL').css('background',$($('.bannerL').children()[picIndex]).attr('data'));
+
+        var len = $('.bannerL li').length;
+        var bb = $('<ul></ul>');
+        bb.addClass('bannerS');
+        for(var i=0;i<len;i++){
+            var cycle = $('<li></li>');
+            cycle.attr('name',i);
+            bb.append(cycle);
+            if(i==0)cycle.addClass('current');
+            cycle.bind('mouseover',function(){
+                if(parseInt($(this).attr('name'))==picIndex)return;
+                clearTimeout(cscs);
+                changePics($(this).attr('name'));
+            })
+        }
+        $('.bannerL').append(bb);
+        bb.css('margin-left',bb.width()/2*-1);
+        cscs = setTimeout(changePics,6000);
+    });
+
+    function changePics(ss){
+        $($('.bannerL').children()[picIndex]).fadeOut();
+        $($('.bannerS li')[picIndex]).removeClass('current');
+        picIndex = ss?parseInt(ss):(picIndex+1)%($('.bannerL').children().length-1);
+        $($('.bannerL').children()[picIndex]).fadeIn();
+        $('.bannerL').css('background',$($('.bannerL').children()[picIndex]).attr('data'));
+        $($('.bannerS li')[picIndex]).addClass('current');
+        cscs = setTimeout(changePics,6000);
+        curPicIndex = picIndex;
+    }
+</script>
+<!-- banner js end -->
+
+<div class="task">
+    <hr>
+    <h2>营销专区</h2>
+    <div class="content">
+        <div class="more"><a href="###" target="_blank">更多需求</a><span class="font-icon">><span></div>
+        <div class="homeBtn"><a href="###" target="_blank" class="btn">发布营销需求</a></div>
+        <ul class="taskList clearfix">
+            <li>
+                <div class="taskCategory">文案推广</div>
+                <div class="taskTitle"><a href="###">领 1500 元体验金，开启懒人理财</a></div>
+                <div class="taskDate"><strong>08.30</strong> 至 <strong>08.31</strong></div>
+                <div class="taskStatus"><em>200</em>人气 / <em>2</em>接单</div>
+                <div class="budget">预算<span>¥<strong>10,000</strong></span></div>
+                <div class="media clearfix">
+                    <img src="http://7sbnkf.com2.z0.glb.qiniucdn.com/FpRhRou-XgPQgPLG2btmNcyruF9K-avatar" alt="军人俱乐部">
+                    <img src="http://7sbnkf.com2.z0.glb.qiniucdn.com/FsSD9Q4a9AF5MhpKkUHu8TyE0msk-avatar" alt="文学百科">
+                    <span class="count">2</span>
+                </div>
+            </li>
+            <li>
+                <div class="taskCategory">文案推广</div>
+                <div class="taskTitle"><a href="###">领 1500 元体验金，开启懒人理财</a></div>
+                <div class="taskDate"><strong>08.30</strong> 至 <strong>08.31</strong></div>
+                <div class="taskStatus"><em>3000</em>人气 / <em>3</em>接单</div>
+                <div class="budget">预算<span>¥<strong>10,000</strong></span></div>
+                <div class="media clearfix">
+                    <img src="http://7sbnkf.com2.z0.glb.qiniucdn.com/FvxFWg1GgdAsci2SDb-ueE-8VaDZ-avatar" alt="南方周末高校">
+                    <img src="http://7sbnkf.com2.z0.glb.qiniucdn.com/FsSD9Q4a9AF5MhpKkUHu8TyE0msk-avatar" alt="文学百科">
+                    <img src="http://7sbnkf.com2.z0.glb.qiniucdn.com/Fgx5EVsp7HJppBNqfBGbbLG3L3zT-avatar" alt="物联网产品爱好者">
+                    <span class="count">3</span>
+                </div>
+            </li>
+            <li>
+                <div class="taskCategory">文案推广</div>
+                <div class="taskTitle"><a href="###">领 1500 元体验金，开启懒人理财</a></div>
+                <div class="taskDate"><strong>08.30</strong> 至 <strong>08.31</strong></div>
+                <div class="taskStatus"><em>10</em>人气 / <em>0</em>接单</div>
+                <div class="budget">预算<span>¥<strong>10,000</strong></span></div>
+                <div class="media clearfix">
+                    <a href="###">立即接单</a>
+                    <span class="count">0</span>
+                </div>
+            </li>
+            <li>
+                <div class="taskCategory">文案推广</div>
+                <div class="taskTitle"><a href="###">领 1500 元体验金，开启懒人理财</a></div>
+                <div class="taskDate"><strong>08.30</strong> 至 <strong>08.31</strong></div>
+                <div class="taskStatus"><em>6000</em>人气 / <em>8</em>接单</div>
+                <div class="budget">预算<span>¥<strong>10,000</strong></span></div>
+                <div class="media clearfix">
+                    <img src="http://7sbnkf.com2.z0.glb.qiniucdn.com/FvxFWg1GgdAsci2SDb-ueE-8VaDZ-avatar" alt="南方周末高校">
+                    <img src="http://7sbnkf.com2.z0.glb.qiniucdn.com/FsSD9Q4a9AF5MhpKkUHu8TyE0msk-avatar" alt="文学百科">
+                    <img src="http://7sbnkf.com2.z0.glb.qiniucdn.com/Fgx5EVsp7HJppBNqfBGbbLG3L3zT-avatar" alt="物联网产品爱好者">
+                    <img src="http://7sbnkf.com2.z0.glb.qiniucdn.com/FpRhRou-XgPQgPLG2btmNcyruF9K-avatar" alt="军人俱乐部">
+                    <img src="http://7sbnkf.com2.z0.glb.qiniucdn.com/Flx3nzs6tE_K4AFTRRAxYnE4NqSV-avatar" alt="篮球王国">
+                    <span class="count">8</span>
+                </div>
+            </li>
+            <li>
+                <div class="taskCategory">文案推广</div>
+                <div class="taskTitle"><a href="###">领 1500 元体验金，开启懒人理财</a></div>
+                <div class="taskDate"><strong>08.30</strong> 至 <strong>08.31</strong></div>
+                <div class="taskStatus"><em>500</em>人气 / <em>3</em>接单</div>
+                <div class="budget">预算<span>¥<strong>10,000</strong></span></div>
+                <div class="media clearfix">
+                    <img src="http://7sbnkf.com2.z0.glb.qiniucdn.com/Flx3nzs6tE_K4AFTRRAxYnE4NqSV-avatar" alt="篮球王国">
+                    <img src="http://7sbnkf.com2.z0.glb.qiniucdn.com/FsSD9Q4a9AF5MhpKkUHu8TyE0msk-avatar" alt="文学百科">
+                    <img src="http://7sbnkf.com2.z0.glb.qiniucdn.com/Fgx5EVsp7HJppBNqfBGbbLG3L3zT-avatar" alt="物联网产品爱好者">
+                    <span class="count">3</span>
+                </div>
+            </li>
+            <li>
+                <div class="taskCategory">文案推广</div>
+                <div class="taskTitle"><a href="###">领 1500 元体验金，开启懒人理财</a></div>
+                <div class="taskDate"><strong>08.30</strong> 至 <strong>08.31</strong></div>
+                <div class="taskStatus"><em>200</em>人气 / <em>2</em>接单</div>
+                <div class="budget">预算<span>¥<strong>10,000</strong></span></div>
+                <div class="media clearfix">
+                    <img src="http://7sbnkf.com2.z0.glb.qiniucdn.com/FvxFWg1GgdAsci2SDb-ueE-8VaDZ-avatar" alt="南方周末高校">
+                    <img src="http://7sbnkf.com2.z0.glb.qiniucdn.com/FsSD9Q4a9AF5MhpKkUHu8TyE0msk-avatar" alt="文学百科">
+                    <span class="count">2</span>
+                </div>
+            </li>
+            <li>
+                <div class="taskCategory">文案推广</div>
+                <div class="taskTitle"><a href="###">领 1500 元体验金，开启懒人理财</a></div>
+                <div class="taskDate"><strong>08.30</strong> 至 <strong>08.31</strong></div>
+                <div class="taskStatus"><em>3000</em>人气 / <em>3</em>接单</div>
+                <div class="budget">预算<span>¥<strong>10,000</strong></span></div>
+                <div class="media clearfix">
+                    <img src="http://7sbnkf.com2.z0.glb.qiniucdn.com/FpRhRou-XgPQgPLG2btmNcyruF9K-avatar" alt="军人俱乐部">
+                    <img src="http://7sbnkf.com2.z0.glb.qiniucdn.com/FsSD9Q4a9AF5MhpKkUHu8TyE0msk-avatar" alt="文学百科">
+                    <img src="http://7sbnkf.com2.z0.glb.qiniucdn.com/Flx3nzs6tE_K4AFTRRAxYnE4NqSV-avatar" alt="篮球王国">
+                    <span class="count">3</span>
+                </div>
+            </li>
+            <li>
+                <div class="taskCategory">文案推广</div>
+                <div class="taskTitle"><a href="###">领 1500 元体验金，开启懒人理财</a></div>
+                <div class="taskDate"><strong>08.30</strong> 至 <strong>08.31</strong></div>
+                <div class="taskStatus"><em>10</em>人气 / <em>0</em>接单</div>
+                <div class="budget">预算<span>¥<strong>10,000</strong></span></div>
+                <div class="media clearfix">
+                    <a href="###">立即接单</a>
+                    <span class="count">0</span>
+                </div>
+            </li>
+        </ul>
+    </div>
+</div>
+<!--div class="case">
+    <hr>
+    <h2>成功案例</h2>
+    <div class="content">
+        <ul class="caseList clearfix">
+            <li><img src="images/case-a.jpg" alt="原创自媒体有福音，互联网金融新贵携手一道媒介管家"></li>
+            <li><img src="images/case-b.jpg" alt="高端定制？气质文艺？一道总能找到你想要的"></li>
+            <li><img src="images/case-c.jpg" alt="长期合作自媒体，何须大海捞针"></li>
+        </ul>
+    </div>
+</div-->
+<div class="hotMedia">
+    <hr>
+    <h2>自媒体风云榜</h2>
+    <div class="content">
+        <div class="more"><a href="###" target="_blank">更多自媒体</a><span class="font-icon">><span></div>
+        <div class="homeBtn"><a href="###" target="_blank" class="btn">自媒体入驻</a></div>
+        <ul class="mediaList clearfix">
+            <li>
+                <a href="###" target="_blank">
+                    <span class="avatar"><img src="http://7sbnkf.com2.z0.glb.qiniucdn.com/Fhk7uAt-cBPCE_BkyzMazRjHC28Q-avatarx" alt="壹读"></span>
+                    <strong class="name">壹读</strong>
+                    <span>平台接单数：<span class="count">2000</span></span>
+                    <span>综合级别：<span class="rank">B</span></span>
+                </a>
+            </li>
+            <li>
+                <a href="###" target="_blank">
+                    <span class="avatar"><img src="http://7sbnkf.com2.z0.glb.qiniucdn.com/FsixIMeNC2BBaHJp_j7kqH2bLoFw-avatarx" alt="富爸爸穷爸爸"></span>
+                    <strong class="name">富爸爸穷爸爸</strong>
+                    <span>平台接单数：<span class="count">2000</span></span>
+                    <span>综合级别：<span class="rank">B</span></span>
+                </a>
+            </li>
+            <li>
+                <a href="###" target="_blank">
+                    <span class="avatar"><img src="http://7sbnkf.com2.z0.glb.qiniucdn.com/FhPrt-eFrScPb60_XRaAOwPAmbKR-avatarx" alt="拇指阅读"></span>
+                    <strong class="name">拇指阅读</strong>
+                    <span>平台接单数：<span class="count">2000</span></span>
+                    <span>综合级别：<span class="rank">B</span></span>
+                </a>
+            </li>
+            <li>
+                <a href="###" target="_blank">
+                    <span class="avatar"><img src="http://7sbnkf.com2.z0.glb.qiniucdn.com/Fs6cG6KbP5QwUGAJQooR4dhjb196-avatarx" alt="商务范"></span>
+                    <strong class="name">商务范</strong>
+                    <span>平台接单数：<span class="count">2000</span></span>
+                    <span>综合级别：<span class="rank">B</span></span>
+                </a>
+            </li>
+            <li>
+                <a href="###" target="_blank">
+                    <span class="avatar"><img src="http://7sbnkf.com2.z0.glb.qiniucdn.com/FrTBzLHSR6BLrbH9pzjUYnw19wR4-avatarx" alt="毒舌来啦"></span>
+                    <strong class="name">毒舌来啦</strong>
+                    <span>平台接单数：<span class="count">2000</span></span>
+                    <span>综合级别：<span class="rank">B</span></span>
+                </a>
+            </li>
+            <li>
+                <a href="###" target="_blank">
+                    <span class="avatar"><img src="http://7sbnkf.com2.z0.glb.qiniucdn.com/FsfuOC1Y6ZZ4PXg735vxa4iaKPCG-avatarx" alt="苏珊米勒星座馆"></span>
+                    <strong class="name">苏珊米勒星座馆</strong>
+                    <span>平台接单数：<span class="count">2000</span></span>
+                    <span>综合级别：<span class="rank">B</span></span>
+                </a>
+            </li>
+            <li>
+                <a href="###" target="_blank">
+                    <span class="avatar"><img src="http://7sbnkf.com2.z0.glb.qiniucdn.com/Fln6nCOs-MvBrPv6J5Dj-vKoOOFz-avatarx" alt="Queen主义"></span>
+                    <strong class="name">Queen主义</strong>
+                    <span>平台接单数：<span class="count">2000</span></span>
+                    <span>综合级别：<span class="rank">B</span></span>
+                </a>
+            </li>
+            <li>
+                <a href="###" target="_blank">
+                    <span class="avatar"><img src="http://7sbnkf.com2.z0.glb.qiniucdn.com/FnyLduB5Y0qGtUtkxUWO_K59cJKb-avatarx" alt="吴晓波频道"></span>
+                    <strong class="name">吴晓波频道</strong>
+                    <span>平台接单数：<span class="count">2000</span></span>
+                    <span>综合级别：<span class="rank">B</span></span>
+                </a>
+            </li>
+        </ul>
+    </div>
+</div>
+<div class="topMedia">
+    <hr>
+    <h2>自媒体收入榜</h2>
+    <div class="content">
+        <ul class="topList clearfix">
+            <li class="top0">
+                <a href="###" target="_blank">
+                    <span class="avatar"><img src="http://7sbnkf.com2.z0.glb.qiniucdn.com/FsixIMeNC2BBaHJp_j7kqH2bLoFw-avatarx" alt="富爸爸穷爸爸"></span>
+                    <strong class="name">富爸爸穷爸爸</strong>
+                    <span>综合级别：<span class="rank">B</span></span>
+                </a>
+            </li>
+            <li class="top1">
+                <a href="###" target="_blank">
+                    <span class="avatar"><img src="http://7sbnkf.com2.z0.glb.qiniucdn.com/FhPrt-eFrScPb60_XRaAOwPAmbKR-avatarx" alt="拇指阅读"></span>
+                    <strong class="name">拇指阅读</strong>
+                    <span>综合级别：<span class="rank">B</span></span>
+                </a>
+            </li>
+            <li class="top2">
+                <a href="###" target="_blank">
+                    <span class="avatar"><img src="http://7sbnkf.com2.z0.glb.qiniucdn.com/FrTBzLHSR6BLrbH9pzjUYnw19wR4-avatarx" alt="毒舌来啦"></span>
+                    <strong class="name">毒舌来啦</strong>
+                    <span>综合级别：<span class="rank">B</span></span>
+                </a>
+            </li>
+            <li class="top3">
+                <a href="###" target="_blank">
+                    <span class="avatar"><img src="http://7sbnkf.com2.z0.glb.qiniucdn.com/FsfuOC1Y6ZZ4PXg735vxa4iaKPCG-avatarx" alt="苏珊米勒星座馆"></span>
+                    <strong class="name">苏珊米勒星座馆</strong>
+                    <span>综合级别：<span class="rank">B</span></span>
+                </a>
+            </li>
+            <li class="top4">
+                <a href="###" target="_blank">
+                    <span class="avatar"><img src="http://7sbnkf.com2.z0.glb.qiniucdn.com/Fln6nCOs-MvBrPv6J5Dj-vKoOOFz-avatarx" alt="Queen主义"></span>
+                    <strong class="name">Queen主义</strong>
+                    <span>综合级别：<span class="rank">B</span></span>
+                </a>
+            </li>
+        </ul>
+    </div>
+</div>
+<div class="footer">
+    <hr>
+    <div class="copyright">&copy;2014-2015 壤歌 <a href="http://www.miibeian.gov.cn" target="_blank">沪ICP备14051525</a></div>
+    <div class="footerNav clearfix">
+        <ul>
+            <li><a href="###" target="_blank">关于我们</a></li>
+            <li><a href="###" target="_blank">联系我们</a></li>
+        </ul>
+    </div>
+    <div class="partner clearfix">
+        <h4>合作伙伴</h4>
+        <ul>
+            <li><a href="###" target="_blank">金数据</a></li>
+            <li><a href="###" target="_blank">秀米</a></li>
+            <li><a href="###" target="_blank">金数据</a></li>
+            <li><a href="###" target="_blank">秀米</a></li>
+            <li><a href="###" target="_blank">金数据</a></li>
+            <li><a href="###" target="_blank">秀米</a></li>
+        </ul>
+    </div>
+</div>
+</body>
+</html>

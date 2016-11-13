@@ -1,0 +1,144 @@
+body{
+    background: #eee;
+}
+.container{
+    width: 951px;
+    height: 100%;
+    margin: 100px auto;
+    background: #ffffff;
+}
+.form{
+    margin-top: 30px;
+    padding-bottom: 20px;
+}
+.input-group{
+    margin-top: 20px;
+    margin-left: 20%;
+    margin-right: 9%;
+}
+.title{
+    background: #237BE6;
+    height: 60px;
+    text-align: center;
+    color: #ffffff;
+    line-height: 60px;
+    font-size: x-large;
+}
+
+
+.form input, select {
+    width: 320px;
+    height: 40px;
+    background: none repeat scroll 0% 0% #ECEDEC;
+}
+.input-group label:first-child{
+    margin-right: 15px;
+    font-size: large;
+    font-family: "MicrosoftYaHei";
+    color: rgb( 51, 51, 51 );
+}
+.input-group label:last-child{
+    margin-left: 15px;
+    font-size: 12px;
+    font-family: "MicrosoftYaHei";
+    color: rgb( 119, 119, 119 );
+    width: 181px;
+    text-align: left;
+}
+.form textarea{
+    width: 10px;
+}
+input[type="textarea"] {
+    padding-top: 25px;
+    line-height: 28px;
+}
+input[type="checkbox"]{
+    width: 20px;
+    background: #ffffff;
+    height: 20px;
+}
+select{
+    width: 324px;
+    -ms-box-sizing:content-box;
+    -moz-box-sizing:content-box;
+    -webkit-box-sizing:content-box;
+    box-sizing:content-box;
+    background: #fff;
+    height: 27px;
+}
+.form .time-select{
+    width: 140px;
+    height: 40px;
+}
+.input-group span{
+    padding-right: 10px;
+    padding-left: 6px;
+}
+.input-group .multi-line{
+    width: 160px;
+    display: inline-flex;
+}
+.live{
+    border-radius: 13px;
+    background: #ffffff;
+    border: 1px solid #ddd;
+    text-align: center;
+    padding: 4px 14px 4px 14px;
+}
+.live:hover{
+    border: 1px solid #ccc;
+    box-shadow: 1px 1px 1px #eeeeee;
+}
+.delete{
+    background: #ffffff;
+    color: #000000;
+    padding: 4px 27px 4px 27px;
+    border-radius: 13px;
+    border:thin solid #ddd;
+    margin-left: 10px;
+}
+.delete:hover{
+    background: #E42E2F;
+    color: #ffffff;
+    padding: 4px 27px 4px 27px;
+    border-radius: 13px;
+    border-color: transparent;
+    margin-left: 10px;
+}
+.choose{
+    background: #ffffff;
+    color: #000000;
+    padding: 4px 12px 4px 12px;
+    border-radius: 13px;
+    border:thin solid #ddd;
+    margin-left: 10px;
+}
+.choose:hover{
+    background: #237BE6;
+    color: #ffffff;
+    padding: 4px 12px 4px 12px;
+    border-radius: 13px;
+    border-color: transparent;
+    margin-left: 10px;
+}
+.fengexian{
+    border-top: thin solid #ddd;
+    margin-top: 12px;
+}
+.fabu{
+    background: #237BE6;
+    color: #ffffff;
+    border-radius: 6px;
+    padding: 12px 142px 12px 142px;
+    margin-left: 14%;
+    font-size: larger;
+}
+.tax-checkbox{
+    display: inline-block;
+    font-size: medium;
+    width: 324px;
+}
+.buttons-operation{
+    display: inline-block;
+    width: 325px;
+}

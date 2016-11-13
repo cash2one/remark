@@ -1,0 +1,177 @@
+{% extends '../../public/main.html' %}
+
+{% block body %}
+<script type="text/javascript">
+    function on_update_admin_role(){
+        var label = document.getElementById('role_label').value;
+        var reg = /^(\w|[\u4E00-\u9FA5])*$/;
+        var cks = document.getElementsByName('role_module_id');
+        var uck = true;
+        if (label.length < 2 || label.length > 10 || reg.test(label) == false) {
+            alert("请输入正确格式的身份名称！\n由2-10位的中文、英文、数字组成！");
+            return false;
+        }
+        for (var i=0;i<cks.length;i++) {
+            if (cks[i].checked) {
+                uck = false;
+                break;
+            }
+        }
+        if (uck) {
+            alert("至少选择一项权限！");
+            return false;
+        }
+        var module_value = [];
+        $('input[name="role_module_id"]:checked').each(function () {
+            module_value.push($(this).val());
+        });
+        var access_value = [];
+        $('input[name="role_access_id"]:checked').each(function () {
+            access_value.push($(this).val());
+        });
+
+        $.ajax({
+            type: "post",
+            dataType: "json",
+            url: "/admin_user/role_manage?a=update",
+            data: {'role_id':"{{admin_role['id']}}", 'role_label':label, 'role_module_id': module_value.join(','), 'role_access_id': access_value.join(',')},
+            success: function (d) {
+                if (d.status == 200) {
+                    window.location.href = "/admin_user/role_manage";
+                } else {
+                    alert('加入跟踪失败。。。');
+                    return false;
+                }
+            }
+        });
+    }
+    function access(ob){
+        var id = ob.id;
+        $("#access"+id).toggle();
+    }
+</script>
+<div class="nav">
+    <a href="/admin_user/role_manage">返回上页</a>
+</div>
+
+<div class="colcon">
+    <table class="table table-bordered table-hover vert-align">
+        <thead>
+        <tr class="res_tbl_title">
+            <td>信息</td>
+            <td>属性</td>
+        </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>编&#12288&#12288号:</td>
+                <td>{{  admin_role['id'] if admin_role['id'] else '-' }}</td>
+            </tr>
+            <tr>
+                <td>身份名称:</td>
+                <td><input type="text" id="role_label" name="role_label" value={{admin_role['label']}}></td>
+            </tr>
+            <tr>
+                <td>请选择可操作模块:</td>
+                <td><div id="role_module_id" ><br /></div></td>
+            </tr>
+            <tr>
+                <td>操作:</td>
+                <td><button class="btn btn-success" name="follow_btn" onclick="on_update_admin_role()">保存</button></td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<script type="text/javascript">
+
+    function display(father_id, access_id){
+        var checked = true;
+        if($("#"+access_id).is(':checked')){
+	        $("#"+father_id).prop("checked",true);
+            $("input[name='role_module_id'][father_id="+access_id+"]").prop("checked",true);
+        }else{
+            $("input[name='role_module_id'][father_id="+father_id+"]").each(function(){
+            if (true == $(this).is(':checked')) {
+                 checked = false;
+            }});
+            if (checked){
+                $("#"+father_id).removeAttr("checked");
+            }
+            $("input[name='role_module_id'][father_id="+access_id+"]").removeAttr("checked");
+        }
+        $("input[name='role_module_id'][father_id="+access_id+"]").each(function(){
+            var child_id = $(this).attr("id");
+            var child_split = child_id.split("_").pop();
+            if (parseInt(child_split) > 0) {
+                display(access_id, child_id);
+            }
+        });
+    }
+    function oncheck(obj){
+        var father_id = $(obj).attr("father_id");
+        var access_id = $(obj).attr("id");
+        display(father_id, access_id, obj);
+    }
+    function show(obj, parent_id, strID, tab){
+        module_cb = "";
+        index = 0;
+        for (var i = 0; i < obj.data.length; i++) {
+            if (obj.data[i].access_level >1 && obj.data[i].parent_id ==parent_id){
+                module_cb += '<div class="powerLi"><span>';
+                module_cb +=tab;
+                if (obj.data[i].checked == 1){
+                    module_cb += '<input type="checkbox" name="role_module_id" father_id='+strID+ obj.data[i].parent_id+' id='+strID+ obj.data[i].access_id + ' value='+ obj.data[i].id + ' onclick="oncheck(this)" checked /> ';
+                }
+                else {
+                    module_cb += '<input type="checkbox" name="role_module_id" father_id='+strID+ obj.data[i].parent_id+' id='+strID+ obj.data[i].access_id + ' value='+ obj.data[i].id + ' onclick="oncheck(this)" > ';
+                }
+                module_cb += obj.data[i].label;
+                if ((obj.data[i].is_exsit_child == 1 && obj.data[i].parent_id ==parent_id) || (obj.data[i].is_exsit_child == 0&&obj.data[i].tag == 0)) {
+                    module_cb += '&nbsp&nbsp<a name="access_group" class="morePower" onclick="access(this)" id='+obj.data[i].id+' >+</a>';
+                    module_cb += '<div id=access'+obj.data[i].id+' style="display: none;"><span>';
+                    module_cb += show(obj, obj.data[i].access_id, strID, tab+tab);
+                    module_cb += '</span></div>';
+                }
+                module_cb += '</span></div>';
+            }
+        }
+        return module_cb;
+    }
+    $(document).ready(function(){
+        //模块
+        $.ajax({
+            type: "get",
+            contentType: "application/json",
+            url: "/admin_user/role_manage?a=getModule&id={{admin_role['id']}}",
+            success: function (result) {
+                var obj = JSON.parse(result);
+                var module_tab = "";
+                var strID = "module_";
+                var tab = '&#12288&#12288&#12288';
+                $("#role_module_id").empty();
+                for (var i = 0; i < obj.data.length; i++) {
+                    if (obj.data[i].access_level == 1){
+                        module_tab += '<div class="power"><span>';
+                        if (obj.data[i].checked == 1){
+                            module_tab += '<input type="checkbox" name="role_module_id" father_id='+strID+ obj.data[i].parent_id+' id='+strID+ obj.data[i].access_id +'  value=' + obj.data[i].id + ' onclick="oncheck(this)" checked /> ';
+                        }
+                        else {
+                            module_tab += '<input type="checkbox" name="role_module_id" father_id='+strID+ obj.data[i].parent_id+' id='+strID+ obj.data[i].access_id +'  value=' + obj.data[i].id + ' onclick="oncheck(this)" > ';
+                        }
+                        module_tab += obj.data[i].label;
+                        module_tab += '&nbsp&nbsp<a class="morePower" name="access_group" onclick="access(this)" id='+obj.data[i].id+' >+</a>';
+                        module_tab += '</span></div>';
+                        if (obj.data[i].is_exsit_child == 1 || (obj.data[i].is_exsit_child == 0&&obj.data[i].tag == 0)) {
+                            module_tab += '<div class="powerBox" id=access'+obj.data[i].id+' style="display: none;"><span>';
+                            module_tab += show (obj, obj.data[i].access_id, strID, tab);
+                            module_tab += '</span></div>';
+                        }
+                    }
+                }
+                $("#role_module_id").append(module_tab);
+            }
+        });
+    });
+</script>
+{% end %}

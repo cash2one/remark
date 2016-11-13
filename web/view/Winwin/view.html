@@ -1,0 +1,804 @@
+{% extends '../public/main.html' %}
+{% block title %}互推详情{% end %}
+{% block body %}
+<link href="{{ static_url('style/winwin.css') }}" type="text/css" rel="stylesheet">
+<link href="{{ static_url('style/jquery-ui.css') }}" type="text/css" rel="stylesheet">
+<link href="{{ static_url('style/jquery.mCustomScrollbar.min.css') }}" type="text/css" rel="stylesheet">
+<style>
+    body {
+        overflow-y: hidden;
+    }
+</style>
+
+<div class="ht-title">
+    <div class="inside-con">
+        <div class="ht-winwin"><a href="/winwin"><span class="icon-winwin"></span>微信互推助手</a></div>
+    </div>
+</div>
+<div class="ht-container">
+    <!--注释：stepstart 为发起互推状态的样式-->
+    <div class="step {% if winwin['id'] == 0 %}stepstart{% end %}">
+        <!--第一层-->
+        <!--发起互推状态的内容，以及互推发起后的左侧内容-->
+        <div class="left">
+            <div class="reqbtn">
+                <!--如果互推已发起未过期、当前用户为组织者，可以编辑-->
+                {% if is_creater and not is_over %}
+                <div id="editWinWin" class="btn btn-op" onclick="editWinwin();" target="_self">编辑要求</div>
+                {% end %}
+            </div>
+
+            <div class="step-tit clearfix">
+                <h2>互推要求</h2>
+            </div>
+            <div class="req form">
+                {% if winwin['id'] > 0 %}
+                <div class="item reqtime clearfix">
+                    <span style="position: absolute;top:0;left:0;">互推时间：</span><strong style="padding-left:110px;">{{ winwin['start_date'] }}</strong>
+                    <input name="time_end" type="text" class="time-select text"  id="datetimepicker2" readonly="readonly" value="{{ winwin['start_date'] }}" style="display: none;" >
+                </div>
+                <div class="item reqdetail clearfix">
+                    <span style="position: absolute;">详细要求：</span>
+                    <p style="margin-top:50px;">{% raw winwin['description'] %}</p>
+                    <textarea id="cform_content" class="text" readonly="readonly" placeholder="输入互推详细要求。如：用户数，参与名额，公众号类型等……" style="display: none;">{{ winwin['description'] }}</textarea>
+                </div>
+                {% else %}
+                <div class="item reqtime clearfix">
+                    <span style="position: absolute;top:0;left:0;">互推时间：</span>
+                    <input name="time_end" type="text" class="time-select text" readonly="readonly" id="datetimepicker2"
+                           value="{{ time_now }}">
+                </div>
+                <div class="item reqdetail clearfix">
+                    <label for="cform_content">详细要求：</label>
+                    <textarea id="cform_content" class="text" placeholder="输入互推详细要求。如：用户数，参与名额，公众号类型等……"></textarea>
+                </div>
+                {% end %}
+
+                <div class="btn-box">
+                    <input class="btn" type="button" value="发起互推" onClick="checkCreate(this);">
+                    <div id="create_alert" class="form-alert"></div>
+                </div>
+                <!--如果互推已发起未过期、当前用户是组织者、至少2个参与成员、互推文案不为空-->
+                {% if winwin and not is_over and (is_creater or is_member) and len(member) > 1 and winwin['status'] == 0 %}
+                <div class="btn-box" style="display: block">
+                    <input class="btn" type="button" value="通知成员开始互推" onClick="hdStart()">
+                </div>
+                {% end %}
+            </div>
+        </div>
+        <!--第二层-->
+
+
+        <!--第三层-->
+        <div class="right">
+            <div class="layoutbtn">
+                <!--如果当前用户为组织者、互推已发起未过期-->
+                {% if is_creater and not is_over %}
+                <div id="btn_edit_content" class="btn btn-op edittext" onclick="editContent();" target="_self">保存文案</div>
+                <div class="btn btn-op copytext" onclick="showColorBoard()">版式<img src="/static/images/navLitPointer.png" style="vertical-align: middle;margin:-2px 0 0 5px;"></div>
+                {% end %}
+                <!--如果互推已开始未过期、当前用户为组织者和参与者-->
+                {% if (is_creater or is_member) and not is_over and is_start %}
+                <div id="writer-copy" class="btn btn-op edittext" href="javascript:void(0)" target="_self">复制文案</div>
+                {% end %}
+            </div>
+            <div class="step-tit clearfix">
+                <h2 class="iphone-mid">互推文案</h2>
+            </div>
+            <!--如果互推已发起未过期，当前用户为组织者-->
+            {% if winwin and is_creater %}
+            <div class="color-board" style="display: none;">
+                {% for item in style %}
+                <div class="cycle-box {% if item['id'] == winwin['style'] %}now{% end %}" style="background: {{ item['background'] }};color:{{ item['color'] }};" data="{{ item['id'] }}">{{ item['name'] }}</div>
+                {% end %}
+            </div>
+            {% end %}
+            <div class="writer nano">
+                <div class="nano-content">
+                    <!--如果互推已发起-->
+                    {% if winwin %}
+                    <!--如果互推已发起，当前用户为组织者-->
+                    {% if is_creater %}
+                    <div class="text-tit">
+                        <input id="content_title" type="text" value="{{ winwin['title'] }}" placeholder="输入互推标题">
+                         <p style="display: none;">{{ winwin['title'] }}</p>
+                    </div>
+                    <div class="text-con">
+                        <textarea id="content_content" placeholder="输入互推内容">{{ winwin['content'] }}</textarea>
+                        <p style="display: none;">{{ winwin['content'] }}</p>
+                    </div>
+                    {% else %}
+                    <div class="text-tit">
+		            	<input id="content_title" readonly="readonly" type="text" value="{{ winwin['title'] }}" placeholder="输入互推标题">
+                        <p style="display: none;">{{ winwin['title'] }}</p>
+		            </div>
+		            <div class="text-con">
+		            	<textarea id="content_content" style="display:none;" readonly="readonly" placeholder="输入互推内容">{{ winwin['content'] }}</textarea>
+                        <p style="display: none;">{{ winwin['content'] }}</p>
+                    </div>
+                    {% end %}
+                    {% else %}
+                    <div class="text-tit">
+	            	    <input id="content_title" readonly="readonly" type="text" value="" placeholder="输入互推标题">
+	                </div>
+	                <div class="text-con">
+	            	    <textarea id="content_content" style="display:none;" readonly="readonly" placeholder="输入互推内容"></textarea>
+	                 </div>
+                    {% end %}
+                    <div class="type">
+                        <!--copy文案版式-->
+                        <div class="type-con yidao-info-1" id="copy-con">
+                            <section class="mpintro" {% if winwin and is_creater %}style="display:none"{% end %}>
+                                <p>{% if winwin %}{{ winwin['content'] }}{% end %}</p>
+                            </section>
+                            <!--如果互推已发起-->
+                            {% if winwin %}
+                            <!--参与互推的公众号-->
+                            {% for item in member %}
+                            <section class="yidao-com">
+                                <fieldset>
+                                    <legend class="mpuser">
+                                        <strong class="mpname">{{ item['name'] }}</strong>
+                                        <em class="mpid">{{ item['wechat_id'] }}</em>
+                                    </legend>
+                                    <p class="mpinfo">{{ item['features'] }}</p>
+
+                                    <p class="mpqrcode">
+                                        <span>长按二维码<br>点选（识别图中二维码）关注</span>
+                                        <img src="{{ item['qrcode'] }}">
+                                    </p>
+                                </fieldset>
+                            </section>
+                            {% end %}
+                            {% end %}
+                        </div>
+                        <!--copy文案版式 end-->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!--第四层-->
+        <div class="mid ui-full">
+            <div class="step-tit clearfix">
+                <h2>参与成员</h2>
+                <!--互推已发起，申请成员大于0-->
+                {% if winwin and len(member_apply) > 0 %}
+                <a class="btn btn-count" href="#">{{ len(member_apply) }} 条互推参与申请</a>
+                {% end %}
+            </div>
+            <div class="step-list nano clearfix">
+                <div class="nano-content">
+                    <!-- 添加参与者 -->
+                    <!--互推已发起未过期-->
+                    {% if winwin and not is_over and not is_start %}
+                    <!--当前用户为组织者-->
+                    {% if is_creater %}
+                    <div class="items additem" onclick="addMember()">
+                        <a href="#"><span class="avatar"><span class="addmember icon-add"></span></span>
+		                <span class="name-dis">添加参与公众号</span></a>
+		            </div>
+                    {% else %}
+                    <div class="items additem" onclick="addMember()">
+		            	<a href="#"><span class="avatar"><span class="addmember icon-add"></span></span>
+		                <span class="name-dis">申请参与</span></a>
+		            </div>
+                    {% end %}
+                    {% end %}
+                    {% if winwin %}
+                    <!--参与者-->
+                    {% for item in member %}
+                    <div class="items">
+		        		<a href="/media?a=view&id={{ item['officialaccount_id'] }}" target="_blank">
+		            	<span class="avatar">
+		            		<img src="{{ item['pic'] }}" alt="{{ item['name'] }}">
+		            	</span>
+		                <span class="name">{{ item['name'] }}</span>
+		                </a>
+		            </div>
+                    {% end %}
+                    {% end %}
+                </div>
+            </div>
+            <div class="push">
+
+                <h4> {% if winwin %}{{ len(member_apply) }}{% end %} 条互推参与申请</h4>
+
+                <div onclick='' class="push-close icon-close"></div>
+                <div class="push-list nano">
+                    <div class="nano-content">
+                        <!--申请者-->
+                        {% for item in member_apply %}
+                        <div class="item clearfix">
+                            <a href="/media?a=view&id={{ item['officialaccount_id'] }}" target="_blank">
+                                <span class="avatar"><img src="{{ item['pic'] }}"></span>
+			                    <span class="con">
+			                    	<h6>{{ item['name'] }}</h6>
+			                    </span>
+                            </a>
+                            {% if is_creater %}
+                            <div class="btn-box">
+                                <a class="btn agree_refuse"
+                                   data-url="/winwin?a=agree_refuse" data-id="{{ item['id'] }}" href="javascript:;">允许参与</a>
+                                <a class="btn agree_refuse"
+                                   data-url="/winwin?a=agree_refuse" data-id="{{ item['id'] }}" href="javascript:;">拒绝</a>
+                            </div>
+                            {% else %}
+                            <em>正在申请加入</em>
+                            {% end %}
+                        </div>
+                        {% end %}
+                    </div>
+                </div>
+            </div>
+            <!-- 选择参与的公众号  -->
+            <div class="addmemberbox">
+                <h4>选择参与的公众号</h4>
+                <div onclick="addMember();" class="addmember-close icon-close"></div>
+                <div class="addmember-list nano">
+                    <div class="nano-content">
+                        <div class="clearfix">
+                            <!--当前用户的公众号-->
+                            {% for item in official_my %}
+                            <div class="item">
+                                <a href="/media?a=view&id={{ item['id'] }}" target="_blank">
+                                    <span class="avatar"><img src="{{ item['avatar'] }}"></span>
+					            <span class="con">
+					                <h6>{{ item['name'] }}</h6>
+					            </span>
+                                </a>
+                                {% if item['id'] in member_my %}
+                                <span class="memberselected"><span class="icon-select"></span></span>
+                                {% else %}
+                                <span onclick="checkaddMember('{{ item["id"] }}')" class="memberselect"><span class="icon-select"></span></span>
+                                {% end %}
+                            </div>
+                            {% end %}
+
+                            <div class="item  additem">
+                                <a href="user?a=media_create">
+					            <span class="avatar">
+					            		<span class="addmember icon-add"></span>
+					            </span>
+					            <span class="con">
+					                <h6>添加公众号</h6>
+					            </span>
+                                </a>
+                            </div>
+                        </div>
+
+                        <div class="reqcopy">
+                            <h6>复制下方要求，邀请其它参与者</h6>
+
+                            <div class="copytext" id="change-url">互推时间：{ winwin.start_date }<br>{ winwin.description
+                                }<br>
+                                <br>参与互推：http://hutui.yidao.info/winwin/{ winwin.uuid }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<!--弹层-->
+<div id="dlg_add" class="light-cover" style="display:none;">
+    <div class="light-bot">
+        <div class="close"><span class="icon-close" onClick="lightbox('dlg_add');"></span></div>
+        <div class="con">
+            <h4>确认加入互推</h4>
+
+            <p>加入后等待组织者统一安排</p>
+
+            <div class="btn-box">
+                <a class="btn btn-sure" href="javascript:add_oa(this)">确认</a><a class="btn btn-cancel"
+                                                                                href="javascript:void(0);"
+                                                                                target="_self"
+                                                                                onClick="lightbox('dlg_add');">取消</a>
+            </div>
+        </div>
+        <!-- 确认加入 -->
+    </div>
+</div>
+<!--弹层 end-->
+
+<!--弹层-->
+<div id="dlg_start" class="light-cover" style="display:none;">
+    <div class="light-bot">
+        <div class="close"><span class="icon-close" onClick="lightbox('dlg_start');"></span></div>
+        <div class="con">
+            <h4>确认开始互推</h4>
+
+            <p>开始后互推要求、文案版式、参与成员都不可更改，确认后邮件通知参与者。</p>
+
+            <div class="btn-box">
+                <a class="btn btn-sure" href="{ url_for('hutui.winwin_start', wid=winwin.uuid) }">确认</a><a
+                    class="btn btn-cancel" href="javascript:void(0);" target="_self"
+                    onClick="lightbox('dlg_start');">取消</a>
+            </div>
+        </div>
+    </div>
+</div>
+<!--弹层 end-->
+
+
+<!--op 底部浮层-->
+<!--至少2个参与者、互推文案不为空-->
+{% if winwin and len(member) > 1 and winwin['content'] %}
+<!--互推已开始未过期-->
+{% if is_start and not is_over %}
+<div class="op">
+    <a id="writer-copy2" class="btn btn-copy writer-copy" href="javascript:void(0);" target="_self"
+       style="background-color: #fff;color: #2891eb;font: inherit;font-size: 20px;line-height: 56px;display: inline; padding: 7px; margin-right: 10px;">复制文案</a>
+
+    <p style="background: none;color: #fff;font: inherit;font-size: 20px;line-height: 56px;display: inline;">
+        到你的公众号发布互推，{{ winwin['start_date'] }}后最终结果会在此呈现。</p>
+</div>
+{% end %}
+{% end %}
+<!--op 底部浮层 end-->
+
+<!--提示-->
+<div class="top-alert top-alert-success" id="copy-alert" style="display:none;">Ctrl+C 或鼠标右键复制模板到剪贴板<br>然后Ctrl+V
+    粘贴到微信的图文消息编辑器中<span class="icon-close"></span></div>
+<!--提示 end-->
+
+
+<div style="display: none">
+    <script type="text/javascript">
+        $('.step').css('height', window.innerHeight - 150);
+        $(window).resize(function () {
+            $('.step').css('height', window.innerHeight - 150);
+        })
+
+    </script>
+</div>
+
+<script src="{{ static_url('script/winwin_detail.js') }}"></script>
+<script src="{{ static_url('script/jquery.nanoscroller.min.js') }}"></script>
+<script src="{{ static_url('script/jquery.cookie.js') }}"></script>
+<script src="{{ static_url('script/common.js') }}"></script>
+<script src="{{ static_url('script/jquery.zclip.js') }}"></script>
+<script src="{{ static_url('script/jquery-ui.js') }}" type="text/javascript"></script>
+<script src="{{ static_url('script/jquery.mCustomScrollbar.concat.min.js') }}" type="text/javascript"></script>
+<script type="text/javascript">
+    // full height
+    var mainheight = $('.ui-full').height();
+    var pickColor; ////error
+    $('.foot').hide();
+    $('#datetimepicker2').datepicker({minDate: new Date(), dateFormat: 'yy/mm/dd'});
+    $('.cycle-box').click(function () {
+        pickColor = $(this).attr('data');
+        $('.now').removeClass('now');
+        $(this).addClass('now');
+        set_style();
+    });
+
+    $('#writer-copy,#writer-copy2').click(function () {
+        SelectText('copy-con');
+    });
+
+    function SelectText(id) {
+        var obj = document.getElementById(id);
+        if ($.support.changeBubbles) {
+            // 现代浏览器
+            var selection = window.getSelection();
+            selection.selectAllChildren(obj);
+        } else {
+            // ie8及以下
+            var range = document.body.createTextRange();
+            range.moveToElementText(obj);
+            range.select();
+        }
+        ;
+        //showAlert("Ctrl+C 或鼠标右键复制模板到剪贴板<br>然后Ctrl+V 粘贴到微信的图文消息编辑器中","success")
+        showTipsBox('message', "Ctrl+C 或鼠标右键复制模板到剪贴板<br>然后Ctrl+V 粘贴到微信的图文消息编辑器中")
+    }
+    ;
+
+    function showColorBoard() {
+        var obj = $('.color-board');
+        if (obj.is(':visible')) {
+            obj.fadeOut();
+        } else {
+            obj.fadeIn();
+        }
+    }
+
+    function hdStart() {
+        showAcceptBox('确认开始互推', '开始后互推要求、文案版式、参与成员都不可更改，确认后邮件通知参与者。', true, function () {
+//            location.href = '/winwin?a=start&id={{ winwin['uuid'] }}';
+            $.ajax({
+                url: '/winwin?a=start',
+                type: 'POST',
+                dataType: 'JSON',
+                data: {
+                    'id': "{{ winwin['uuid'] }}"
+                }
+            }).then(function(d){
+                if(d.status != 200){
+                    alert('操作失败，请刷新重试');
+                    return false;
+                }
+                location.reload();
+            });
+        })
+    }
+
+    function resetHeight() {
+        var op = $('.op').size() ? $('.op').outerHeight() : 0;
+        var h = Math.max(mainheight, $(window).height() - $('.head').height() - 20 - 2 - op);
+        $('.ui-full').css('height', h);
+        $('.step .push-list,.step .addmember-list,.step-list').css('height', h - 70);
+        //$('.step .layoutSelect').css('height', h - 20);
+        $('.step .left').css('height', h - 76);
+        $('.step .mid').css('height', h - 76);
+        $('.step .right').css('height', h - 16);
+        $('.step .writer').css('height', h - 126);
+        $('.step .req .item textarea').css('height', h - 186);
+    }
+    ;
+    resetHeight();
+    $(window).resize(function (e) {
+        resetHeight();
+    });
+    /*    */
+    $('.nano').nanoScroller();
+    var href = location.href;
+    if (href.match(/\/history$/)) {
+        $("#win-nav").find("li").eq(1).addClass("now").siblings().removeClass("now");
+    }
+
+
+    $(document).ready(function () {
+
+        $('#copy-con').removeClass().addClass('type-con').addClass('yidao-info-' + '{{ winwin['style'] }}');
+        var obj = $("#content_title");
+        if (obj.val() == '') {
+            obj.focus();
+        } else {
+            $('#btn_edit_content').text('编辑文案');
+            $('.text-tit input').hide();
+            $('.step .writer .text-tit p').show();
+            $('.text-con textarea').hide();
+            $('.step .writer .text-con p').show();
+        }
+        pickColor = 1;
+    });
+
+    function set_style() {
+
+        var syl = $('#sel_style li.now');
+        console.log(syl.attr('data'));
+        $.ajax({
+            type: "POST",
+            url: "/winwin?a=update_style",
+            dataType: 'JSON',
+            data: {
+                'id': "{{ winwin['uuid'] }}",
+                'style_id': pickColor
+            },
+            success: function (d) {
+                if(d.status != 200){
+                    alert('操作失败，请刷新重试');
+                    return false;
+                }
+                //$('#copy-con').className
+                document.getElementById('copy-con').className = 'type-con yidao-info-' + pickColor;
+                $('.color-board').fadeOut();
+            }
+        });
+    }
+    function checkaddMember(oaid) {
+        $('#dlg_add').attr('oaid', oaid);
+        //lightbox('dlg_add');
+        showAcceptBox('确认加入互推', '加入后等待组织者统一安排', true, function () {
+            var oaid = $('#dlg_add').attr('oaid');
+            $.ajax({
+                type: "POST",
+                dataType: 'JSON',
+                url: "/winwin?a=join",
+                data: {
+                    'official_id': oaid,
+                    'winwin_id': '{{ winwin["id"] }}'
+                },
+                success: function (d) {
+                    alert(d.status);
+                    if(d.status == 200){
+                        location.reload();
+                    }else{
+                        alert('你已经申请加入了。');
+                    }
+                }
+            });
+        })
+    }
+
+    function add_oa() {
+        var oaid = $('#dlg_add').attr('oaid');
+
+        $.ajax({
+            type: "GET",
+            url: "/winwin/join//" + oaid,
+            success: function (msg) {
+                if (msg == "ok") {
+                    location.reload();
+                } else if (msg == 'exists') {
+                    alert('你已经申请加入了。');
+                }
+            }
+        });
+    }
+
+    function addMember() {
+
+// step
+
+        var obj = $('.addmemberbox');
+        if (obj.is('.working')) {
+            return false;
+        } else {
+            obj.addClass('working');
+        }
+        ;
+        if (!obj.is('.nano-ready')) {
+            $('.push-list').nanoScroller();
+            obj.addClass('nano-ready');
+        }
+        ;
+        obj.animate({width: obj.is('.stepshow') ? 0 : 280}, function () {
+            $(this).toggleClass('stepshow');
+            $(this).removeClass('working');
+        });
+    }
+
+    function editWinwin() {
+        var cform_date = $("#datetimepicker2");
+        var cform_content = $("#cform_content");
+        var btn_winwin = $('#editWinWin');
+
+        if (btn_winwin.text() == "编辑要求") {
+
+            //cform_date.removeAttr("readonly");
+            cform_content.removeAttr("readonly");
+            btn_winwin.text("保存要求");
+            $('.reqtime strong').hide();
+            $('.reqtime input').show();
+            $('.reqdetail p').hide();
+            $('.reqdetail textarea').show();
+            cform_date.focus();
+
+        } else if (btn_winwin.text() == "保存要求") {
+
+            var cform_date = $("#datetimepicker2").val();
+            var cform_content = $("#cform_content").val();
+
+            if (cform_content == '') {
+                alert('说明不能为空');
+                return;
+            }
+            $('.reqtime strong').text(cform_date).show();
+            $('.reqtime input').hide();
+            $('.reqdetail p').text(cform_content).show();
+            $('.reqdetail textarea').hide();
+
+//            var params = {type: 'require', start_date: cform_date, description: cform_content};
+
+            $.ajax({
+                type: "POST",
+                url: "/winwin?a=update",
+                dataType: 'JSON',
+                data: {
+                    'start_date': cform_date,
+                    'description': cform_content,
+                    'id': "{{ winwin['uuid'] }}"
+                },
+                success: function (d) {
+                    if(d.status == 200){
+                        $("#cform_date").attr("readonly", "readonly");
+                        $("#cform_content").attr("readonly", "readonly");
+                        btn_winwin.text("编辑要求");
+                    }else{
+                        alert('操作失败，请刷新重试');
+                    }
+                }
+            });
+        }
+    }
+
+    function editContent() {
+        var content_title = $("#content_title");
+        var content_content = $("#content_content");
+        var btn_edit_content = $('#btn_edit_content');
+
+        if (btn_edit_content.text() == "编辑文案") {
+            content_title.removeAttr("readonly");
+            content_content.removeAttr("readonly");
+            btn_edit_content.text("保存文案");
+            $('.text-tit input').show();
+            $('.step .writer .text-tit p').hide();
+            $('.text-con textarea').show();
+            $('.step .writer .text-con p').hide();
+            content_content.show();
+            $('.mpintro').hide();
+
+        } else if (btn_edit_content.text() == "保存文案") {
+            var params = {type: "content", title: content_title.val(), content: content_content.val(), 'id': '{{ winwin['uuid'] }}'};
+            console.log('123');
+            $.ajax({
+                type: "POST",
+                url: "/winwin?a=update",
+                dataType: 'JSON',
+                data: $.param(params),
+                success: function (d) {
+                    if(d.status == 200){
+                        $("#content_title").attr("readonly", "readonly");
+                        $("#content_content").attr("readonly", "readonly");
+                        $('.text-tit input').hide();
+                        $('.step .writer .text-tit p').text($('.text-tit input').val()).show();
+                        $('.text-con textarea').hide();
+                        $('.step .writer .text-con p').text($('.text-con textarea').val()).show();
+                        btn_edit_content.text("编辑文案");
+                    }
+//                    if (msg == "ok") {
+//                        $("#content_title").attr("readonly", "readonly");
+//                        $("#content_content").attr("readonly", "readonly");
+//                        $('.text-tit input').hide();
+//                        $('.step .writer .text-tit p').text($('.text-tit input').val()).show();
+//                        $('.text-con textarea').hide();
+//                        $('.step .writer .text-con p').text($('.text-con textarea').val()).show();
+//                        btn_edit_content.text("编辑文案");
+//                        //var c = $("#content_content");
+//                        //c.hide();
+//                        //$('.mpintro p').text(c.val());
+//                        //$('.mpintro').show();
+//                    }
+                }
+            });
+        }
+    }
+
+    function checkDate(a, b) {
+        var arr = a.split("/");
+        var starttime = new Date(arr[0], arr[1], arr[2]);
+        var starttimes = starttime.getTime();
+
+        var arrs = b.split("/");
+        var lktime = new Date(arrs[0], arrs[1], arrs[2]);
+        var lktimes = lktime.getTime();
+
+        if (starttimes >= lktimes) {
+            return true;
+        }
+        else
+            return false;
+
+    }
+
+    Date.prototype.getMonth2 = function () {
+        return this.getMonth() + 1;
+    };
+
+    Date.prototype.Format = function (formatStr) {
+        var str = formatStr;
+        var Week = ['日', '一', '二', '三', '四', '五', '六'];
+
+        str = str.replace(/yyyy|YYYY/, this.getFullYear());
+        str = str.replace(/yy|YY/, (this.getYear() % 100) > 9 ? (this.getYear() % 100).toString() : '0' + (this.getYear() % 100));
+
+        str = str.replace(/MM/, this.getMonth2() > 9 ? this.getMonth2().toString() : '0' + this.getMonth2());
+        str = str.replace(/M/g, this.getMonth());
+
+        str = str.replace(/w|W/g, Week[this.getDay()]);
+
+        str = str.replace(/dd|DD/, this.getDate() > 9 ? this.getDate().toString() : '0' + this.getDate());
+        str = str.replace(/d|D/g, this.getDate());
+
+        str = str.replace(/hh|HH/, this.getHours() > 9 ? this.getHours().toString() : '0' + this.getHours());
+        str = str.replace(/h|H/g, this.getHours());
+        str = str.replace(/mm/, this.getMinutes() > 9 ? this.getMinutes().toString() : '0' + this.getMinutes());
+        str = str.replace(/m/g, this.getMinutes());
+
+        str = str.replace(/ss|SS/, this.getSeconds() > 9 ? this.getSeconds().toString() : '0' + this.getSeconds());
+        str = str.replace(/s|S/g, this.getSeconds());
+
+        return str;
+    };
+
+    function checkCreate(e) {
+        //lightbox('lb1');
+        // this, lightbox-id
+        var alertbox = $(e).next();
+
+        var cform_date = $("#datetimepicker2").val();
+        var cform_content = $("#cform_content").val();
+
+        /*reg = /^(\d{4})\/(0\d{1}|1[0-2])\/(0\d{1}|[12]\d{1}|3[01])$/;
+         errorText = "时间格式错误，请遵照格式：2014/09/01";
+
+         if(!reg.test(cform_date)){
+         alertbox.html(errorText).fadeIn();
+         return;
+         }*/
+        if (cform_content == '') {
+            alertbox.html('说明不能为空').fadeIn();
+            return;
+        }
+
+        var now = new Date(); //获取系统日期，即Sat Jul 29 08:24:48 UTC+0800 2006
+
+        /*if(!checkDate(cform_date, now.Format('YYYY/MM/DD'))){
+         alertbox.html('日期必须是今天以后哦！').fadeIn();
+         return;
+         }*/
+
+        var params = {start_date: cform_date, description: cform_content};
+
+        $.ajax({
+            type: "POST",
+            url: "/winwin?a=create",
+            dataType: 'JSON',
+            data: $.param(params),
+            success: function (d) {
+                if(d.status == 200){
+                    $('.left .btn-box').fadeOut();
+                    $('.step .left .btn-op').fadeIn();
+                    $('.left .startwinwin').fadeIn();
+                    $('.left').animate({
+                        left: '20px',
+                        marginLeft: 0
+                    }, 400, function () {
+                        $('.step .layoutSelect,.step .right,.step .mid').fadeIn();
+                        $('.step').removeClass('stepstart');
+                        location.href = '/winwin?a=view&id=' + d.data;
+                    });
+                }
+//                //rets = msg.split("|");
+//                //if (rets[0] == 'ok') {
+//                    $('.left .btn-box').fadeOut();
+//                    $('.step .left .btn-op').fadeIn();
+//                    $('.left .startwinwin').fadeIn();
+//                    $('.left').animate({
+//                        left: '20px',
+//                        marginLeft: 0
+//                    }, 400, function () {
+//                        $('.step .layoutSelect,.step .right,.step .mid').fadeIn();
+//                        $('.step').removeClass('stepstart');
+//                        location.href = '/winwin?a=view&id=' + rets[1];
+//                    });
+//                }
+            }
+        });
+    }
+
+$(function(){
+    // 监听同意与拒绝
+    $('.agree_refuse').click(function(){
+        var str_data_url = $(this).attr('data-url');
+        var str_id = $(this).attr('data-id');
+        if(!str_data_url || !str_id){
+            alert('数据有误，请刷新重试');
+            return false;
+        }
+        $.ajax({
+            url: str_data_url,
+            type: 'POST',
+            dataType: 'JSON',
+            data: {
+                'id': str_id
+            }
+        }).then(function(d){
+            if(d.status != 200){
+                alert('操作失败，请刷新重试');
+                return;
+            }
+            location.reload();
+        });
+    });
+});
+</script>
+{% end %}

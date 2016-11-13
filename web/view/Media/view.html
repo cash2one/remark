@@ -1,0 +1,1013 @@
+{% extends '../public/main.html' %}
+{% block title %}{{ media['name'] }}{% end %}
+{% block body %}
+<link href="{{ static_url('style/self_media.css') }}" type="text/css" rel="stylesheet" >
+<!--[if lt IE 9]>
+<script language="javascript" type="text/javascript" src="{{ static_url('script/excanvas.js') }}"></script><![endif]-->
+<script language="javascript" type="text/javascript" src="{{ static_url('script/jquery.jqplot.js') }}"></script>
+<script language="javascript" type="text/javascript" src="{{ static_url('script/d3.min.js') }}"></script>
+
+<div class="mediaContainer">
+    <!--<div class="userBox">-->
+        <!--<a href="/u?id={{ media['user_id'] }}">-->
+            <!--<span class="ydi yd-left"></span><img src="{{ media['user_avatar'] }}">{{ media['nickname'] }}-->
+            <!--<input type="hidden"value="{a.user.id}">-->
+        <!--</a>-->
+    <!--</div>-->
+    <div class="mediaBox clearfix">
+        <div class="mediaAvatar">
+            <img src="{{ media['avatar'] }}" alt="{{ media['name'] }}">
+        </div>
+        <div class="mediaInfo">
+            <div class="mediaTitle">
+                <span class="mediaName">{{ media['name'] }}</span>
+                {% if media['original'] %}
+                <span class="original" title="原创">原创</span>
+                {% end %}
+                {% if media['identify'] %}
+                <span class="wechatVerify ydi yd-checked" title="微信认证">已认证</span>
+                {% end %}
+                <span class="level" title="综合级别">级别<strong>{{ media['value_level'] }}</strong></span>
+                <span class="qrcode"><img src="/static/images/qr-mini.png" alt="二维码"><img src="{{ media['qrcode'] }}" alt="{{ media['name'] }}二维码" class="codeL"></span>
+            </div>
+            <div class="mediaCategory">
+                <span>{{ media['category'] }}</span>
+            </div>
+            <div class="mediaTag">
+                {% for item in media['tags'] %}
+                    <span data="">{{ item['name'] }}</span>
+                {% end %}
+            </div>
+            <dl class="mediaAudience">
+                <dt>针对地域：</dt>
+                <dd>{{ media['area'] }}</dd>
+                <dt>针对性别：</dt>
+                <dd>{{ media['audience_gender'] }}</dd>
+            </dl>
+        </div>
+        <div class="mediaDescription">
+            <p><strong>简介</strong></p>
+            <p>{{ media['breif'] }}</p>
+        </div>
+        <div class="more">
+            {% if current_user['user_id'] == media['user_id'] %}
+            <a href="/user?a=media_edit&id={{ media['id'] }}" target="_blank" class="btnMore" data-id="{{ media['id'] }}"  data-onclick="load_data({{ media['id'] }}); lightbox('case-cost')">编辑信息</a>
+            {% end %}
+        </div>
+    </div>
+    <div class="share">
+        <div class="bdsharebuttonbox"><strong>分享 {{ media['name'] }}：</strong><a href="#" class="bds_more" data-cmd="more"></a><a href="#" class="bds_weixin" data-cmd="weixin" title="分享到微信"></a><a href="#" class="bds_tsina" data-cmd="tsina" title="分享到新浪微博"></a><a href="#" class="bds_sqq" data-cmd="sqq" title="分享到QQ好友"></a><a href="#" class="bds_qzone" data-cmd="qzone" title="分享到QQ空间"></a><a href="#" class="bds_tqq" data-cmd="tqq" title="分享到腾讯微博"></a><a href="#" class="bds_douban" data-cmd="douban" title="分享到豆瓣网"></a><a href="#" class="bds_bdhome" data-cmd="bdhome" title="分享到百度"></a><a href="#" class="bds_tieba" data-cmd="tieba" title="分享到百度贴吧"></a><a href="#" class="bds_copy" data-cmd="copy" title="复制网址"></a><a href="#" class="bds_mail" data-cmd="mail" title="分享到邮件"></a></div>
+<script>window._bd_share_config={"common":{"bdSnsKey":{},"bdText":"自媒体：{{ media['name'] }}（微信公众号），浏览自媒体资料、价值信息、刊例报价请打开右侧链接：http://yidao.info/media?a=view&id={{ media['id'] }}","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"0","bdSize":"16"},"share":{}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];</script>
+    </div>
+</div>
+<!--<div class="mediaMain clearfix">-->
+    <!--<div class="readNumberChart">-->
+        <!--<div class="title">-->
+            <!--<hr>-->
+            <!--<h3>阅读数曲线图</h3>-->
+        <!--</div>-->
+        <!--<div class="content">-->
+            <!--<div id="chart_read_num">-->
+                <!--<script type="text/javascript" src=" http://echarts.baidu.com/build/dist/echarts.js"> </script>-->
+                <!--<script type="text/javascript">-->
+                    <!--var data_date;-->
+                    <!--var data_read_num;-->
+
+                    <!--$.ajax({-->
+                        <!--type: "get",-->
+                        <!--contentType: "application/json",-->
+                        <!--url: "/media?a=get_read_num&media_id=" + '{{ media["id"] }}',-->
+                        <!--//data: "{}",-->
+                        <!--//url:'/media?a=get_read_num',-->
+                        <!--//method:'post',-->
+                        <!--//dataType:'json',-->
+                        <!--//data: {'media_id': '{{ media["id"] }}'},-->
+                        <!--success:function(d){-->
+                            <!--if(d.status==200){-->
+                                <!--$('#read_num_default').hide();-->
+                                <!--$('#chart_read_num').show();-->
+                                <!--data_date= d.data['date'];-->
+                                <!--data_read_num = d.data['read_num'];-->
+
+                                <!--require.config({-->
+                                    <!--paths:{-->
+                                        <!--echarts:'http://echarts.baidu.com/build/dist'-->
+                                    <!--}-->
+                                <!--});-->
+                                <!--require(-->
+                                    <!--[-->
+                                        <!--'echarts',-->
+                                        <!--'echarts/chart/line'-->
+                                    <!--],-->
+                                    <!--function(ec){-->
+                                        <!--var chart = ec.init(document.getElementById('chart_read_num'));-->
+                                        <!--var option = {-->
+                                            <!--title : {-->
+                <!--//                                text: '阅读数',-->
+                <!--//                                subtext: '近七天阅读数'-->
+                                            <!--},-->
+                                            <!--tooltip : {-->
+                                                <!--trigger: 'axis',-->
+                                                <!--axisPointer: {-->
+                                                    <!--lineStyle: {color: 'rgba(0,0,0,.2)'}-->
+                                                <!--},-->
+                                                <!--formatter: function(params){-->
+                                                    <!--s = params[0].value;-->
+                                                    <!--if (s == 0) {-->
+                                                        <!--s = '无数据'-->
+                                                    <!--}-->
+                                                    <!--return params[0].name + '<br/>' + params[0].seriesName + ': ' + s-->
+                                                <!--}-->
+                                            <!--},-->
+                                            <!--legend: {-->
+                                                <!--data:['头条']-->
+                                            <!--},-->
+                                            <!--calculable : true,-->
+                                            <!--xAxis : [-->
+                                                <!--{-->
+                                                    <!--type : 'category',-->
+                                                    <!--boundaryGap : false,-->
+                                                    <!--data : data_date,-->
+                                                    <!--splitLine:{-->
+                                                        <!--show: true,-->
+                                                        <!--lineStyle: {color: '#e6e6e6'}-->
+                                                    <!--},-->
+                                                    <!--axisLabel : {-->
+                                                        <!--// 日期格式化-->
+                                                        <!--formatter: function(v){-->
+                                                            <!--date = v.slice(5, 10);-->
+                                                            <!--return date-->
+                                                        <!--},-->
+                                                        <!--textStyle: {color: '#999'}-->
+                                                    <!--},-->
+                                                    <!--axisLine: {-->
+                                                        <!--lineStyle: {width: 0}-->
+                                                    <!--},-->
+                                                    <!--axisTick: {-->
+                                                        <!--lineStyle: {width: 0}-->
+                                                    <!--}-->
+                                                <!--}-->
+                                            <!--],-->
+                                            <!--yAxis : [-->
+                                                <!--{-->
+                                                    <!--type : 'value',-->
+                                                    <!--splitLine:{-->
+                                                        <!--show: true,-->
+                                                        <!--lineStyle: {color: '#e6e6e6'}-->
+                                                    <!--},-->
+
+                                                    <!--splitNumber: 3,-->
+
+                                                    <!--axisLabel : {-->
+                                                        <!--// 不显示0刻度-->
+                                                        <!--formatter: function(n){-->
+                                                            <!--if(n == '0'){-->
+                                                                <!--return ''-->
+                                                            <!--}-->
+                                                            <!--return n-->
+                                                        <!--},-->
+                                                        <!--textStyle: {color: '#999'}-->
+                                                    <!--},-->
+                                                    <!--axisLine: {-->
+                                                        <!--lineStyle: {color: '#e6e6e6', width: 1}-->
+                                                    <!--}-->
+                                                <!--}-->
+                                            <!--],-->
+                                            <!--series : [-->
+                                                <!--{-->
+                                                    <!--name:'头条',-->
+                                                    <!--type:'line',-->
+                                                    <!--smooth:true,-->
+                                                    <!--itemStyle: {normal: {-->
+                                                        <!--color: 'rgb(40,145,235)',-->
+                                                        <!--areaStyle: {type: 'default', color: 'rgba(40,145,235,0.4)'}-->
+                                                    <!--}},-->
+                                                    <!--data:data_read_num-->
+                                                <!--}-->
+                                            <!--]-->
+                                        <!--};-->
+
+                                        <!--chart.setOption(option);-->
+                                    <!--}-->
+                                <!--);-->
+                            <!--} else {-->
+                                <!--$('#read_num_default').show();-->
+                            <!--}-->
+                        <!--}-->
+                    <!--});-->
+                <!--</script>-->
+            <!--</div>-->
+            <!--&lt;!&ndash;<div>近七天阅读数</div>&ndash;&gt;-->
+            <!--<p id="read_num_default" class="defaultTip" style="display: none"><span>暂无近一周数据</span></p>-->
+        <!--</div>-->
+    <!--</div>-->
+    <!--<div class="historyArticle">-->
+        <!--<div class="title">-->
+            <!--<hr>-->
+            <!--<h3>历史文章</h3>-->
+        <!--</div>-->
+        <!--<div class="content">-->
+            <!--{% if media_article %}-->
+            <!--<ul>-->
+                <!--{% for article_item in media_article%}-->
+                    <!--<li>-->
+                        <!--<a href="{{ article_item['url'] }}" target="_blank">{{ article_item['title'] }}</a>-->
+                        <!--<span>{{ article_item['post_day'] }}</span>-->
+                    <!--</li>-->
+                <!--{% end %}-->
+            <!--</ul>-->
+            <!--{% else %}-->
+            <!--<p class="defaultTip"><span>数据正在获取</span></p>-->
+            <!--{% end %}-->
+        <!--</div>-->
+    <!--</div>-->
+    <!--<div class="mediaAdvertising">-->
+        <!--<div class="title">-->
+            <!--<hr>-->
+            <!--<h3>刊例报价</h3>-->
+        <!--</div>-->
+        <!--<div class="content">-->
+
+            <!--{% if login != 0 %}-->
+            <!--<ul>-->
+                <!--{% for item in media['price_info'] %}-->
+                <!--<li onclick="chooseThisPosition(this)" value="{{item['price']}}">{{item['attr_value_info']}}</li>-->
+                <!--{% end %}-->
+            <!--</ul>-->
+            <!--<div class="mediaInvite" hidden>-->
+                <!--<span class="price"><small>¥</small><strong>5000</strong></span>-->
+                <!--&lt;!&ndash;<span class="btnNext">邀请接单</span>&ndash;&gt;-->
+            <!--</div>-->
+            <!--{% end %}-->
+            <!--&lt;!&ndash;如用户未登录提示登录&ndash;&gt;-->
+            <!--{% if login == 0 %}-->
+            <!--<p class="defaultTip"><span><a href="javascript:;" onClick="lightbox('lb1');showBox('loginBox');">登录</a>后查看自媒体报价</span></p>-->
+            <!--{% end %}-->
+        <!--</div>-->
+    <!--</div>-->
+    <!--&lt;!&ndash;-->
+    <!--<div class="mediaCase">-->
+        <!--<div class="title">-->
+            <!--<hr>-->
+            <!--<h3>成功案例</h3>-->
+        <!--</div>-->
+        <!--<div class="content">-->
+        <!--</div>-->
+    <!--</div>-->
+    <!--&ndash;&gt;-->
+<!--</div>-->
+<div class="recommendedBox">
+    <div class="title">
+        <h3>相似的自媒体</h3>
+    </div>
+    <div class="content">
+        <ul class="recommendedMediaBox clearfix">
+        </ul>
+    </div>
+</div>
+<!--原代码，改完删除
+<div class="case-more-box mar-top">
+    <div class="self-media-main" id="pages">
+        <div class="excel" style="width:100%;">
+            <div class="title">
+                <div class="press-btn">阅读数曲线图</div>
+                <div>刊例报价</div>
+                <div>成功案例</div>
+                <div>历史文章</div>
+                <div>受众</div>
+            </div>
+            <div class="title">近两月阅读数</div>
+            <div class="excel-main" id="excel"><div id="comefrom">数据来源于新媒体指数<div class="comeqr">【微信号：indexmedia；网址：www.gsdata.cn】 </div></div></div>
+            <div class="artical-list">
+                <div class="linemsg" style="color:#555;">历史文章<div class="readNum">阅读数</div><div class="pub-time">发布时间</div></div>
+            </div>
+            <div class="audience">
+                <div class="data-ana">性别数据分析 <div class="btn-with-blueBg-and-addBtn addMsg" onclick="addAudience('sex')">添加性别数据</div></div>
+
+                <div id="audience2" style="display: inline-block;width:300px;height: 160px;margin-left:150px;"></div>
+                <table id="sex-ana">
+                    <tr>
+                        <th  class="head-part">性别</th>
+                        <th  class="head-part">人数</th>
+                        <th  class="head-part">百分比</th>
+                    </tr>
+                    <tr >
+                        <th>未知</th>
+                        <th>未知</th>
+                        <th>未知</th>
+                    </tr>
+                </table>
+                <div class="data-ana">省份数据分析 <div class="btn-with-blueBg-and-addBtn addMsg" onclick="addAudience('province')">添加省份数据</div></div>
+                <img src="/static/images/chinaMap.png" width="365" height="301">
+                <table id="province-ana">
+                    <tr>
+                        <th  class="head-part">省份</th>
+                        <th  class="head-part">人数</th>
+                        <th  class="head-part">占比</th>
+                    </tr>
+                    <tr >
+                        <th>未知</th>
+                        <th>未知</th>
+                        <th>未知</th>
+                    </tr>
+                </table>
+            </div>
+            <div class="loadingData">数据正在获取中...</div>
+            <div class="price_each" style="display: none;">
+                <div class="media-update">
+                    <label class="media-update-label">刊例报价仅供参考</label>
+                    {% if current_user['user_id'] == media['user_id'] %}
+                    <button class="btn-with-blueBg-and-addBtn media-update-price" id="media_update" data-type="form">修改价格</button>
+                    {% end %}
+                </div>
+                <table>
+                    <tr>
+                        <th>位置</th>
+                        <th>单图文</th>
+                        <th>多图文首条</th>
+                        <th>多图文二条</th>
+                        <th>多图文其他</th>
+                    </tr>
+
+                </table>
+            </div>
+            <div class="case-show clearfix" style="display: none;">
+                {% for item in media_case %}
+                <div class="case-box">
+                    <input type="hidden" value="" />
+                    <p style="height:20px;line-height:20px;overflow:hidden;">
+                        <b><a href="{{ item['url'] }}" target="_blank">{{ item['title'] }}</a></b>
+                    </p>
+                    <p>{{ item['publish_at'] }}</p>
+                    <a href="{{ item['url'] }}">
+                        <img src="{{ item['picture'] }}" style="width:140px;height:80px;" />
+                    </a>
+                    {% if item['price'] > 0 %}
+                    <p class="big_size"><small>¥ </small> {{ item['price'] }}</p>
+                    {% end %}
+                </div>
+                {% end %}
+                {% if current_user['user_id'] == media['user_id'] %}
+                <div class="case-box" id="add-btn">
+                    <img src="/static/images/sm_case_add.png" alt="addBtn" width="32" height="32" style="margin:35px 0 0 54px;"/>
+                    <div class="case-add">添加案例</div>
+                </div>
+                {% end %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="light-cover" id="case-cost" style="display: none;">
+    <div class="change-msg-box">
+        <input name="oid" type="hidden" value="" />
+        <input name="category_list" type="hidden" value="" />
+        <div class="login-close"><span class="icon-close" onClick="lightbox('case-cost');"></span></div>
+        <div class="bg-box-line"></div>
+        <div class="title title-one">接单报价</div>
+        <div class="m-row">
+            <span class="m-left">单图文</span>
+            <span class="m-middle"><input name="price_1x" type="text" value="{oa.prices_info.price_1x}" /></span>
+            <span class="m-right">单图文消息</span>
+        </div>
+        <div class="m-row">
+            <span class="m-left">多图文首条</span>
+            <span class="m-middle"><input name="price_x1" type="text" value="{oa.prices_info.price_x1}" /></span>
+            <span class="m-right">多图文消息的第一条</span>
+        </div>
+        <div class="m-row">
+            <span class="m-left">多图文二条</span>
+            <span class="m-middle"><input name="price_x2" type="text" value="{oa.prices_info.price_x2}" /></span>
+            <span class="m-right">多图文消息的第二条</span>
+        </div>
+        <div class="m-row">
+            <span class="m-left">多图文其他</span>
+            <span class="m-middle"><input name="price_xx" type="text" value="{oa.prices_info.price_xx}" /></span>
+            <span class="m-right">多图文消息的其他条</span>
+        </div>
+        <div class="m-row" style="margin-top:30px;">
+            <span class="m-left" ></span>
+            <span class="m-middle">
+                <button id="post_btn" type="button" onclick="savePrice()" class="submit-btn">保存</button>
+            </span>
+            <span class="m-right"></span>
+        </div>
+        <div class="o_media_accept">
+            <a href="javascript:;" class="o_media_accept_button" id="o_media_accept_button" data-id="{{ media['id'] }}">邀请接单</a>
+        </div>
+    </div>
+</div>
+
+
+<div class="light-cover" id="pick-marketing" style="display: none;">
+    <div class="pick-marketing-tips">
+        <div class="login-close"><span class="icon-close" onClick="lightbox('pick-marketing');"></span></div>
+        <div class="title">选择一个营销需求</div>
+        <div class="container" data-mcs-theme="minimal-dark" id="o_demand_list">
+
+            <div class="marketing-box">
+                <div class="mak-title">{ d.title }</div>
+                <div class="interested-container">
+                    	<div class="interestedBox">{ c.name }</div>
+                </div>
+                <div>预算总额：<span class="cost"><small>￥</small>{ d.money }</span> </div>
+                <div>营销事件：{ d.begin_parse}至{d.end_parse}</div>
+                <input type="hidden" value="{d.id}">
+            </div>
+        </div>
+        <div class="add-marketing-btn" onclick="onlink('/user?a=demand_form')"><p>+</p>新发布一个营销需求</div>
+    </div>
+</div>
+-->
+
+
+<script type="text/javascript">
+    var hasInvited = false;
+    var handupType;
+    var isloading = false;
+    $.ajax({
+        type: 'get',
+        url: "{{ RECO_HOST }}/media_similary_media?id={{media['id']}}",
+        dataType: 'jsonp',
+        jsonp: "callback",
+        success: function (res) {
+            simi = res
+            console.log(simi)
+            //alert("success")
+            simi_html= ''
+                for(k in simi)
+                {
+                    media = simi[k][1]
+                    simi_html += '<li class="mediaBox">' +
+                        '<a href="/media?a=view&id=' + media['id'] + '"><img src="' + media['avatar'] + '" alt="' + media['name'] + '">' +
+                        '<span class="mediaName">' + media['name'] + '</span></a>' + '</li>'
+                        //'<div class="mediaTag">'
+                        //for (var m = 0; m < simi[i]['tagname'].length; m++) {
+                        //    simi_html += '<div class="interestedBox">' + simi[i]['tagname'][m]['name'] + '</div>'
+                        //}
+                        //simi_html += '</div>'
+                }
+            //alert(simi_html)
+            $(".recommendedMediaBox").append(simi_html)
+        },
+        error: function (res) {
+
+        }
+    })
+
+    $(function(){
+        // 自媒体ID
+        var mediaId = '{{ media['id'] }}';
+        // ajax
+        var ajaxHandle = '';
+        var ajaxLoading = false;
+        var dataLoaded = false;
+
+        /**
+         * 处理曲线图
+         * author: onlyfu
+         * update: 2015-8-14
+         */
+        var tu = function(){
+            var data = {% if media['week_read_data'] %}[{% raw media['week_read_data'] %}]{% else %}[]{% end %};
+            getExcel(data);
+
+        }();
+
+        /**
+         * 处理邀请接单
+         */
+        var invitation = function(){
+            $('#o_media_accept_button').click(function(){
+                if(!mediaId){
+                    return false;
+                }
+                lightbox('pick-marketing');
+                // 加载需求
+                if(!dataLoaded && !ajaxLoading){
+                    ajaxLoading = true;
+                    ajaxHandle = $.ajax({
+                        url: '/user?a=demand_online',
+                        type: 'POST',
+                        dataType: 'JSON',
+                        data: {}
+                    }).then(function(d){
+                        ajaxLoading = false;
+                        if(d.status != 200){
+                            showTipsBox('alert','数据有误，请刷新重试');
+                            return false;
+                        }
+
+                        var dataLen = d.data.length;
+                        if(dataLen > 0){
+                            var _html = '';
+                            for(var i = 0; i < d.data.length; i++){
+                                _html += '<div class="marketing-box" data-id="'+ d['data'][i]['demand_id'] +'">'+
+                                    '<div class="mak-title">'+ d['data'][i]['title'] +'</div>'+
+                                    '<div class="interested-container">'+
+                                        '<div class="interestedBox">{ c.name }</div>'+
+                                    '</div>'+
+                                    '<div>预算总额：<span class="cost"><small>￥</small>'+ d['data'][i]['money'] +'</span> </div>'+
+                                    '<div>营销事件：'+ d['data'][i]['time_begin'] +'至'+ d['data'][i]['time_end'] +'</div>'+
+                                    '<input type="hidden" value="'+ d['data'][i]['id'] +'">'+
+                                '</div>';
+                            }
+                            $('#o_demand_list').html(_html);
+                            if(dataLen > 2){
+                                $('#pick-marketing .container').addClass('mCustomScrollbar');
+                            }
+
+                            // 监听点击
+                            $('.marketing-box').click(function(){
+                                if(ajaxLoading){
+                                    return false;
+                                }
+                                ajaxLoading = true;
+
+                                var demandId = $(this).attr('data-id');
+                                if(!mediaId || !demandId){
+                                    return false;
+                                }
+
+                                $('#loading').show();
+
+                                $.ajax({
+                                    url:'/demand?a=invite',
+                                    type:'post',
+                                    dataType:'json',
+                                    data: {
+                                        'media_id': mediaId,
+                                        'demand_id': demandId
+                                    }
+                                }).then(function(d){
+                                    $('#loading').fadeOut();
+                                    ajaxLoading = false;
+                                    if(d.status != 200){
+                                        showTipsBox('alert', '操作失败，请重试');
+                                        return;
+                                    }
+                                    showTipsBox('message','邀请成功');
+                                    lightbox('pick-marketing');
+                                }, function(){
+                                    $('#loading').fadeOut();
+                                    showTipsBox('alert', '操作失败，请重试');
+                                });
+                            });
+                        }
+                    });
+                }
+            });
+        }();
+
+        /**
+         * 处理修改价格
+         */
+        var mediaPriceUpdate = function(){
+            $('#media_update').click(function() {
+                var _this = $(this);
+                var dataType = $(this).attr('data-type');
+                if (dataType == 'form') {
+                    $('.media_price').each(function () {
+                        var price = $(this).find('span').text();
+                        $(this).html('<input type="text" class="form-control media-price-input" value="' + price + '" />');
+                    });
+                    $(this).attr('data-type', 'save').text('保存');
+                }
+
+                if(dataType == 'save'){
+                    // get value
+                    var prices = [];
+                    $('.media-price-input').each(function(){
+                        var price = $.trim($(this).val());
+                        price = price ? parseFloat(price) : 0;
+                        prices.push(price);
+                    });
+
+                    // post ajax
+                    if(!mediaId){
+                        showTipsBox('alert','数据有误，请刷新重试');
+                        return;
+                    }
+                    // loading
+                    $('#loading').show();
+
+                    $.ajax({
+                        url: '/user?a=media_price_update',
+                        type: 'POST',
+                        dataType: 'JSON',
+                        data: {
+                            'media_id': mediaId,
+                            'prices': JSON.stringify(prices)
+                        }
+                    }).then(function(d){
+                        $('#loading').fadeOut();
+                        showTipsBox('message', dicStatusMsg['media_price_update'][d['status']]);
+                        if(d.status == 200){
+                            var i = 0;
+                            $('.media_price').each(function(){
+                                var _html = '<small>¥ </small>'+
+                                        '<span>'+ prices[i] +'</span>';
+                                $(this).html(_html);
+                                i++;
+                            });
+                            // change button text
+                            _this.attr('data-type', 'form').text('修改价格');
+                        }
+                    });
+                }
+            });
+        }();
+
+
+        $('.invited-page-btn').hover(function(){
+            if($(this).text()!='邀请接单')$(this).text('邀请接单');
+        });
+        if($('.marketing-box').length>2){
+            $('#pick-marketing .container').addClass('mCustomScrollbar');
+        }
+
+        //getExcelApi();
+        //getCasesList();
+        $('.excel .title div').click(function(){
+            if(!$(this).hasClass('press-btn')){
+                $('.press-btn').removeClass('press-btn');
+                $(this).addClass('press-btn');
+                $('.excel').children(' div[class!="title"]').hide();
+                console.log();
+                switch ($(this).text()){
+                    case '阅读数曲线图':
+                        if($('.loadingData').text()==''){
+                            $('.excel-main').show();
+                        }else{
+                            $('.loadingData').show();
+                        }
+                        break;
+                    case '刊例报价':
+                        $('.price_each').show();
+                        break;
+                    case '成功案例':
+                        $('.case-show').show();
+                        break;
+                    case '历史文章':
+                        $('.artical-list').show();
+                        break;
+                    case '受众':
+                        $('.audience').show();
+                        break;
+                }
+                checkFootLocation();
+            }
+            $('#qr-mini').hover(function(){
+                console.log('123');
+                $('#showQr').show();
+            },function(){
+                $('#showQr').hide();
+            })
+        });
+        $('#add-btn').click(function(){
+            showAcceptBox('添加案例','请输入案例地址<input type="text" id="input_url" style="height:32px;margin-top:10px;">',true,function(){
+                var url = $('#input_url').val();
+                if(url.indexOf('http://')!=-1){
+                    lightbox('accetpBox');
+                    $('#loading').show();
+                    $.ajax({
+                        url:'/media?a=anli_create',
+                        dataType:'json',
+                        type:'post',
+                        data: {
+                            'official_id': '{{ media['id'] }}',
+                            'url': url
+                        },
+                        success:function(data){
+                            if(data.status == 200){
+                                showTipsBox('message', dicStatusMsg['anli_create'][data['status']]);
+                                setTimeout(pageReload,2000);
+                            }else{
+                                showTipsBox('alert', dicStatusMsg['anli_create'][data['status']]);
+                            }
+                            $('#loading').fadeOut();
+                        }
+                    })
+                }else{
+                    showTipsBox('alert','网页格式有误');
+                }
+            })
+        });
+            //getAudience();
+        //setTimeout(getAudience,1000);
+            //loadanaData();
+            //loadArticals();
+    });
+
+    function loadArticals(){
+        $.ajax({
+            url:'/api/smedia/hostory_articles',
+            method:'get',
+            dataType:'json',
+            data:{oaid:'{oa.id}'},
+            success:function(data){
+                var list = data.articles;
+                for(var i=0;i<list.length;i++){
+                    $('.artical-list').append('<div class="linemsg"><a target="_blank" href="' + list[i].url +'">' + decodeURIComponent(list[i].title.length>25?list[i].title.substr(0,24) + '...':list[i].title) + '</a><div class="readNum">' + list[i].readnum + '</div><div class="pub-time">' + list[i].posttime.split(' ')[0] + '</div></div>')
+                }
+            }
+        })
+    }
+
+    function addAudience(type){
+        handupType = type;
+        if(isloading) return;
+        showAcceptBox('提交分析数据','<textarea style="width:100%;height:80px;resize: none;" id="inputArea"></textarea>',false,function(){
+            var datas = $('#inputArea').val().split(' ').join('').split('\n');
+            if(datas.length>30){
+                if(datas[0].indexOf('省份')!=-1)datas.shift();
+                datas.length = 30;
+            }
+            if(handupType=='sex'){
+                if(datas[0].indexOf('性别')!=-1)datas.shift();
+                if(datas.length>9)datas.length = 9;
+            }
+            if(!checkData(datas))return;
+            datas = datas.join(';');
+            setDataTable(datas,handupType);
+            isloading = true;
+            $.ajax({
+                url:'/api/smedia/audiences',
+                method:'post',
+                data:{data:datas,type:handupType,oaid:'{oa.id}'},
+                success:function(){
+                    //$('#inputArea').val('');
+                    //lightbox('accetpBox');
+                    isloading = false;
+                    window.location.reload();
+                }
+            })
+        })
+    }
+
+    function checkData(list){
+        var sum = 0;
+        if(handupType=='sex'){
+            if(list[0]!='女'||list[3]!='男'|| list[6]!='未知'){
+                showTipsBox('alert','性别数据错误');
+                return false;
+            }
+        }
+        for(var i=0;i<list.length;i++){
+            if(i%3==1){
+                var aa = list[i].split(',').join('');
+                if(isNaN(aa)){
+                    showTipsBox('alert','数据格式错误');
+                    return false;
+                }
+            }
+            if(i%3==2){
+                var bbc = parseFloat(list[i].replace('%',''));
+                sum+=bbc;
+            }
+        }
+        if(Math.floor(sum)>100){
+            showTipsBox('alert','数据格式错误');
+
+            return false;
+        }
+        return true;
+    }
+    function chooseThisPosition(obj){
+        //console.log($(obj).parent().next().children().children()[1])
+        $(obj).parent().children().removeClass("current")
+        $(obj).addClass("current");
+        total_cost=($(obj).attr('value'));
+        $(obj).parent().next().children().children()[1].innerHTML=total_cost
+        $(obj).parent().next().show()
+        //alert($(".more .price strong").innerHTML)
+
+    };
+
+    function getAudience(dataset){
+    	var width  = 300;	//SVG绘制区域的宽度
+    	var height = 160;	//SVG绘制区域的高度
+
+    	var svg = d3.select("#audience2")
+    				.append("svg")
+    				.attr("width", width)
+    				.attr("height", height);
+    	var pie = d3.layout.pie()
+    				.value(function(d){ return d[1]; });
+
+    	var piedata = pie(dataset);
+    	var fontsize = 14;
+    	var outerRadius = 240 / 3;
+    	var innerRadius = 0;
+    	var arc = d3.svg.arc()
+    					.innerRadius(innerRadius)
+    					.outerRadius(outerRadius);
+    	var color= ['#fb5050','#ffc12c','#2891eb'];
+    	//var color = d3.scale.category10();
+    	var arcs = svg.selectAll("g")
+    				  .data(piedata)
+    				  .enter()
+    				  .append("g")
+    				  .attr("transform","translate("+( outerRadius )+","+ ( outerRadius ) +")");
+    	arcs.append("path")
+    		.attr("fill",function(d,i){
+    			return color[i];
+    		})
+    		.attr("d",function(d){
+    			return arc(d);
+    		});
+    	arcs.append("text")
+    		.attr("transform",function(d){
+    			var x = arc.centroid(d)[0] * 1.2;
+    			var y = arc.centroid(d)[1] * 1.2;
+    			return "translate(" + x + "," + y + ")";
+    		})
+    		.attr("text-anchor","middle")
+    		.style("font-size",fontsize).style('fill','#ffffff')//.style("opacity",0.0)//
+    		.text(function(d){
+    			var percent = Number(d.value)/d3.sum(dataset,function(d){ return d[1]; }) * 100;
+    			return percent.toFixed(1) + "%";
+    		});
+    }
+
+    function loadanaData(){
+        $.ajax({
+            url:'/api/smedia/audiences',
+            method:'get',
+            dataType:'json',
+            data:{type:handupType,oaid:'{oa.id}'},
+            success:function(data){
+                setDataTable(data.audiences_sex,'sex');
+                setDataTable(data.audiences_province,'province');
+                if(data.audience_sex=='')return;
+                console.log(data.audiences_sex);
+                var list = data.audiences_sex.split(',').join('').split(';');
+                var tarlist = [[list[0],list[1]],[list[3],list[4]],[list[6],list[7]]];
+                console.log(tarlist);
+                getAudience(tarlist);
+            }
+        })
+    }
+
+    function setDataTable(str,type){
+        if(str=='')return;
+        var target = type=='sex'?$('#sex-ana'):$('#province-ana');
+        target.empty();
+        var list = str.split(';');
+        if(type=='sex'){
+            target.append('<tr><th  class="head-part">性别</th><th  class="head-part">人数</th><th  class="head-part">百分比</th></tr>');
+        }else{
+            target.append('<tr><th  class="head-part">省份</th><th  class="head-part">人数</th><th  class="head-part">占比</th></tr>');
+        }
+        for(var i=0;i<list.length/3;i++){
+            target.append('<tr><th>' + list[i*3] +'</th><th>' + list[i*3+1] +'</th><th>' + list[i*3+2] +'</th></tr>');
+        }
+    }
+
+    function pageReload(){
+        location.reload();
+    }
+
+    function getCasesList(){
+        $.ajax({
+            url:'/api/smedia/oa_anli_list',
+            method:'get',
+            dataType:'json',
+            data:{oaid:'{ oa.id}'},
+            success:showCaseList
+        })
+    }
+
+    function getExcelApi(){
+        $.ajax({
+            url:'/api/oa/oa_read8',
+            method:'get',
+            dataType:'json',
+            data:{oaid:'{ oa.id}'},
+            success:getExcel
+        })
+    }
+
+    function showCaseList(data){
+        var list = data.anlis;
+        for(var i=0;i<list.length;i++){
+            var f1 = $('<div></div>');
+            f1.addClass('case-box');
+            f1.append('<input type="hidden" value="' + list[i].url + '">');
+            f1.append('<p><b>' + decodeURIComponent(list[i].title.length>10?list[i].title.substr(0,9) + '...':list[i].title) + '</b></p>');
+            f1.append('<p>' + list[i].publish + '</p>');
+            f1.append('<img src="' + list[i].photo + '" width="140" height="80">');
+            if(list[i].price!=0)f1.append('<p class="big_size"><small>¥ </small>' + list[i].price + '</p>');
+            $('.case-show').append(f1);
+            f1.click(function(){
+                window.open($(this).children('input').val());
+            })
+        }
+    }
+
+    function savePrice(){
+        var a1 = $('.change-msg-box input[name="price_1x"]').val();
+        var a2 = $('.change-msg-box input[name="price_x1"]').val();
+        var a3 = $('.change-msg-box input[name="price_x2"]').val();
+        var a4 = $('.change-msg-box input[name="price_xx"]').val();
+        a1 = a1==''?0:a1;
+        a2 = a2==''?0:a2;
+        a3 = a3==''?0:a3;
+        a4 = a4==''?0:a4;
+        var sum = a1+a2+a3+a4;
+        if(sum==0){
+            showTipsBox('alert','至少填写一个投放位的报价');
+            return;
+        }
+        $.ajax({
+            url:'/api/smedia/smedia_price',
+            method:'post',
+            contentType:'application/json',
+            dataType:'json',
+            data:JSON.stringify({price_1x:a1,price_x1:a2,price_x2:a3,price_xx:a4,oid:'{oa.id}'}),
+            success:function(data){
+                if(data.success==1){
+                    $('#p0').html('<small>¥ </small>'+$('.change-msg-box input[name="price_1x"]').val());
+                    $('#p1').html('<small>¥ </small>'+$('.change-msg-box input[name="price_x1"]').val());
+                    $('#p2').html('<small>¥ </small>'+$('.change-msg-box input[name="price_x2"]').val());
+                    $('#p3').html('<small>¥ </small>'+$('.change-msg-box input[name="price_xx"]').val());
+                    lightbox('case-cost');
+                }
+            }
+        })
+    }
+
+    function getExcel(data){
+        var list = data;
+        while(list.length<8){
+            list.unshift('0');
+        }
+        //var list = [88888,90033,85833,92313,80021,91449,81439,91439];
+        var max = getMax(list);
+        var min = getMin(list);
+        var sam = total(list);
+        if(sam>0){
+            $('.loadingData').text('').hide();
+            $('.excel-main').show();
+            if(max<30000){
+                if(max==0){
+                    max = 10;
+                    min = -1;
+                }else{
+                    max = max*3;
+                    min = -1*max/3;
+                }
+
+            }else if(max<70000){
+                max = max*2;
+                min = 0;
+            }else{
+                max = 105000;
+                min = 50000<min?50000:min*0.4;
+            }
+            $.jqplot('excel',  [list],{seriesColors:['#f2faff'],
+                axesDefaults:{show:false,tickOptions:{show:false},showTicks: false,showTickMarks: false},
+                axes:{xaxis:{min:0.8,max:8.2},yaxis:{max:max,min:min}},
+                grid:{background: '#f8f9fa',borderColor: '#f8f9fa',shadow:false,gridLineColor: '#f9f9f9',show:false},
+                seriesDefaults:{fill:true,fillAndStroke:true,fillColor:'#f2faff',show:true,lineWidth:2,color:'#2891eb',pointLabels:{ypadding:6,show:true},markerOptions:{shadow:false,size:6},shadow:false}
+            });
+        }else{
+            $('.excel-main').hide();
+        }
+
+    }
+
+    function total(list){
+        var sam = 0;
+        for(var i=0;i<list.length;i++){
+            sam+=list[i];
+        }
+        return sam;
+    }
+
+    function getMin(list){
+
+        var min = 100000;
+        for(var i=0;i<list.length;i++){
+            if(list[i]<min)min = list[i];
+        }
+        return min;
+    }
+
+    function getMax(list){
+        var max = 0;
+        for(var i=0;i<list.length;i++){
+            list[i] = parseFloat(list[i]);
+            if(list[i]>max)max = list[i];
+        }
+        return max;
+    }
+</script>
+<script src="{{ static_url('script/jquery.mCustomScrollbar.concat.min.js') }}" type="text/javascript"></script>
+<!--[if lt IE 9]>
+<script language="javascript" type="text/javascript" src="{{ static_url('script/excanvas.js')}}"></script><![endif]-->
+<script language="javascript" type="text/javascript" src="{{ static_url('script/jquery.jqplot.js') }}"></script>
+<script language="javascript" type="text/javascript" src="{{ static_url('script/jqplot.barRenderer.min.js') }}"></script>
+<script language="javascript" type="text/javascript" src="{{ static_url('script/jqplot.categoryAxisRenderer.min.js') }}"></script>
+<script language="javascript" type="text/javascript" src="{{ static_url('script/jqplot.pointLabels.min.js') }}"></script>
+{% end %}

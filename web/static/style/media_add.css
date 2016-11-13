@@ -1,0 +1,58 @@
+.mediaAddNav{position:relative;height:50px;border-bottom:1px solid #ddd;background-color:#fff;}
+.mediaAddNav h2{position:absolute;top:0;left:50%;margin-left:-590px;color:#666;font-weight:700;font-size:20px;line-height:50px;}
+.mediaAddNav ul{width:1180px;margin:0 auto;}
+.mediaAddNav li{float:left;margin-left:40px;font-size:16px;line-height:50px;}
+.mediaAddNav .wechat{margin-left:200px;}
+.mediaAddNav .ydi{float:left;width:20px;height:20px;margin-top:15px;margin-right:10px;border-radius:50%;background-color:#ddd;}
+.mediaAddNav .wechat .ydi{background-color:#00bd0b;}
+
+.mediaAddContent{width:1180px;margin:20px auto;}
+.mediaAddContent h3{margin:40px;font-size:24px;line-height:40px;text-align:center;}
+.mediaAddContent .wechat{border:1px solid #ddd;background-color:#fff;}
+.mediaAddContent .wechatAuth{float:left;width:588px;}
+.mediaAddContent .wechatVeri{float:right;width:588px;border-left:1px solid #ddd;}
+
+.mediaAddContent{}
+.mediaAddContent dt{width:400px;margin:0 auto;font-weight:400;font-size:16px;line-height:30px;}
+.mediaAddContent dt em{display:block;width:50px;height:50px;margin-bottom:20px;background-color:#0db;border-radius:50%;color:#fff;font-weight:700;font-size:32px;line-height:50px;text-align:center;}
+.mediaAddContent dt strong{padding:0 5px;font-weight:700;}
+.mediaAddContent dt a{display:inline-block;width:20px;height:20px;margin-left:5px;border-radius:10px;border:1px solid #0db;font-size:16px;color:#0db;line-height:20px;text-align:center;}
+.mediaAddContent dd{font-size:16px;}
+.mediaAddContent dd .code{width:380px;margin:10px auto 30px;padding:9px;border:1px dotted #ccc;background-color:#fff;color:#2891EB;word-break:break-all;}
+.mediaAddContent dd .type{width:400px;margin:10px auto 30px;background-color:#fff;color:#333;}
+.mediaAddContent dd .type .text{width:380px;height:36px;padding:8px;border-radius:3px;border:#ddd 2px solid;background-color:#fff;font-size:16px;line-height:36px;outline:none;transition:all .2s;}
+.mediaAddContent dd .type .text:hover{border-color:#ccc;}
+.mediaAddContent dd .type .text:focus{border-color:#2891EB;background-color:#E9F4FD;}
+.mediaAddContent p{font-size:16px;line-height:24px;text-align:center;}
+.mediaAddContent .new{margin-bottom:20px;}
+.mediaAddContent .new:before{display:inline-block;height:24px;padding:0 4px;border-radius:4px;background-color:#0db;color:#fff;font-size:16px;line-height:24px;content:'新入驻方式';}
+.mediaAddContent .action{margin-top:20px;margin-bottom:40px;text-align:center;}
+.mediaAddContent .action .btnOk{width:180px;font-size:20px;line-height:50px;}
+.wechatAuth p{padding:50px 0;}
+.wechatAuth .action{margin-top:112px;}
+.help{margin:40px;text-align:center;}
+.help p{margin-bottom:10px;}
+.help a{display:inline-block;margin:0 20px;font-size:16px;line-height:24px;}
+.help strong{float:left;font-weight:400;}
+.help .yd-play:before{float:right;margin-left:4px;font-size:16px;line-height:24px;content:'▶';}
+.help .yd-help:before{float:right;margin-left:4px;font-size:16px;line-height:24px;content:'▼';}
+
+
+
+/*step-by-step*/
+.step-by-step{margin-top:20px;border-top:1px solid #ddd;border-bottom:1px solid #ddd;background-color:#fff;}
+.step-by-step h4{padding-top:50px;padding-bottom:50px;font-size:20px;color:#0db;text-align:center;}
+.step-by-step h4 strong{border-bottom:2px solid #0db;}
+.step-by-step .item{width:800px;margin:0 auto;padding:40px 0;border-top:1px solid #eee;}
+.step-by-step dt{float:left;width:400px;margin:0 auto;font-weight:400;font-size:20px;line-height:30px;}
+.step-by-step dt em{display:block;width:50px;height:50px;margin-bottom:20px;background-color:#0db;border-radius:50%;color:#fff;font-weight:700;font-size:32px;line-height:50px;text-align:center;}
+.step-by-step dt strong{padding:0 5px;font-weight:700;}
+.step-by-step dd{font-size:16px;}
+.step-by-step dd .image{text-align:right;}
+
+.swf{position: absolute;width:960px;height:540px;left:50%;top:50%;margin:-260px 0 0 -480px;}
+
+.side-swf-btn{position: absolute;left:0;top:360px;cursor: pointer;}
+
+#videoBox .login-close{position:absolute;top:50%;left:50%;z-index:15;width:36px;height:36px;margin:-280px 0 0 460px;border-radius:50%;border:2px solid #fff;background-color:#2891eb;color:#fff;font-size:20px;line-height:36px;text-align:center;cursor: pointer;transition:background-color .2s;}
+#videoBox .login-close:hover{background-color:#00508c;}

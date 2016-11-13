@@ -1,0 +1,46 @@
+{% extends '../../public/main.html' %}
+
+{% block body %}
+
+<script type="text/javascript">
+    function on_documents_commit(){
+        var value = document.getElementById('myEditors').value;
+        var title = document.getElementById('documents_title').value;
+        if (title == "") {
+            alert("标题信息不允许为空！");
+            return false;
+        }
+        if (value == "") {
+            alert("文案信息为空！");
+            return false;
+        }
+        document.getElementById('documents_form').submit();
+    }
+
+    $(function(){
+        window.UMEDITOR_HOME_URL = "../../../static/ueditor/"
+	    window.um = UM.getEditor('myEditors');
+    });
+</script>
+
+<div class="nav">
+    <a href="/project/documents">返回上页</a>
+</div>
+
+<div>
+    <form id="documents_form" name="documents_form" action='/project/documents?a=create' method="post">
+        <h4 id="advertiser_create_title">文案编辑</h4>
+        <strong>标题：</strong><input id="documents_title" name="documents_title" cols="50"> <b>*</b> <i>文案标题</i><br><br>
+
+        <div>
+            <textarea id="myEditors" name="myEditors" >文案编辑</textarea>
+        </div><br>
+
+    </form>
+
+    <button class="btn btn-success" onclick="on_documents_commit()" >保存</button>
+    <button class="btn btn-default" data-dismiss="modal" aria-hidden="true">取消</button>
+</div>
+
+
+{% end %}

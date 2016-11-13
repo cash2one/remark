@@ -1,0 +1,89 @@
+.s1{left:20px;}
+.s2{left:600px;}
+.s3{left:900px;}
+
+
+.list-container{margin:0 auto;padding-top:20px;height: auto;width:1180px;display: block;/*overflow-x: hidden;*/overflow-y:visible;position: relative;}
+.list-container .title{position:relative;height:60px;border:solid 1px #ddd;background:#f5f5f5;}
+.list-container .title h2{position:absolute;height:40px;margin:10px 20px;padding-right:20px;border-right:solid #ddd 2px;color:#555;font-weight:700;font-size:18px;line-height:40px;}
+.list-container .title .btn{overflow:hidden;position: absolute;top:14px;left:140px;display:inline-block;height:30px;padding:0;border:none;}
+.list-container .title .btn a{display:inline-block;padding:0 10px;color:#fff;font-size:14px;line-height:30px;transition:all .2s;}
+.list-container .title .btn a:hover{background-color:#0066C2;text-decoration:none;}
+.list-container .title b{font-size:32px;font-weight: 100;vertical-align: middle;margin-top:-1px;}
+.list-container .title .rightBtn{position: absolute;right:20px;font-size: 14px;color:#2891ec;height: 34px;margin-top:13px;font-weight: 600;line-height:34px;cursor: pointer}
+.list-container .title .rightBtn a{color:#2891EB;}
+.list-container .title .rightBtn a:hover{text-decoration: none; color:#0066c2;}
+.list-container .title .rightBtn .ydi{float:right;font-size:20px;line-height:34px;}
+.list-container .title a{color:#fff;}
+.list-container .title a:hover{text-decoration: none;}
+.list-container-clear{margin-top:14px;margin-bottom: 14px;}
+
+.demandStatusFilter{position:relative;z-index:2;width:290px;margin:-52px auto 10px;}
+.demandStatusFilter ul{margin-left:-10px;width:300px;}
+.demandStatusFilter li a{float:left;width:88px;height:40px;margin-left:10px;border:1px solid #ddd;background-color:#fff;color:#666;font-size:16px;line-height:40px;text-align:center;transition:all 0.2s;}
+.demandStatusFilter li a:hover{border-color:#aaa;color:#333;text-decoration:none;}
+.demandStatusFilter li.current a{border-color:#2891EB;color:#2891EB;font-weight:700;}
+
+.sec-title{height:50px;border-right:1px solid #ddd;border-left:1px solid #ddd;background: #f2f2f2;position: relative;border-bottom: solid 1px #ddd;padding-left: 30px;}
+.sec-title span{font-size: 15px;line-height: 50px;position: absolute;}
+
+.list-container .container{width:auto;padding:20px;border-right:1px solid #ddd;border-bottom:1px solid #ddd;border-left:1px solid #ddd;background-color: #fff;}
+.demandBox{padding:20px 0;border-bottom:solid 1px #ddd;}
+.demandBox .demandInfo{float:left;width:580px;}
+.demandBox .demandType{float:left;margin-right:5px;padding:0 4px;border-radius:2px;background-color:#b4bec8;color:#fff;font-size:14px;line-height:18px;}
+.demandBox a{overflow:hidden;float:left;max-width:480px;font-size:16px;line-height:18px;text-overflow:ellipsis;white-space:nowrap;}
+.demandBox .demandCategory{clear:both;float:left;height:20px;margin-top:10px;margin-right:20px;}
+.demandBox .demandCategory span{float:left;margin-right:6px;padding:0 4px;border:1px solid #ccc;background-color:#fff;color:#333;font-size:14px;line-height:18px;white-space:nowrap;}
+.demandBox .demandTag{float:left;height:20px;margin-top:10px;}
+.demandBox .demandTag span{float:left;margin-right:6px;padding:0 4px;border-radius:5px/10px;background-color:#eee;color:#666;font-size:14px;line-height:20px;white-space:nowrap;}
+.demandBox .demandDate{float:left;width:280px;margin-top:14px;margin-right:29px;color:#999;font-size:12px;line-height:18px;}
+.demandBox .demandDate strong{color:#666;font-weight:400;font-size:14px;}
+.demandBox .demandBudget{float:left;padding-top:13px;color:#ec4339;font-size:12px;line-height:20px;}
+.demandBox .demandBudget small{font-size:12px;}
+.demandBox .demandBudget strong{color:#ec4339;font-weight:400;font-size:20px;}
+.demandBox .demandStatus{float:right;}
+.demandBox .demandStatus div{margin-top:10px;}
+.demandBox .demandStatus .btnMore{display:inline-block;margin-top:8px;padding:0 10px;border-radius:4px;background-color:#2891EB;color:#fff;font-size:14px;line-height:30px;transition:all 0.2s;}
+.demandBox .demandStatus .btnMore:hover{text-decoration:none;background-color:#0066C2;}
+
+.search-box{min-height:86px;border-right:1px solid #ddd;border-left:1px solid #ddd;background: #fff;border-bottom: solid 1px #ddd;color:#999;font-size:12px;padding:6px 20px;}
+.search-box .choose-line{min-height: 36px;line-height: 36px;position: relative;}
+.search-box .choose-line .choices-box{margin-left:16px;display: inline-block;width:80%;color:#555;}
+.search-box .choose-line .choices-box input{width:86px;height: 20px;vertical-align: middle;line-height: 20px;padding-left: 4px;}
+.search-box .choose-line .choices-box .choices{color:#555;height: 20px;line-height: 20px;padding:0 4px;margin:8px 6px;display: inline-block;cursor: pointer;}
+.search-box .choose-line .choices-box .choices-choosen{background: #2891EB;color:#fff;}
+
+/*my trade*/
+.ss2{left:420px;}
+.ss3{left:800px;}
+.list-container .container .list-box .front-date{left:400px;top:32px;}
+
+.back-btn{color:#2891EB;cursor: pointer;font-size: 16px;position: absolute;top:20px;left:25px;}
+.back-btn img{margin:4px 5px 0 0 ;filter:FlipV;-webkit-transform: rotate(180deg);-moz-transform: rotate(180deg);-ms-transform: rotate(180deg);-o-transform: rotate(180deg)}
+.status-btn{font-size:15px;color:#000;line-height: 60px;float:right;text-align: center;margin:0 10px;cursor: pointer;padding: 0 5px;}
+.list-container .title{padding-right: 15px;}
+.current-page{color:#2891EB;font-weight: 600;border-bottom: solid 2px #2891EB;}
+.status-level{height: 46px;position: relative;border-bottom: solid 1px #ddd;background: #f8f9fa;width:100%;padding-right:10px;}
+.status-level .interestedBox{float:right;border-radius: 10px;margin-top:12px;padding:4px 16px;}
+.status-level .current-status{border-color: #2891EB;color:#2891EB;}
+.list-container .container{padding-top:0;}
+.status-box{border:solid 1px #ddd;border-radius: 20px;width:147px;height:30px;background: #f5f5f5;font-size:15px;line-height: 28px;text-align: center;color:#555;position: absolute;top:27px;left:735px;}
+
+
+
+/*end of my trade*/
+
+/*union list*/
+.list-container .set-head-padding{padding-top:20px;}
+.union-box{min-height: 137px;width:906px;position: relative;margin-bottom: 10px;}
+.union-box .union-logo{width:150px;height: 100px;border:solid 1px #ddd;overflow: hidden;display: inline-block;}
+.union-box .union_detail{border-top:solid 1px #ddd;font-size:12px;color:#555;width:731px;position: absolute;top:-21px;left:180px;padding-top:21px;}
+.union-box .union_detail a{font-size:18px;}
+.union-box .union_detail p{width:350px;color:#777;}
+.union-box .union_detail .interestedContainer {margin:3px -2px;}
+.union-box .union_detail .interestedContainer .interestedBox{margin:0 2px;border-radius: 10px;cursor: default;float:none;display: inline-block;padding:4px 8px;color:#333;}
+.union-box .member-list{width:365px;height: 94px;border-left: solid 1px #ddd;position: absolute;top:5px;right:0;padding: 15px 0 0 45px;}
+.union-box .member-list h5{display: inline-block;margin-top:0;}
+.union-box .member-list .ball-list{margin-left:-5px;}
+.union-box .member-list .ball{width:42px;height: 42px;border:solid 1px #ddd;border-radius: 50%;background: #eee;text-align: center;line-height: 42px;float:left;overflow: hidden;font-size:20px;margin: 0 5px;}
+/*end of union list*/

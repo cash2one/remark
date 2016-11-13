@@ -1,0 +1,43 @@
+{% extends '../public/main.html' %}
+
+{% block body %}
+<div class="status_title">
+    <div>
+        <a href="javascript:history.go(-1);">返回</a>
+    </div>
+</div>
+<table class="table table-bordered table-hover vert-align">
+    <thead>
+        <tr class="res_tbl_title">
+            <td>序号</td>
+            <td>自媒体</td>
+            <td>自媒体所属账户</td>
+            <td>反馈链接</td>
+            <td>标题</td>
+            <td>发布时间</td>
+            <td>反馈图一</td>
+            <td>反馈图二</td>
+            <td>反馈图三</td>
+            <td>状态</td>
+            <td>创建时间</td>
+        </tr>
+    </thead>
+    {% for item in feedback_info %}
+    <tbody>
+        <tr>
+            <td>{{ item['idx'] }}</td>
+            <td>{{ item['name'] }}</td>
+            <td>{{ item['nickname'] }}</td>
+            <td>{{ item['url'] }}</td>
+            <td>{{ item['title'] }}</td>
+            <td>{{ item['publish_time'] }}</td>
+            <td><a href="{{ item['picture_1'] }}" target="_blank"><img src="{{ item['picture_1'] }}" width="120" height="48" /></a></td>
+            <td><a href="{{ item['picture_2'] }}" target="_blank"><img src="{{ item['picture_2'] }}" width="120" height="48" /></a></td>
+            <td><a href="{{ item['picture_3'] }}" target="_blank"><img src="{{ item['picture_3'] }}" width="120" height="48" /></a></td>
+            <td>{{ item['status_tag'] }}</td>
+            <td>{{ item['create_time'] }}</td>
+        </tr>
+    </tbody>
+    {% end %}
+</table>
+{% end %}

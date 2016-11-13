@@ -1,0 +1,701 @@
+
+.navbar{
+    margin-bottom: 0px;
+}
+.footer-below{
+    background: #e5e5e5;
+}
+#ruzhu{
+    /*padding-left: 37%;*/
+    text-align: center;
+}
+.meida{
+    padding-top: 30px;
+    /*text-align: center;*/
+    height: 500px;
+    background-color: white;
+}
+.name{
+    text-align: center;
+    font-weight: 300;
+    font-size: large;
+    margin-top: inherit;
+
+
+}
+.btn-ruzhu{
+    background-color: #237BE5;
+    margin-bottom: 19px;
+}
+.contact{
+    margin-top: 16px;
+}
+.copyright{
+    margin-bottom: 6px;
+    margin-top: 10px;
+}
+.free{
+    height: 44px;
+    position: absolute;
+    text-align: center;
+}
+.wechat{
+    padding-bottom: 4px;
+    padding-left: 2px;
+}
+.tecent{
+    padding-bottom: 4px;
+}
+.social{
+    padding-top: 8px;
+}
+.media-pic{
+    width: 90px;
+    height: 90px;
+
+}
+.btn-self{
+    color: #fff;
+    border-color: #000000;
+    background-color: #F6F6F6;
+    color: #000000;
+    font-size: 18px;
+    line-height: 1.33;
+    border-radius: 6px;
+}
+
+.btn-sample {
+    color: #1A1717;
+    background-color: #F6F6F6;
+    border-color: #130269;
+}
+
+.btn-sample:hover,
+.btn-sample:focus,
+.btn-sample:active,
+.btn-sample.active,
+.open .dropdown-toggle.btn-sample {
+    color: #ffffff;
+    background-color: #3080E2;
+    border-color: #130269;
+}
+
+.btn-sample:active,
+.btn-sample.active,
+.open .dropdown-toggle.btn-sample {
+    background-image: none;
+}
+
+.btn-sample.disabled,
+.btn-sample[disabled],
+fieldset[disabled] .btn-sample,
+.btn-sample.disabled:hover,
+.btn-sample[disabled]:hover,
+fieldset[disabled] .btn-sample:hover,
+.btn-sample.disabled:focus,
+.btn-sample[disabled]:focus,
+fieldset[disabled] .btn-sample:focus,
+.btn-sample.disabled:active,
+.btn-sample[disabled]:active,
+fieldset[disabled] .btn-sample:active,
+.btn-sample.disabled.active,
+.btn-sample[disabled].active,
+fieldset[disabled] .btn-sample.active {
+    background-color: #F6F6F6;
+    border-color: #130269;
+}
+
+.btn-sample .badge {
+    color: #F6F6F6;
+    background-color: #1A1717;
+}
+
+.btn-mid {
+    display: inline-block;
+    border: #666 2px solid;
+    line-height: 36px;
+    padding: 0 30px;
+    text-align: center;
+    cursor: pointer;
+    margin-top: 4px;
+    border-radius: 9px;
+    transition: all 0.3s;
+    font-family: "Microsoft YaHei";
+}
+.navbar-brand
+{
+    /*position: absolute;*/
+    /*width: 100%;*/
+    /*left: 0;*/
+    /*top: 0;*/
+    /*text-align: center;*/
+    /*margin: auto;*/
+}
+
+
+.btn-platform {
+    color: #ffffff;
+    background-color: #ED7B26;
+    border-color: #fff;
+}
+
+.btn-platform:hover,
+.btn-platform:focus,
+.btn-platform:active,
+.btn-platform.active,
+.open .dropdown-toggle.btn-platform {
+    color: #ffffff;
+    background-color: #D9630F;
+    border-color: #fff;
+}
+
+.btn-platform:active,
+.btn-platform.active,
+.open .dropdown-toggle.btn-platform {
+    background-image: none;
+}
+
+.btn-platform.disabled,
+.btn-platform[disabled],
+fieldset[disabled] .btn-platform,
+.btn-platform.disabled:hover,
+.btn-platform[disabled]:hover,
+fieldset[disabled] .btn-platform:hover,
+.btn-platform.disabled:focus,
+.btn-platform[disabled]:focus,
+fieldset[disabled] .btn-platform:focus,
+.btn-platform.disabled:active,
+.btn-platform[disabled]:active,
+fieldset[disabled] .btn-platform:active,
+.btn-platform.disabled.active,
+.btn-platform[disabled].active,
+fieldset[disabled] .btn-platform.active {
+    background-color: #ED7B26;
+    border-color: #000;
+}
+
+.btn-platform .badge {
+    color: #ED7B26;
+    background-color: #ffffff;
+}
+
+
+header {
+    text-align: center;
+    color: #fff;
+    background: #267FD7;
+}
+
+header .container {
+    padding-top: 100px;
+    padding-bottom: 50px;
+}
+
+header img {
+    display: block;
+    margin: 0 auto 20px;
+}
+
+header .intro-text .name {
+    display: block;
+    text-transform: uppercase;
+    font-family: Montserrat,"Helvetica Neue",Helvetica,Arial,sans-serif;
+    font-size: 2em;
+    font-weight: 700;
+}
+
+header .intro-text .skills {
+    font-size: 1.25em;
+    font-weight: 300;
+}
+
+@media(min-width:768px) {
+    /*header .container {*/
+        /*padding-top: 200px;*/
+        /*padding-bottom: 100px;*/
+    /*}*/
+
+    header .intro-text .name {
+        font-size: 4.75em;
+    }
+
+    header .intro-text .skills {
+        font-size: 1.75em;
+    }
+}
+
+
+.fill {
+    position: relative;
+    background: #2891eb url("/lib/images/login/background.png") 50% 350% no-repeat;
+    height: 600px;
+}
+
+.fill a{position:absolute;bottom:60px;left:50%;display:block;width:200px;height:50px;border-radius:10px;background-color:#f90;color:#fff;font-size:20px;line-height:50px;text-align:center;transition:all .3s;}
+.fill a:hover{background-color:#f80;text-decoration:none;font-size:22px;}
+.fill a:active{background-color:#f70;}
+.fill-btn-post{margin-left:-485px;}
+.fill-btn-get{margin-left:-205px;}
+.fill-btn-create{margin-left:335px;margin-bottom:70px;}
+.fill-btn-join{margin-left:335px;}
+
+
+.wechat:hover .saowechat{
+    /*background-image: url("lib/images/login/wechat.png");*/
+    /*height: 100px;*/
+    /*padding-top: -21px;*/
+    visibility: visible;
+}
+
+
+.selfmedia span{
+    font-size: medium;
+    font-weight: 500;
+    font-family: "MicrosoftYaHei";
+    color: rgb( 51, 51, 51 );
+    height: 50px;
+    margin-top: 20px;
+    float: left;
+    margin-left: 10px;
+}
+.selfmedia p{
+    font-size: small;
+    margin-top: 7px;
+    font-weight: 200;
+    font-family: "MicrosoftYaHei";
+    color: rgb( 51, 51, 51 );
+}
+
+.images span,.images1 span{
+    font-size: medium;
+    font-family: "MicrosoftYaHei";
+    color: rgb( 51, 51, 51 );
+}
+
+.navbar-up{
+    z-index: 2;
+    border-color: #e5e5e5;
+    background-color:#f1f1f1;
+}
+.icon-dao{
+    width: 60px;
+    margin: 0 auto;
+    margin-top: 6px;
+}
+
+.foter{
+    bottom:0;
+    width:100%;
+    height:70px;   /* Height of the footer */
+    background:#f1f1f1;
+    position: fixed;
+
+}
+
+
+@media screen and  (max-height: 585px){
+    body{
+        height: 900px;
+    }
+
+}
+
+.footer-left{
+    float: left;
+    margin-top: 20px;
+    margin-left: 22px;
+
+}
+
+
+
+.jiaoyicishu span:first-child{
+    font-family: "MicrosoftYaHei";
+    color: rgb( 85, 85, 85 );
+    font-size: medium;
+}
+.hutuicishu span:first-child{
+    font-family: "MicrosoftYaHei";
+    color: rgb( 85, 85, 85 );
+    font-size: medium;
+}
+@font-face {
+    src: url(/lib/fonts/icomoon.woff);
+    font-family: Font;
+}
+.icon-logo{
+    font-family: Font;
+    text-align: center;
+    font-size: xx-large;
+}
+.btn-lg{
+    padding: 10px 30px;
+    background-color: rgb(35,123,229);
+}
+
+
+
+
+.self-img1{
+    height: 30px;
+    float: left;
+    margin-right: 20px;
+    margin-top: 11px;
+}
+.ico-nav{
+    font-size: x-large;
+    padding-left: 20px;
+    font-family: Font;
+}
+.self-img a{
+    color: #000000;
+}
+
+.btn-lg{
+    padding: 6px 30px;
+}
+
+.backgroung-1{
+    background-color: #F6F6F6;
+}
+
+.jiaoyi{
+    margin-left: 6px;
+    font-size: large;
+}
+.left{
+    float: left;
+    width: 310px;
+    background-color: #ffffff;
+    margin-left: -70px;
+    height: 200px;
+}
+
+
+.title{
+    font-family: "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
+    font-size: x-large;
+    padding-right: 10px;
+}
+
+.edit{
+    padding-top: 9px;
+}
+
+.address{
+    padding-top: 17px;
+}
+
+
+.jiaoyicishu{
+    width: 151px;
+    float: left;
+    height: 52px;
+    border-right-color: #e1e1e1;
+    border-right-style: inset;
+    border-right-width: 1px;
+    padding-top: 19px;
+    line-height: 22px;
+}
+.hutuicishu{
+    width: 150px;
+    float: left;
+    height: 52px;
+    border-right-color: #e1e1e1;
+    border-right-width: 1px;
+    padding-top: 16px;
+}
+.logo{
+     width: 120px;
+     float: left;
+     padding-top: 20px;
+ }
+.logo-01{
+    padding-left: 21px;
+    padding-top: 9px;
+    width: 120px;
+    height: 110px;
+}
+.self-info{
+    width: 180px;
+    height: 120px;
+    float: right;
+    padding-top: 12px;
+    padding-left: 20px;
+}
+.row-1{
+    height: 121px;
+
+}
+.row-2{
+    height: 50px;
+    margin-top: 26px;
+    border-top-width: 1px;
+    border-top-color: rgba(225, 225, 225, 0.15);
+    border-top-style: inset;
+}
+
+.total-left{
+    width: 310px;
+}
+.left-02{
+    float: left;
+    width: 311px;
+    height: 220px;
+    background-color: #ffffff;
+    margin-left: -70px;
+    margin-top: 30px;
+}
+
+.addbutton{
+    height: 50px;
+    margin-left: 14px;
+    margin-top: 30px;
+    margin-left: 20px;
+    display: block;
+    text-align: center;
+    font: bold 3.2em/40px "Helvetica Neue", Arial, Helvetica, Geneva, sans-serif;
+    border: #ffffff;
+    float: left;
+}
+
+
+.line-1 a{
+    color: #000000;
+}
+
+.btn1 {
+    background: #F6F6F6;
+    background-image: -webkit-linear-gradient(top, #F6F6F6, #F6F6F6);
+    background-image: -moz-linear-gradient(top, #F6F6F6, #F6F6F6);
+    background-image: -ms-linear-gradient(top, #F6F6F6, #F6F6F6);
+    background-image: -o-linear-gradient(top, #F6F6F6, #F6F6F6);
+    background-image: linear-gradient(to bottom, #F6F6F6, #F6F6F6);
+    -webkit-border-radius: 0;
+    -moz-border-radius: 0;
+    border-radius: 0px;
+    font-family: Arial;
+    color: #878787;
+    font-size: 22px;
+    text-decoration: none;
+    font-family: font;
+    font-family: Font;
+}
+
+.btn1:hover {
+    background: #f6f0f7;
+    background-image: -webkit-linear-gradient(top, #f6f0f7, #F6F6F7);
+    background-image: -moz-linear-gradient(top, #f6f0f7, #F6F6F7);
+    background-image: -ms-linear-gradient(top, #f6f0f7, #F6F6F7);
+    background-image: -o-linear-gradient(top, #f6f0f7, #F6F6F7);
+    background-image: linear-gradient(to bottom, #f6f0f7, #F6F6F7);
+    text-decoration: none;
+}
+
+.create{
+    float: right;
+    margin-right: 159px;
+    font-size: large;
+    margin-top: 43px;
+}
+.create span{
+    font-family: "MicrosoftYaHei";
+    color: rgb( 51, 51, 51 );
+}
+.line-2{
+    margin-left: 20px;
+}
+.logoimg{
+    width: 80px;
+}
+.logoimg img{
+    width: 50px;
+    height: 50px;
+    margin-top: 20px;
+    float: left;
+}
+.right-line0{
+    width: 920px;
+    height: 200px;
+    background: #2891eb url("lib/images/self_display/jiaoyi.png") center;
+    margin-top: -200px;
+    float: right;
+    margin-right: 60px;
+
+}
+.right-line2{
+    width: 920px;
+    height: 220px;
+    background-color: #ffffff;
+    margin-top: 32px;
+    float: right;
+    margin-right: 60px;
+
+}
+.total-right{
+    position: relative;
+    width: 920px;
+    margin: 0 auto;
+    margin-left: 333px;
+}
+.line-111{
+    margin-top: 6px;
+    font-weight:400;
+    font-size: x-large;
+}
+.line-111 span{
+    padding-left: 22px;
+    height: 309.00px;
+    width: 406.50px;
+    font-family: "MicrosoftYaHei";
+    color: rgb( 102, 102, 102 );
+
+}
+
+
+.line-222{
+    width: 800px;
+}
+
+
+.images{
+    width: 110px;
+    height: 110px;
+    text-align: center;
+    float: left;
+    margin-top: 24px;
+    margin-left: 29px;
+}
+.images1{
+    float: left;
+    width: 110px;
+    height: 110px;
+    margin-top: 24px;
+    margin-left: 45px;
+    text-align: center;
+}
+.images1 img{
+    width: 110px;
+    height: 110px;
+}
+
+
+.btn-warning{
+    background-color: #ee8326;
+    margin-top: 139px;
+    margin-left: 284px;
+}
+.btn-hutui{
+    margin-left: 252px;
+}
+.addwechat span{
+    text-align: center;
+}
+.button{
+    width: 110px;
+    height: 110px;
+    background-color: #f6f6f6;
+    border-radius: 72px;
+    font-size: -webkit-xxx-large;
+    padding-left: 13px;
+    font-family: Font;
+}
+.button:hover{
+-webkit-gradient(linear, left bottom, left top, color-stop(0.32, #c7ddef), color-stop(0.66, #e5e5e5), color-stop(0.83, #5c7c99));
+}
+
+
+.selfmedia span{
+    font-size: medium;
+    font-weight: 500;
+    font-family: "MicrosoftYaHei";
+    color: rgb( 51, 51, 51 );
+    height: 50px;
+    margin-top: 20px;
+    float: left;
+    margin-left: 10px;
+}
+.selfmedia p{
+    font-size: small;
+    margin-top: 7px;
+    font-weight: 200;
+    font-family: "MicrosoftYaHei";
+    color: rgb( 51, 51, 51 );
+}
+
+
+.jiaoyicishu span:first-child{
+    font-family: "MicrosoftYaHei";
+    color: rgb( 85, 85, 85 );
+    font-size: medium;
+}
+.hutuicishu span:first-child{
+    font-family: "MicrosoftYaHei";
+    color: rgb( 85, 85, 85 );
+    font-size: medium;
+}
+
+.images img{
+    height: 110px;
+    width: 110px;
+}
+
+@media screen and  (min-width: 1500px){
+    .left, .left-02{
+        margin-left: -80px;
+    }
+}
+
+@media screen and  (max-width: 811px){
+    .left, .left-02{
+        margin-left: -10px;
+    }
+    .right-line0{
+        margin-right: 0px;
+    }
+    .right-line2{
+        margin-right: 0px;
+    }
+}
+
+@media screen and (min-width: 993px) and (max-width: 1251px){
+    .left{
+        margin-left: -50px;
+    }
+    .left-02{
+        margin-left: -50px;
+    }
+    .right-line0{
+        margin-right: 40px;
+    }
+    .right-line2{
+        margin-right: 40px;
+    }
+}
+.btn1 {
+    background: #F6F6F6;
+    background-image: -webkit-linear-gradient(top, #F6F6F6, #F6F6F6);
+    background-image: -moz-linear-gradient(top, #F6F6F6, #F6F6F6);
+    background-image: -ms-linear-gradient(top, #F6F6F6, #F6F6F6);
+    background-image: -o-linear-gradient(top, #F6F6F6, #F6F6F6);
+    background-image: linear-gradient(to bottom, #F6F6F6, #F6F6F6);
+    -webkit-border-radius: 0;
+    -moz-border-radius: 0;
+    border-radius: 0px;
+    font-family: Arial;
+    color: #878787;
+    font-size: 22px;
+    text-decoration: none;
+    font-family: font;
+    font-family: Font;
+}
+
+.btn1:hover {
+    background: #f6f0f7;
+    background-image: -webkit-linear-gradient(top, #f6f0f7, #F6F6F7);
+    background-image: -moz-linear-gradient(top, #f6f0f7, #F6F6F7);
+    background-image: -ms-linear-gradient(top, #f6f0f7, #F6F6F7);
+    background-image: -o-linear-gradient(top, #f6f0f7, #F6F6F7);
+    background-image: linear-gradient(to bottom, #f6f0f7, #F6F6F7);
+    text-decoration: none;
+}

@@ -1,0 +1,110 @@
+{% extends '../../public/main.html' %}
+
+{% block body %}
+<script type="text/javascript">
+    function on_media_commit(){
+        var media_id = document.getElementById('media_id').value;
+        if (media_id == "") {
+            alert("自媒体ID不能为空");
+            return false;
+        }
+        document.getElementById('media_form').submit();
+    }
+    function update_media(obj){
+        var id = obj.name;
+        var form_id = 'media_form' + id;
+        var media_id = document.getElementById('media_id'+id).value;
+        if (media_id == "") {
+            alert("自媒体ID不能为空");
+            return false;
+        }
+        document.getElementById(form_id).submit();
+    }
+</script>
+</div>
+<div class="result_filter" id="result_filter">
+    <button class="btnAdd" data-target="#media_dialog" data-toggle="modal">新增自媒体</button>
+</div>
+<div>
+    <div id="media_dialog" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">X</button>
+                    <h4 id="media_create_title">新增自媒体</h4>
+                </div>
+                <div class="modal-body">
+                    <form id="media_form" name="media_form" method="post" action="/index_op/media_revenue_top?a=create">
+                        自媒体ID
+                        <input type="text" id="media_id" name="media_id" value=""><br /><br />
+                        广告主&#12288;
+                        <input type="text" id="ad_name_1" name="ad_name_1" value=""><br /><br />
+                        链&#12288;接&#12288;
+                        <input type="text" id="ad_url_1" name="ad_url_1" value=""><br /><br />
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-success" onclick="on_media_commit()">保存</button>
+                    <button class="btn btn-default" data-dismiss="modal" aria-hidden="true">取消</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<table class="table table-bordered table-hover vert-align">
+    <thead>
+        <tr class="res_tbl_title">
+            <td>序号</td>
+            <td>名称</td>
+            <td>接单数</td>
+            <td>广告主</td>
+            <td>排序</td>
+            <td>更新时间</td>
+            <td>操作</td>
+        </tr>
+    </thead>
+    {% for item in index_info %}
+    <tbody>
+        <tr>
+            <td>{{ item['idx'] }}</td>
+            <td>
+                <a href="/yidao/media?a=detail&id={{ item['media_id'] }}">{{ item['name'] }}</a>
+            </td>
+            <td>{{ item['order_num'] }}</td>
+            <td>{{ item['ad_name_1'] if item['ad_name_1'] else '暂无' }}</td>
+            <td>{{ item['sort'] }}</td>
+            <td>{{ item['last_update_time'] }}</td>
+            <td>
+                <a class="btn btnThin" data-target="#media_dialog{{ item['id'] }}" data-toggle="modal">变更</a>
+                <div id="media_dialog{{ item['id'] }}" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">X</button>
+                                <h4 id="media_update_title{{ item['id'] }}">变更自媒体</h4>
+                            </div>
+                            <div class="modal-body">
+                                <form id="media_form{{ item['id'] }}" name="media_form" method="post" action="/index_op/media_revenue_top?a=update">
+                                    <input type="hidden" id="idx_media_id{{ item['id'] }}" name="idx_media_id" value="{{ item['id'] }}">
+                                    自媒体ID
+                                    <input type="text" id="media_id{{ item['id'] }}" name="media_id" value="{{ item['media_id'] }}"><br /><br />
+                                    广告主&#12288;
+                                    <input type="text" id="ad_name_1{{ item['id'] }}" name="ad_name_1" value="{{ item['ad_name_1'] if item['ad_name_1'] else '' }}"><br /><br />
+                                    链&#12288;接&#12288;
+                                    <input type="text" id="ad_url_1{{ item['id'] }}" name="ad_url_1" value="{{ item['ad_url_1'] if item['ad_url_1'] else '' }}"><br /><br />
+                                </form>
+                            </div>
+                            <div class="modal-footer">
+                                <button class="btn btn-success" name="{{ item['id'] }}" onclick="update_media(this)">保存</button>
+                                <button class="btn btn-default" data-dismiss="modal" aria-hidden="true">取消</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <a class="btn btnThin" href="/index_op/media_revenue_top?a=delete&id={{ item['id'] }}" onclick="return confirm('确认删除?');">删除</a>
+            </td>
+        </tr>
+    </tbody>
+    {% end %}
+</table>
+{% end %}

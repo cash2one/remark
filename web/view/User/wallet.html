@@ -1,0 +1,13 @@
+{% extends '../public/main.html' %}
+{% block title%}我的钱包{% end %}
+{% block body %}
+<link href="{{ static_url('style/uc.css') }}" type="text/css" rel="stylesheet">
+
+{% include 'my_top.html' %}
+<div class="ucContainer clearfix">
+{% include 'my_menu.html' %}
+<div class="ucMain userinfo-body">
+    我的钱包￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥
+</div>
+</div>
+{% end %}

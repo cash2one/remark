@@ -1,0 +1,245 @@
+
+<!--<script type="text/javascript">-->
+    <!--var chooseList = [];-->
+    <!--var demandId;-->
+    <!--var handUpMsg = {};-->
+    <!--var handUpList = [];-->
+    <!--$.ajax({-->
+            <!--type:'get',-->
+            <!--url:"http://123.57.29.208:6625/sort?a=view&id={{demandId}}",-->
+            <!--dataType: 'jsonp',-->
+            <!--jsonp:"callback",-->
+            <!--success: function(res){-->
+                <!--reco = res-->
+                <!--console.log(reco)-->
+                <!--var _html='<div class="choose-sm-others-box">'-->
+                <!--_html+='<div class="case-more-box">'-->
+                    <!--for(var i = 0; i<reco.length;i++){-->
+                        <!--_html +='<div class="self-media-main">'+-->
+                                    <!--'<div class="self-msg">'+-->
+                                        <!--'<img src="'+reco[i][0]['avatar']+'" width="40" height="40">'+-->
+                                        <!--'<a href="/u?id='+reco[i][0]['user_id']+'">'+reco[i][0]['nickname']+'</a>'+-->
+                                    <!--'</div>'+-->
+                                    <!--'<div class="mobile"><img src="/static/images/mobile.png">'+reco[i][0]['phone']+'</div>'+-->
+                                    <!--'<div class="container">'-->
+                                        <!--for(var n=0;n<reco[i].length-1;n++){-->
+                                            <!--_html+= '<div class="media-box">'+-->
+                                                        <!--'<div class="media-head">'+-->
+                                                            <!--'<a href="/media?a=view&id='+reco[i][n+1][0]['id']+'">'+-->
+                                                                <!--'<img src="'+reco[i][n+1][0]['avatar']+'" style="width:100px;height:100px;" />'+-->
+                                                            <!--'</a>'+-->
+                                                        <!--'</div>'+-->
+                                                        <!--'<div class="backColor">'+-->
+                                                            <!--'<div class="bc"></div>'+-->
+                                                        <!--'</div>'+-->
+                                                        <!--'<input type="hidden" value="" />'+-->
+                                                        <!--'<div class="media-main am-page">'+-->
+                                                            <!--'<div class="media-title">'+-->
+                                                            <!--'<a href="/media?a=view&id='+reco[i][n+1][0]['id']+'">'+-->
+                                                                <!--reco[i][n+1][0]['name']+-->
+                                                            <!--'</a>'+-->
+                                                            <!--'</div>'+-->
+
+                                                            <!--'<div class="media-title-letters">微信号：'+reco[i][n+1][1][0]['wechat_id']+'</div>'+-->
+                                                            <!--'<p>'+reco[i][n+1][0]['breif']+'</p>'+-->
+                                                            <!--'<div class="intrested-container">'-->
+                                                               <!--for(var m=0;m<reco[i][n+1][2].length;m++){-->
+                                                                <!--_html+= '<div class="interestedBox">'+reco[i][n+1][2][m]['name']+'</div>'-->
+                                                                <!--}-->
+                                                            <!--_html+='</div>'+-->
+                                                            <!--'<div class="am-choose-pick-form">'+-->
+                                                                <!--'<b>选择营销投放位</b>'-->
+                                                                <!--if((reco[i][n+1][3]['price_1x'] !="")&&(reco[i][n+1][3]['price_1x'] !=0)){-->
+                                                                    <!--_html+='<div class="choose-btn choose-btn-normal" onclick="chooseThisPosition(this)" value="'+reco[i][n+1][3]['price_1x']+'" type="price_1x">单图文</div>';-->
+                                                                <!--}-->
+                                                                <!--if((reco[i][n+1][3]['price_x1'] !="")&&(reco[i][n+1][3]['price_x1'] !=0)){-->
+                                                                    <!--_html+='<div class="choose-btn choose-btn-normal" onclick="chooseThisPosition(this)" value="'+reco[i][n+1][3]['price_x1']+'" type="price_x1">多图文首条</div>';-->
+                                                                <!--}-->
+                                                                <!--if((reco[i][n+1][3]['price_x2'] !="")&&(reco[i][n+1][3]['price_x2'] !=0)){-->
+                                                                                    <!--_html+='<div class="choose-btn choose-btn-normal" onclick="chooseThisPosition(this)" value="'+reco[i][n+1][3]['price_x2']+'" type="price_x2">多图文二条</div>';-->
+                                                                                <!--}-->
+                                                                <!--if((reco[i][n+1][3]['price_xx'] !="")&&(reco[i][n+1][3]['price_xx'] !=0)){-->
+                                                                                    <!--_html+='<div class="choose-btn choose-btn-normal" onclick="chooseThisPosition(this)" value="'+reco[i][n+1][3]['price_xx']+'" type="price_xx">其他</div>';-->
+                                                                                <!--}-->
+                                                            <!--_html+='</div>'+-->
+                                                            <!--'<div class="cost"><small>￥</small>0</div>'+-->
+                                                                    <!--'</div>'-->
+                                            <!--_html+='</div>'-->
+                                        <!--}-->
+                                    <!--_html+='</div>'-->
+                        <!--_html+='</div>'-->
+                    <!--}-->
+                <!--_html+='</div>'+-->
+                <!--'<div class="check-total-value">'+-->
+                        <!--'<div class="has-accepted">已选择<span class="number" id="total-nums">0</span>个自媒体<br/><small>可以等待更多自媒体接单，如果已决定请在右边支付</small></div>'+-->
+                        <!--'<div class="cost" id="total-cost"><small>￥</small>88,888</div>'+-->
+                        <!--'<div class="btn-with-blueBg-and-addBtn pay-btn" onclick="payForEverything()">支付</div>'+-->
+                <!--'</div>'+-->
+                        <!--'</div>'-->
+                <!--$("body").append(_html)-->
+
+
+
+            <!--},-->
+            <!--error:function(res){-->
+                <!--alert("fail")-->
+            <!--}-->
+
+
+    <!--});-->
+    <!--function payForEverything(){-->
+        <!--var list = [];-->
+        <!--for(var str in handUpMsg){-->
+            <!--if(handUpMsg[str]!=null){-->
+                <!--list.push(handUpMsg[str]);-->
+            <!--}-->
+        <!--}-->
+        <!--if(list.length==0){-->
+            <!--showTipsBox('alert','请选择自媒体投放');-->
+            <!--return;-->
+        <!--}-->
+        <!--var object = {};-->
+        <!--object.did = demandId;-->
+        <!--object.sum = $('#total-cost').text().replace('￥','').split(',').join('');-->
+        <!--object.list = list;-->
+        <!--$.ajax({-->
+            <!--url:'/demand?a=pay_create',-->
+            <!--type:'POST',-->
+            <!--dataType: 'JSON',-->
+            <!--data:{'data': JSON.stringify(object)},-->
+            <!--success:function(d){-->
+                <!--if(d.status == 200){-->
+                    <!--location.href = '/demand?a=pay&id=' + d.data.id;-->
+                <!--}else{-->
+                    <!--showTipsBox('alert','提交支付信息失败，请重试');-->
+                    <!--return;-->
+                <!--}-->
+            <!--}-->
+        <!--})-->
+    <!--}-->
+
+    <!--function gotoUrl(url){-->
+        <!--console.log(url);-->
+    <!--}-->
+
+    <!--function showError(data){-->
+
+    <!--}-->
+
+    <!--function formatMobileNumber(str){-->
+        <!--return str.substr(0,3)+'-' + str.substr(3,4) + '-'+str.substr(7);-->
+    <!--}-->
+
+    <!--function clearAllMsg(){-->
+        <!--$('.case-more-box .self-media-main').remove();-->
+    <!--}-->
+    <!--function showHideDetail(){-->
+        <!--if($('.case-page-detail').hasClass('mini-page')){-->
+            <!--$('.case-page-detail').removeClass('mini-page');-->
+            <!--$('#up-down').addClass('btn-rotate');-->
+        <!--}else{-->
+            <!--$('.case-page-detail').addClass('mini-page');-->
+            <!--$('#up-down').removeClass('btn-rotate');-->
+        <!--}-->
+        <!--checkFootLocation();-->
+    <!--}-->
+    <!--function chooseThisPosition(obj){-->
+        <!--var list = $(obj).parent().children();-->
+        <!--var ooo = {};-->
+        <!--ooo.jid = $(obj).parent().parent().parent().children('input').val();-->
+        <!--handUpMsg[ooo.jid] = ooo;-->
+        <!--ooo.ptype=$(obj).attr('type');-->
+        <!--ooo.price = $(obj).attr('value').toString();-->
+
+        <!--for(var i=0;i<list.length;i++){-->
+            <!--if($(list[i]).hasClass('choose-btn-down')){-->
+                <!--chooseList.splice(getIndexInList(chooseList,$(list[i]).attr('value')),1);-->
+                <!--$(list[i]).removeClass('choose-btn-down').addClass('choose-btn-normal');-->
+                <!--if(list[i]==obj){-->
+                    <!--$(obj).parent().next().hide();-->
+                    <!--setTotalCosts();-->
+                    <!--handUpMsg[ooo.jid] = null;-->
+                    <!--if(chooseList.length==0){$('#total-cost').hide();}-->
+                    <!--return;-->
+                <!--}-->
+            <!--}-->
+        <!--}-->
+        <!--$(obj).removeClass('choose-btn-normal').addClass('choose-btn-down');-->
+        <!--chooseList.push($(obj).attr('value'));-->
+        <!--$(obj).parent().next().show().html('<small>￥</small>' + $(obj).attr('value'));-->
+        <!--setTotalCosts();-->
+    <!--}-->
+
+    <!--function setTotalCosts(){-->
+        <!--var costs = 0;-->
+        <!--for(i=0;i<chooseList.length;i++){-->
+            <!--costs +=parseFloat(chooseList[i].split(',').join(''));-->
+        <!--}-->
+        <!--$('#total-cost').show().html('<small>￥</small>' + formatNumber(costs));-->
+        <!--$('#total-nums').text(chooseList.length.toString());-->
+    <!--}-->
+
+
+
+<!--</script>-->
+<!--{% if jiedan_other %}-->
+<!--<div class="choose-sm-others-box">-->
+<!--<div class="case-more-box">-->
+    <!--{% for key in jiedan_other %}-->
+    <!--<div class="self-media-main">-->
+        <!--<div class="self-msg">-->
+            <!--<img src="{{ jiedan_other[key]['info']['avatar'] }}" width="40" height="40">-->
+            <!--<a href="/u?id={{ jiedan_other[key]['info']['user_id'] }}">-->
+            <!--{{ jiedan_other[key]['info']['nickname'] }}-->
+            <!--</a>-->
+        <!--</div>-->
+        <!--{% if jiedan_other[key]['info']['phone'] %}-->
+        <!--<div class="mobile"><img src="{{ static_url('images/mobile.png') }}">{{ jiedan_other[key]['info']['phone'] }}</div>-->
+        <!--{% end %}-->
+        <!--<div class="container">-->
+            <!--{% for value in jiedan_other[key]['official'] %}-->
+            <!--<div class="media-box">-->
+                <!--<div class="media-head"><img src="{{ value['avatar'] }}" style="width:100px;height:100px;" /></div>-->
+                <!--<div class="media-main am-page">-->
+                    <!--<div class="media-title"><a href="/media?a=view&id={{ value['oa_id'] }}">{{ value['name'] }}</a></div>-->
+                    <!--<div class="media-title-letters">{{ value['wechat_id'] }}</div>-->
+                    <!--<p>{{ value['features'] }}</p>-->
+                    <!--<div class="intrested-container">-->
+                        <!--{% for val in value['category'] %}-->
+                        <!--<div class="interestedBox">{{ val['name'] }}</div>-->
+                        <!--{% end %}-->
+                    <!--</div>-->
+                    <!--<div class="am-choose-pick-form">-->
+                        <!--<b>选择营销投放位</b>-->
+                        <!--{% if value['price_1x'] != '' and value['price_1x'] != 0 %}-->
+                        <!--<div class="choose-btn choose-btn-normal" onclick="chooseThisPosition(this)" value="{{ value['price_1x'] }}" type="price_1x">单图文</div>-->
+                        <!--{% end %}-->
+                        <!--{% if value['price_x1'] != '' and value['price_x1'] != 0 %}-->
+                        <!--<div class="choose-btn choose-btn-normal" onclick="chooseThisPosition(this)" value="{{ value['price_x1'] }}" type="price_x1">多图文首条</div>-->
+                        <!--{% end %}-->
+                        <!--{% if value['price_x2'] != '' and value['price_x2'] != 0 %}-->
+                        <!--<div class="choose-btn choose-btn-normal" onclick="chooseThisPosition(this)" value="{{ value['price_x2'] }}" type="price_x2">多图文二条</div>-->
+                        <!--{% end %}-->
+                        <!--{% if value['price_xx'] != '' and value['price_xx'] != 0 %}-->
+                        <!--<div class="choose-btn choose-btn-normal" onclick="chooseThisPosition(this)" value="{{ value['price_xx'] }}" type="price_xx">其他</div>-->
+                        <!--{% end %}-->
+                    <!--</div>-->
+                    <!--<div class="cost"><small>￥</small>0</div>-->
+                <!--</div>-->
+                <!--<div class="backColor">-->
+                    <!--<div class="bc"></div>-->
+                <!--</div>-->
+                <!--<input type="hidden" value="{{ value['id'] }}" />-->
+            <!--</div>-->
+            <!--{% end %}-->
+        <!--</div>-->
+        <!--{% end %}-->
+    <!--</div>-->
+    <!--<div class="check-total-value">-->
+        <!--<div class="has-accepted">已选择<span class="number" id="total-nums">0</span>个自媒体<br/><small>可以等待更多自媒体接单，如果已决定请在右边支付</small></div>-->
+        <!--<div class="cost" id="total-cost"><small>￥</small>88,888</div>-->
+        <!--<div class="btn-with-blueBg-and-addBtn pay-btn" onclick="payForEverything()">支付</div>-->
+    <!--</div>-->
+<!--</div>-->
+<!--</div>-->
+<!--{% end %}-->

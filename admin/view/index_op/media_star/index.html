@@ -1,0 +1,155 @@
+{% extends '../../public/main.html' %}
+
+{% block body %}
+<script type="text/javascript">
+    function on_media_commit(){
+        var media_id = document.getElementById('media_id').value;
+        var title = document.getElementById('title').value;
+        var brief = document.getElementById('brief').value;
+        var url = document.getElementById('url').value;
+        var feature = document.getElementById('feature').value;
+        if (media_id == "" || title == "" || brief == "" || url == "" || feature == "") {
+            alert("填写选项不能为空!");
+            return false;
+        }
+        document.getElementById('media_form').submit();
+    }
+    function update_media(obj){
+        var id = obj.name;
+        var form_id = 'media_form' + id;
+        var media_id = document.getElementById('media_id'+id).value;
+        var title = document.getElementById('title'+id).value;
+        var brief = document.getElementById('brief'+id).value;
+        var url = document.getElementById('url'+id).value;
+        var feature = document.getElementById('feature'+id).value;
+        if (media_id == "" || title == "" || brief == "" || url == "" || feature == "") {
+            alert("填写选项不能为空!");
+            return false;
+        }
+        document.getElementById(form_id).submit();
+    }
+    $(document).ready(function(){
+        uediter('brief');
+    })
+    function process(str_id){
+        var str = 'brief'+str_id;
+        uediter(str);
+    }
+</script>
+<div class="result_filter" id="result_filter">
+    <button class="btnAdd" data-target="#media_dialog" data-toggle="modal">新增自媒体</button>
+</div>
+<div>
+    <div id="media_dialog" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">X</button>
+                    <h4 id="media_create_title">新增自媒体</h4>
+                </div>
+                <div class="modal-body brickWall">
+                    <form id="media_form" name="media_form" method="post" action="/index_op/media_star?a=create">
+                        <div>
+                            <strong>自媒体ID</strong>
+                            <input type="text" id="media_id" name="media_id" value="">
+                        </div>
+                        <div>
+                            <strong>文章标题</strong>
+                            <input type="text" id="title" name="title" value="">
+                        </div>
+                        <div class="uediter">
+                            <strong>文章摘要</strong>
+                            <textarea id="brief" name="brief" maxlength="100" style="resize:none;overflow:hidden" ></textarea>
+                        </div>
+                        <div>
+                            <strong>链接</strong>
+                            <input type="text" id="url" name="url" value="">
+                        </div>
+                        <div>
+                            <strong>特征</strong>
+                            <input type="text" id="feature" name="feature" value="">
+                        </div>
+
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-success" onclick="on_media_commit()">保存</button>
+                    <button class="btn btn-default" data-dismiss="modal" aria-hidden="true">取消</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<table class="table table-bordered table-hover vert-align">
+    <thead>
+        <tr class="res_tbl_title">
+            <td>序号</td>
+            <td>名称</td>
+            <td>文章标题</td>
+            <td>文章摘要</td>
+            <td>特征</td>
+            <td>排序</td>
+            <td>更新时间</td>
+            <td>操作</td>
+        </tr>
+    </thead>
+    {% if media_star %}
+    <tbody>
+        <tr>
+            <td>{{ media_star['idx'] }}</td>
+            <td>
+                <a href="/yidao/media?a=detail&id={{ media_star['media_id'] }}">{{ media_star['name'] }}</a>
+            </td>
+            <td>{{ media_star['title'] }}</td>
+            <td>{% raw media_star['brief'] if len(media_star['brief']) <= 30 else media_star['brief'][:30]+'...' %}</td>
+            <td>{{ media_star['feature'] }}</td>
+            <td>{{ media_star['sort'] }}</td>
+            <td>{{ media_star['last_update_time'] }}</td>
+            <td>
+                <a class="btn btnThin" data-target="#media_dialog{{ media_star['id'] }}" data-toggle="modal" onclick="process({{ media_star['id'] }})">变更</a>
+                <div id="media_dialog{{ media_star['id'] }}" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">X</button>
+                                <h4 id="media_update_title{{ media_star['id'] }}">变更自媒体</h4>
+                            </div>
+                            <div class="modal-body brickWall">
+                                <form id="media_form{{ media_star['id'] }}" name="media_form" method="post" action="/index_op/media_star?a=update">
+                                    <input type="hidden" id="idx_media_id{{ media_star['id'] }}" name="idx_media_id" value="{{ media_star['id'] }}">
+                                    <div>
+                                        <strong>自媒体ID</strong>
+                                        <input type="text" id="media_id{{ media_star['id'] }}" name="media_id" value="{{ media_star['media_id'] }}">
+                                    </div>
+                                    <div>
+                                        <strong>文章标题</strong>
+                                        <input type="text" id="title{{ media_star['id'] }}" name="title" value="{{ media_star['title'] }}">
+                                    </div>
+                                    <div class="uediter">
+                                        <strong>文章摘要</strong>
+                                        <textarea id="brief{{ media_star['id'] }}" name="brief" maxlength="100" style="resize:none;overflow:hidden" >{% raw media_star['brief'] %}</textarea>
+                                    </div>
+                                    <div>
+                                        <strong>链接</strong>
+                                        <input type="text" id="url{{ media_star['id'] }}" name="url" value="{{ media_star['url'] }}">
+                                    </div>
+                                    <div>
+                                        <strong>特征</strong>
+                                        <input type="text" id="feature{{ media_star['id'] }}" name="feature" value="{{ media_star['feature'] }}">
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="modal-footer">
+                                <button class="btn btn-success" name="{{ media_star['id'] }}" onclick="update_media(this)">保存</button>
+                                <button class="btn btn-default" data-dismiss="modal" aria-hidden="true">取消</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <a class="btn btnThin" href="/index_op/media_star?a=delete&id={{ media_star['id'] }}" onclick="return confirm('确认删除?');">删除</a>
+            </td>
+        </tr>
+    </tbody>
+    {% end %}
+</table>
+{% end %}

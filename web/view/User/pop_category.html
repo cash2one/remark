@@ -1,0 +1,102 @@
+<div class="side-trade-list">
+    <div class="trade-list-title">选择行业类型<div class="login-close"><span class="icon-close" onClick="close_side();"></span></div></div>
+    <div class="mCustomScrollbar side-content"  data-mcs-theme="minimal-dark">
+	    <div class="type-container">
+                {% for value in category %}
+	        	<div id ="c_{{ value['id'] }}" data="{{ value['id'] }}" class="interestedBox">{{ value['name'] }}</div>
+                {% end %}
+	    </div>
+    </div>
+</div>
+<script>
+var tradeList = [];
+
+var pop_height = 60;
+var pop_max = 1;
+
+$(function(){
+	
+    $('#show-side-list').click(function(){
+        if(!$('.side-trade-list').hasClass('trade-in')){
+            $('.side-trade-list').addClass('trade-in');
+        }else{
+            $('.side-trade-list').removeClass('trade-in');
+        }
+
+    });
+
+    $('.type-container .interestedBox').click(function(e){
+        var ss = e.target.innerHTML;
+        var sid = $(e.target).attr('data');
+        
+        if(getListNum(tradeList,sid)==-1){
+            if(tradeList.length>=pop_max){
+                showTipsBox('alert','最多只可以选择' + pop_max + '个需求类型');
+                return;
+            }
+            
+            tradeList.push(sid);
+            $(e.target).addClass('picked');
+            var obj = document.createElement('div');
+            var ooo2 = document.createElement('span');
+            ooo2.innerHTML = '删除';
+            ooo2.className = 'deleteBtn';
+            obj.innerHTML = ss;
+            obj.className = 'interestedBox';
+            obj.id = 'inner'+sid;
+            //obj.data = sid;
+            $(obj).attr('data',sid);
+            $('#trade-container').prepend(obj);
+            $('#inner' + sid).append(ooo2).click(function(e){
+                var sa = $(this).attr('data');
+                 tradeList.splice(getListNum(tradeList,sa), 1);
+                  $(this).remove();
+                $('#c_'+sa).removeClass('picked');
+                console.log(tradeList);
+                $('input[name="category_list"]').val(tradeList.join(','));
+            });
+            
+        }else{
+            $(e.target).removeClass('picked');
+            tradeList.splice(getListNum(tradeList,sid),1);
+             $('#inner' + sid).remove();
+        }
+        $('input[name="category_list"]').val(tradeList.join(','));
+        console.log($('#trade-container').height());
+    });
+    $('#i-box').hide();
+
+});
+
+
+
+function getListNum(list,key){
+    var tt = -1;
+    var len = list.length;
+    for(var i=0;i<len;i++){
+        if(key==list[i]){
+            tt = i;
+            return tt;
+        }
+    }
+    return tt;
+}
+
+function resetInvoice(){
+    if($('#needInvoice').attr('checked')){
+        $('#needInvoice').removeAttr('checked');
+        //$('#invoice-box').attr('disabled','disabled').val('');
+        $('#i-box').hide();
+    }else{
+        $('#needInvoice').attr('checked','checked');
+        $('#i-box').show();
+    }
+}
+
+
+function close_side(){
+    $('.side-trade-list').removeClass('trade-in');
+}
+
+
+</script>

@@ -1,0 +1,71 @@
+{% extends '../public/main.html' %}
+
+{% block body %}
+<div class="status_title">
+    <div>
+        <a href="javascript:history.go(-1);">返回</a>
+    </div>
+</div>
+<table class="table table-bordered table-hover vert-align">
+    <thead>
+        <tr class="res_tbl_title">
+            <td>基本信息</td>
+            <td></td>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>ID</td>
+            <td>{{ detail_info['id'] }}</td>
+        </tr>
+        <tr>
+            <td>投放平台</td>
+            <td>{{ detail_info['platform_tag'] }}</td>
+        </tr>
+        <tr>
+            <td>营销形式</td>
+            <td>{{ detail_info['demand_form'] }}</td>
+        </tr>
+        <tr>
+            <td>营销主题</td>
+            <td>{{ detail_info['title'] }}</td>
+        </tr>
+        <tr>
+            <td>预算总额</td>
+            <td>{{ detail_info['money'] }}</td>
+        </tr>
+        <tr>
+            <td>营销时间</td>
+            <td>{{ detail_info['time_begin'] }} 至 {{ detail_info['time_end'] }}</td>
+        </tr>
+        <tr>
+            <td>广告主</td>
+            <td>
+                {% if detail_info['nickname'] %}
+                <a href="/user?a=detail&id={{ detail_info['user_id'] }}">{{ detail_info['nickname'] }}</a>
+                {% else %}
+                -
+                {% end %}
+            </td>
+        </tr>
+    </tbody>
+    <thead>
+        <tr class="res_tbl_title">
+            <td>具体需求描述</td>
+            <td></td>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>建议营销指标</td>
+            <td>{{ detail_info['marketing'] }}</td>
+        </tr>
+        <tr>
+            <td>更多详情</td>
+            <td>
+                <a href="http://www.yidao.info/demand?a=view&id={{ detail_info['id'] }}">转至前台查看</a>
+            </td>
+        </tr>
+    </tbody>
+</table>
+{% end %}

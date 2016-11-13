@@ -1,0 +1,68 @@
+{% extends '../public/main.html' %}
+
+{% block body %}
+<div class="status_title">
+    <div>
+        <a href="javascript:history.go(-1);">返回</a>
+    </div>
+</div>
+<table class="table table-bordered table-hover vert-align">
+    <thead>
+        <tr class="res_tbl_title">
+            <td>基本信息</td>
+            <td></td>
+            <td>操作</td>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>ID</td>
+            <td>{{ detail_info['id'] }}</td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>联盟名称</td>
+            <td>{{ detail_info['name'] }}</td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>所属用户账户</td>
+            <td>{{ detail_info['nickname'] }}</td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>创建时间</td>
+            <td>{{ detail_info['create_time'] }}</td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>状态</td>
+            <td>{{ detail_info['status_tag'] }}</td>
+            <td>
+                {% if detail_info['status'] == -2 %}
+                <a href="/union?a=unban&status={{ detail_info['status'] }}&id={{ detail_info['id'] }}" onclick="return confirm('确认取消禁用?');">取消禁用</a> |
+                {% elif detail_info['status'] == -1 %}
+                <a href="/union?a=allow&status={{ detail_info['status'] }}&id={{ detail_info['id'] }}" onclick="return confirm('确认通过?');">通过</a> |
+                {% elif detail_info['status'] == 0 %}
+                <a href="/union?a=allow&status={{ detail_info['status'] }}&id={{ detail_info['id'] }}" onclick="return confirm('确认通过?');">通过</a> |
+                <a href="/union?a=disallow&status={{ detail_info['status'] }}&id={{ detail_info['id'] }}" onclick="return confirm('确认不通过?');">不通过</a> |
+                {% elif detail_info['status'] == 1 %}
+                <a href="/union?a=ban&status={{ detail_info['status'] }}&id={{ detail_info['id'] }}" onclick="return confirm('确认禁用?');">禁用</a> |
+                {% else %}
+                {% end %}
+                <a href="/union?a=delete&status={{ detail_info['status'] }}&id={{ detail_info['id'] }}" onclick="return confirm('确认删除?');">删除</a>
+            </td>
+        </tr>
+        <tr>
+            <td>logo</td>
+            <td><img src="{{ detail_info['logo'] }}" /></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>简介</td>
+            <td>{{ detail_info['desc'] }}</td>
+            <td></td>
+        </tr>
+    </tbody>
+</table>
+{% end %}

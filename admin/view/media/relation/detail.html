@@ -1,0 +1,100 @@
+{% extends '../../public/main.html' %}
+
+{% block body %}
+<div class="nav">
+    <a href="/media/relation">返回上页</a>
+</div>
+<div class="colcon">
+    <div class="col1in3">
+        <table class="table table-bordered table-hover vert-align">
+            <thead class="th-title">
+                <tr>
+                   <td colspan="2">基本信息</td>
+                </tr>
+            </thead>
+            <tbody> 
+                <tr>
+                    <td>ID</td>
+                    <td>{{ detail_info['id'] }}</td>
+                </tr>
+                <tr>
+                    <td>联系人</td>
+                    <td>{{ detail_info['contact_person'] if detail_info['contact_person'] else '-'}}</td>
+                </tr>
+                <tr>
+                    <td>职位</td>
+                    <td>{{ detail_info['contact_position'] if detail_info['contact_position'] else '-'}}</td>
+                </tr>
+                <tr>
+                    <td>手机</td>
+                    <td>{{ detail_info['contact_phone'] if detail_info['contact_phone'] else '-'}} </td>
+                </tr>
+                <tr>
+                    <td>座机</td>
+                    <td>{{ detail_info['contact_tel'] if detail_info['contact_tel'] else '-'}}</td>
+                </tr>
+                <tr>
+                    <td>QQ</td>
+                    <td>{{ detail_info['contact_qq'] if detail_info['contact_qq'] else '-'}}</td>
+                </tr>
+                <tr>
+                    <td>微信</td>
+                    <td>{{ detail_info['contact_wechat'] if detail_info['contact_wechat'] else '-'}}</td>
+                </tr>
+                <tr>
+                    <td>邮件</td>
+                    <td>{{ detail_info['contact_email'] if detail_info['contact_email'] else '-'}}</td>
+                </tr>
+                <tr>
+                    <td>其它</td>
+                    <td>{{ detail_info['contact_other'] if detail_info['contact_other'] else '-'}}</td>
+                </tr>
+            </tbody>
+        </table>
+        <div class="opc">
+            <button class="btnNormal" id="update_contact" data-target="#basic_info_update_dialog" data-toggle="modal">更新</button>
+        </div>
+    </div>
+</div>
+<br>
+{% if media %}
+<div class="colcon">
+   
+        <table class="table table-bordered table-hover vert-align">
+            <thead class="th-title">
+                <tr>
+                    <td colspan="7" class="res_tbl_title">关联媒体</td>
+                </tr>
+            </thead>
+            <tbody>
+                <tr class="res_tbl_title">
+                    <td>ID</td>
+                    <td>媒体名称</td>
+                    <td>媒体类型</td>
+                    <td>备注</td>
+                    <td>创建时间</td>
+                    <td>更新时间</td>
+                </tr>
+                {% for item in media %}
+                <tr>
+                    <td>{{ item['id'] }}</td>
+                    <td>
+                        <a href="/media/{{ item['platform'][0] }}?a=detail&id={{item['m.id']}}" title="简介：{{ item['brief'] }}">{{ item['name'] }}</a>
+                    </td>
+                    <td>{{ item['platform'][1] }}</td>
+                    <td width="20%"><div class="tabDisplay">{% raw item['remark'] if item['remark'] else '-' %}</div></td>
+                    <td>{{ item['create_time'] }}</td>
+                    <td>{{ item['last_update_time'] }}</td>
+                </tr>
+                {% end %}
+            </tbody>
+        </table>
+    
+</div>
+
+{% end %}
+<script type="text/javascript">
+$(document).ready(function() {
+})
+</script>
+{% end %}

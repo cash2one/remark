@@ -1,0 +1,74 @@
+<div class="v3_demand_step" id="v3_demand_step3" style="display:none;">
+    <div class="v3_demand_step_title">
+        <div class="v3_demand_step_title_ico"></div>
+        <div class="v3_demand_step_title_text">广告文案</div>
+    </div>
+    <div class="v3_demand_step_content">
+        <div class="v3_demand_step_content_line v3_h35">
+            <div class="v3_demand_step_content_label v3_h35 v3_w147 v3_right">文案内容：</div>
+            <div class="v3_demand_step_content_item v3_h35">
+                <label class="v3_demand_step_content_checkbox">
+                <input type="radio" class="article_status" name="article_status" value="0" checked="checked" /> 直接与自媒体沟通
+                </label>
+                <label class="v3_demand_step_content_checkbox">
+                <input type="radio" class="article_status" name="article_status" value="1" /> 微信图文链接
+                </label>
+                <label class="v3_demand_step_content_checkbox">
+                <input type="radio" class="article_status" name="article_status" value="2" /> 上传文案
+                </label>
+            </div>
+            <div class="v3_demand_step_content_tips v3_h35"></div>
+        </div>
+        <div class="v3_demand_step_content_line">
+            <div class="v3_demand_step_content_label v3_demand_step_content_label_top v3_w147 v3_right"></div>
+            <div class="v3_demand_step_content_item">
+                <input type="text" name="origin_link" id="origin_link" class="v3_demand_step_content_input v3_demand_step_content_text_long v3_w240" style="display: none"/>
+                <input type="hidden" name="doc_path" id="doc_path" value="" />
+                <form id="upload_form" action="/user?a=upload_content" method="post" enctype="multipart/form-data" target="hidden_form">
+                    <input type="file" id="content_file" name="content_file" accept=".pdf,.doc,.docx" onchange="on_submit_content()" style="display: none"/>
+                </form>
+                <!--<form id="upload_form" enctype="multipart/form-data">-->
+                    <!--<input type="file" name="content_file" id="content_file" accept=".pdf,.doc,.docx" class="v3_demand_step_content_text_long v3_w240" style="display: none"/>-->
+                    <!--<button id="upload" style="display: none">上传</button>-->
+                <!--</form>-->
+            </div>
+            <div class="v3_demand_step_content_tips"></div>
+        </div>
+        <!--
+        <div class="v3_demand_step_content_line">
+            <div class="v3_demand_step_content_label v3_demand_step_content_label_top">图文标题：</div>
+            <div class="v3_demand_step_content_item">
+                <input type="text" name="artical_title" id="artical_title" class="v3_demand_step_content_input v3_demand_step_content_text_long v3_w240" />
+            </div>
+            <div class="v3_demand_step_content_tips"></div>
+        </div>
+        <div class="v3_demand_step_content_line">
+            <div class="v3_demand_step_content_label v3_demand_step_content_label_top v3_right">作者：</div>
+            <div class="v3_demand_step_content_item">
+                <input type="text" name="artical_author" id="artical_author" class="v3_demand_step_content_input v3_w123" />
+            </div>
+            <div class="v3_demand_step_content_tips"></div>
+        </div>
+        <div class="v3_demand_step_content_line">
+            <div class="v3_demand_step_content_label v3_demand_step_content_label_top v3_right">详细内容：</div>
+            <div class="v3_demand_step_content_item">
+                <textarea class="v3_demand_step_content_input v3_demand_step_content_textarea" name="artical_body" id="artical_body"></textarea>
+            </div>
+            <div class="v3_demand_step_content_tips"></div>
+            <div style="clear:both;font-size:0px;"></div>
+        </div>
+        <div class="v3_demand_step_content_line">
+            <div class="v3_demand_step_content_label v3_demand_step_content_label_top">原文链接：</div>
+            <div class="v3_demand_step_content_item">
+                <input type="text" name="origin_link" id="origin_link" class="v3_demand_step_content_input v3_demand_step_content_text_long v3_w240" />
+            </div>
+            <div class="v3_demand_step_content_tips"></div>
+        </div>
+        -->
+        <div class="v3_demand_step_content_line">
+            <a href="javascript:;" class="v3_demand_step_content_cancel v3_w147 v3_step_next" data-next="2">上一步</a>
+            <button class="v3_button" id="v3_submit">提交需求审核</button>
+        </div>
+    </div>
+</div>
+<!--<iframe frameborder="0" id="iframe" name='hidden_form' style="width:0;height: 0;" onload="iframeLoaded(this)"></iframe>-->

@@ -1,0 +1,69 @@
+{% extends '../../public/main.html' %}
+
+{% block body %}
+<link rel="stylesheet" type="text/css" href="{{ static_url('style/bootstrap-responsive.css') }}" />
+<link rel="stylesheet" type="text/css" href="{{ static_url('style/bootstrap-datetimepicker.css') }}" />
+<script type="text/javascript" src="{{ static_url('script/bootstrap-datetimepicker.js') }}"></script>
+
+<div class="status_title">
+    <ol class="breadcrumb">
+        <li><a href="#">订单管理</a></li>
+        <li><a href="/demand/order?status=10">全部</a></li> 
+        <li><a href="/demand/order?status=2">等待反馈</a></li> 
+        <li><a href="/demand/order?status=3">等待验收</a></li> 
+        <li><a href="/demand/order?status=4">已完成</a></li> 
+        <li><a href="/demand/order?status=5">已取消</a></li> 
+    </ol>
+</div>
+<div class="result_filter">
+    <form action='/demand/order' method="get">
+        <input type="hidden" name="status" value="{{ status }}" />
+        日期
+        <input size="16" type="text" readonly class="form_datetime form-control dateInput" name="start">
+        <span>&nbsp;至&nbsp;</span>
+        <input size="16" type="text" readonly class="form_datetime form-control dateInput" name="end">
+        <span>&nbsp;&nbsp;自媒体</span>
+        <input type="text" name="search" class="form-control dateInput" />
+        <input type="submit" value="筛选" class="btn btn-default" />
+    </form>
+    <script type="text/javascript">
+        $(".form_datetime").datetimepicker({
+            format: 'yyyy-mm-dd',
+            minView: 'month',
+            autoclose: true
+        });
+    </script>
+</div>
+<div>
+    <table class="table table-bordered table-hover vert-align">
+        <thead>
+            <tr class="res_tbl_title">
+                <td>序号</td>
+                <td> 需求名称</td>
+                <td>自媒体</td>
+                <td>订单价格</td>
+                <td>下单时间</td>
+                <td>状态</td>
+            </tr>
+        </thead>
+        <tbody>
+        {% for item in index_info %}
+            <tr>
+                <td>{{item['idx']}}</td>
+                <td><a href="/demand?a=detail&id={{item['demand_id']}}">{{item['title']}}</a></td>
+                <td><a href="/yidao/media?a=detail&id={{item['media_id']}}">{{item['media_name']}} </a></td>
+                <td>{{item['price']}}</td>
+                <td>{{item['create_time']}}</td>
+                <td>{{item['status_name']}}
+
+                    <!--<a href="/demand?a=delete&status={{ item['status'] }}&id={{ item['id'] }}" onclick="return confirm('确认删除?');">删除</a>-->
+                </td>
+            </tr>
+        {% end %}
+        </tbody>
+    </table>
+</div>
+<div>
+    {% raw page_html %}
+</div>
+{% end %}

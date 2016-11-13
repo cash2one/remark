@@ -1,0 +1,70 @@
+/*login vip's head picture*/
+.head .account { float:left;margin-right: 10px;font-size: 16px;z-index:10;}
+.head .account a {overflow:hidden;display: block;width:40px;height:40px;border-radius:50%;border:2px solid #003862;}
+.head .account a:hover {}
+.head .account img {width:36px;height:36px;}
+/*end of login vip's head picture*/
+
+a { color: #2798eb; text-decoration: none; transition: all 0.3s; }
+a:hover { color: #0066c2;text-decoration: none; }
+.downBox .a{color:#fff;font-size: 17px;}
+.downBox .a:hover{color:#fff;}
+img { border: none; vertical-align: top; }
+li { list-style: none; }
+table { border-collapse: collapse; border-spacing: 0; }
+.cost a{color:#fff;}
+
+
+.main{max-width: 1280px;width:100%;margin:60px auto;}
+.main .column-left{float:left;}
+.main .column-right{margin-left:340px;}
+.main .user{width:320px;margin-bottom:20px;padding:19px;border:1px solid #e6e6e6;border-top:none;background-color:#fff;}
+.main .user .avatar {float: left;}
+.main .user .avatar a{overflow:hidden;display:block;width:100px;height:100px;border-radius:50%;border:1px solid #e6e6e6;}
+.main .user .avatar a:hover {border-color:#2891EB;}
+.main .user .avatar img{width:100px;height:100px;}
+.main .user .info {float: right;width:160px;font-size:14px;}
+.main .user .info h2{overflow: hidden;width:160px;font-size:24px;white-space: nowrap; text-overflow: ellipsis;}
+.main .user dl{margin-top:5px;}
+.main .user dt{float:left;width:46px;}
+.main .kits{margin-bottom:20px;background-color:#2891EB;}
+.main .kits .kits-deal{position:relative;float:left;width:55%;height:200px;background:url(../images/kits-deal.png) 50% 20px no-repeat;}
+.main .kits .kits-winwin{position:relative;float:left;width:45%;height:200px;background:url(../images/kits-winwin.png) 50% 0 no-repeat;}
+.main .kits h2{display:none;}
+.main .kits div div{position:absolute;left:50%;margin-top:120px;margin-left:-110px;}
+.main .kits .btn{opacity: 0.8;display:inline-block;width:100px;height:40px;margin:0 5px;border-radius:8px;border:1px solid #f90;background-color:#f90;color:#fff;font-size:16px;font-weight:700;line-height:40px;text-align:center;}
+.main .kits .btn:hover{opacity:1;}
+.main .wemedia{margin-bottom:20px;border:1px solid #e6e6e6;background-color: #fff;font-size:16px;}
+.main .wemedia h2{margin-top:19px;margin-left:29px;font-weight:400;font-size:20px;}
+.main .wemedia ul{margin-top:20px;margin-left:10px;margin-right:28px;}
+.main .wemedia li{float:left;margin-bottom:19px;margin-left:18px;}
+.main .wemedia li a{display:block;}
+.main .wemedia li a:hover{color:#333;}
+.main .wemedia li strong,.main .wemedia li img{display:block;width:100px;height:100px;border-radius:50%;border:1px solid #e6e6e6;background-color: #f8f8f8;}
+.main .wemedia li strong{transition:0.3s;color:#999;font-size:50px;line-height:100px;text-align:center;}
+.main .wemedia li a:hover strong{border-color:#2891EB;background-color:#e9f4fd;color:#2891EB;font-size:60px;}
+.main .wemedia li span{overflow: hidden;display:block;width:96px;margin-top:10px;margin-left:2px;text-align:center;white-space: nowrap; text-overflow: ellipsis;}
+
+
+/*forget password*/
+.change-pwd-box{width:950px;height:500px;margin:100px auto 50px auto;background: #fff;border:solid 1px #ddd;border-radius: 2px;padding:15px;position: relative;}
+.change-pwd-box .title{width:920px;border-bottom: solid 1px #ddd;padding:11px 0 18px 15px;font-size:18px;color:#333;font-weight: bold;}
+.change-pwd-box .mid-box{width:350px;position:absolute;top:100px;left:285px;height:auto;font-size:16px;color:#333;line-height: 30px;}
+.change-pwd-box .mid-box div{margin-bottom: 20px;}
+.change-pwd-box .mid-box small{font-size:14px;}
+.change-pwd-box input{width:264px;height: 36px;border:solid 1px #ddd;background: #eee;margin-left:19px;padding-left:5px;}
+.change-pwd-box .btn{text-align: center;font-size:14px;width:264px;margin-left:50px;}
+
+.change-pwd-box .success-word{font-size:14px;position: absolute;top:27px;font-weight: bold;}
+.change-pwd-box .if-fail{position: absolute;top:124px;color:#686868;font-size:14px;}
+.change-pwd-box .if-fail .research{color:#2798eb;margin-left:3px;cursor: pointer;transition: all 0.3s;}
+.change-pwd-box .if-fail .research:hover{color:#0066c2;}
+
+.change-pwd-box .change-form{position: absolute;top:98px;left:50%;font-size:16px;}
+.change-pwd-box div{margin-bottom: 15px;}
+
+.swf{position: absolute;width:1280px;height:700px;left:50%;top:50%;margin:-350px 0 0 -640px;}
+
+.side-swf-btn{position: absolute;left:0;top:360px;cursor: pointer;}
+
+#videoBox .login-close{position: absolute;top:50%;left:50%;margin:-340px 0 0 585px;color:#ddd;z-index:15;font-size:26px;cursor: pointer;}
